@@ -1,0 +1,6 @@
+6 5
+W S A A A S
+A A A S O S
+A S A S A S
+A W A A A S
+A W A S A A
