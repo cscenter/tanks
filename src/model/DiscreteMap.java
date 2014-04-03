@@ -2,7 +2,7 @@ package model;
 
 public class DiscreteMap {
     
-    public static final int emptyID = 0;
+    public static final int EMPTY_ID = 0;
     
     private int ids[][];
     private final int width;
@@ -15,7 +15,7 @@ public class DiscreteMap {
         for (int i = 0; i < h; ++i) {
             ids[i] = new int[w];
             for (int j = 0; j < w; ++j) {
-                ids[i][j] = emptyID;
+                ids[i][j] = EMPTY_ID;
             }
         }
     }
@@ -41,7 +41,7 @@ public class DiscreteMap {
         int y = j + obj.getWidth();
         for (; i < x; ++i) {
             for (j = obj.getPosition().getY(); j < y; ++j) {
-                ids[i][j] = emptyID;
+                ids[i][j] = EMPTY_ID;
             }
         }        
     }
@@ -49,20 +49,20 @@ public class DiscreteMap {
     public int getObjectID(Vector2D pos, int w, int h) {
         // it also isnt very safe.
         if (pos.getX() < 0 || pos.getY() < 0) {
-            return emptyID;
+            return EMPTY_ID;
         }
         if (pos.getX() + h > height || pos.getY() + w > width) {
-            return emptyID;
+            return EMPTY_ID;
         }
         
         for (int i = pos.getX(); i < pos.getX() + h; ++i) {
             for (int j = pos.getY(); j < pos.getY() + w; ++j) {
-                if (ids[i][j] != emptyID) {
+                if (ids[i][j] != EMPTY_ID) {
                     return ids[i][j];
                 }
             }
         }
-        return emptyID;
+        return EMPTY_ID;
     }
     
     public boolean isFree(Vector2D pos, int w, int h) {
@@ -76,7 +76,7 @@ public class DiscreteMap {
         
         for (int i = pos.getX(); i < pos.getX() + h; ++i) {
             for (int j = pos.getY(); j < pos.getY() + w; ++j) {
-                if (ids[i][j] != emptyID) {
+                if (ids[i][j] != EMPTY_ID) {
                     return false;
                 }
             }

@@ -16,9 +16,9 @@ public class ViewPanel extends JPanel {
         /// warning !!!
         model = new GameModel();
         GameModelReader.parse(model, "map.txt");
-        model.addTank("Player");
+        model.addTank("Player", 1);
         
-        model.addTank("Semen");
+        model.addTank("Semen", 2);
         
         final String[] name = {"Player", "Semen"};
         int i = 0;

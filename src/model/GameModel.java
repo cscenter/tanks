@@ -4,7 +4,7 @@ import java.util.*;
 
 public class GameModel {
     
-    private static final int discreteFactor = 3;
+    private static final int DISCRETE_FACTOR = 3;
     private DiscreteMap map;
     private Map<Integer, GameObject> gameobjects;
     private Map<Integer, Projectile> projectiles;
@@ -35,7 +35,7 @@ public class GameModel {
     
     public char getLetter(int x, int y) {
         int id = map.getObjectID(new Vector2D(x, y), 1, 1);
-        if (id == DiscreteMap.emptyID) {
+        if (id == DiscreteMap.EMPTY_ID) {
             return ' ';
         } else {
             return gameobjects.get(id).getLetter();
@@ -48,9 +48,9 @@ public class GameModel {
     }
     
     public void rebuild(int w, int h) {
-        width = discreteFactor * w;
-        height = discreteFactor * h;
-        freeID = DiscreteMap.emptyID + 1;
+        width = DISCRETE_FACTOR * w;
+        height = DISCRETE_FACTOR * h;
+        freeID = DiscreteMap.EMPTY_ID + 1;
         gameobjects = new HashMap<Integer, GameObject>();
         projectiles = new HashMap<Integer, Projectile>();
         tanks = new HashMap<Integer, Tank>();
@@ -59,22 +59,22 @@ public class GameModel {
     }
     
     public void addImmovableObject(int i, int j, char letter) {
-        Vector2D pos = new Vector2D(discreteFactor * i, discreteFactor * j);
-        ImmovableObject obj = new ImmovableObject(freeID++, pos, discreteFactor, discreteFactor,  letter);
+        Vector2D pos = new Vector2D(DISCRETE_FACTOR * i, DISCRETE_FACTOR * j);
+        ImmovableObject obj = new ImmovableObject(freeID++, pos, DISCRETE_FACTOR, DISCRETE_FACTOR,  letter);
         
         map.add(obj);
         gameobjects.put(obj.getID(), obj);
     }
     
-    public void addTank(String name) {
+    public void addTank(String name, int team) {
         // TODO : write new tank placement algo
         
         Vector2D s = new Vector2D(0, 0);
-        for (int i = 0; i < height; i += discreteFactor) {
-            for (int j = 0; j < width; j += discreteFactor) {
+        for (int i = 0; i < height; i += DISCRETE_FACTOR) {
+            for (int j = 0; j < width; j += DISCRETE_FACTOR) {
                 Vector2D pos = new Vector2D(i, j);
-                if (map.isFree(pos, discreteFactor, discreteFactor)) {
-                    Tank tank = new Tank(freeID++, pos, discreteFactor, discreteFactor,  '#', s);
+                if (map.isFree(pos, DISCRETE_FACTOR, DISCRETE_FACTOR)) {
+                    Tank tank = new Tank(freeID++, pos, DISCRETE_FACTOR, DISCRETE_FACTOR,  '#', team, s);
                     map.add(tank);
                     gameobjects.put(tank.getID(), tank);
                     tanks.put(tank.getID(), tank);
@@ -98,6 +98,28 @@ public class GameModel {
             projectiles.put(projectile.getID(), projectile);
             map.add(projectile);
         }
+    }
+    
+    public List<CellWithPredecessor> getAccessibleCells(Tank tank) {
+        List<CellWithPredecessor> result = new ArrayList<CellWithPredecessor>();
+        boolean visited[][] = new boolean[height][];
+        for (int i = 0; i < height; ++i) {
+            visited[i] = new boolean[width];
+        }
+        Queue<Vector2D> queue = new Queue<Vector2D>();
+        queue.add(tank.getPosition());
+        while (! queue.empty()) {
+            Vector2D p = queue.remove();
+            visited[p.getX()][p.getY()] = true;
+            for (Direction d : Direction.values()) {
+                Vector2D tmp = p.add(d.getMove());
+                if (map.isFree(tmp, tank.getWidth(), tank.getHeight()) &&  ! visited[tmp.getX()][tmp.getY()]) {
+                    result.add(new CellWithPredecessor(tmp, p));
+                    queue.add(tmp);
+                }
+            }
+        }
+        return result;
     }
     
     private void moveProjectiles() {
@@ -128,8 +150,9 @@ public class GameModel {
             } else {
 
                 int id = map.getObjectID(pos.add(deltaMove), w, h);
-                if (id != DiscreteMap.emptyID) {
+                if (id != DiscreteMap.EMPTY_ID) {
                     if (gameobjects.get(id).attacked(projectile)) {
+                        map.remove(gameobjects.get(id));
                         gameobjects.remove(id);
                         tanks.remove(id);
                     }
