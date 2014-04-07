@@ -17,8 +17,11 @@ public class ViewPanel extends JPanel {
         model = new GameModel();
         GameModelReader.parse(model, "map.txt");
         
-		model.addPlayer(1);
+		
         model.addBot(2);
+		model.addBot(2);
+		model.addBot(2);
+		model.addPlayer(1);
 		
 		int playerID = model.getPlayerID();
         
