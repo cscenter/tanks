@@ -14,7 +14,8 @@ public class GameModel {
     private int height;
     private Random r = new Random();
     
-    private Map<String, Integer> namesOfTanks;
+    private int playerID;
+	private Collection<Bot> bots;
     
     
     public void debugprint() {
@@ -43,6 +44,7 @@ public class GameModel {
     }
     
     public void tick() {
+		botsMakeTurn();
         moveProjectiles();
         moveTanks();
     }
@@ -55,7 +57,7 @@ public class GameModel {
         projectiles = new HashMap<Integer, Projectile>();
         tanks = new HashMap<Integer, Tank>();
         map = new DiscreteMap(width, height);
-        namesOfTanks = new HashMap<String, Integer>();
+		bots = new ArrayList<Bot>();
     }
     
     public void addImmovableObject(int i, int j, char letter) {
@@ -66,10 +68,16 @@ public class GameModel {
         gameobjects.put(obj.getID(), obj);
     }
     
-    public void addTank(String name, int team) {
-        // TODO : write new tank placement algo
+	private void botsMakeTurn() {
+		for (Bot bot : bots) {
+			bot.makeTurn();
+		}
+	}
+	
+	private Tank addTank(int team) {
+		// TODO : write new tank placement algo
         
-        Vector2D s = new Vector2D(0, 0);
+		Vector2D s = new Vector2D(0, 0);
         for (int i = 0; i < height; i += DISCRETE_FACTOR) {
             for (int j = 0; j < width; j += DISCRETE_FACTOR) {
                 Vector2D pos = new Vector2D(i, j);
@@ -78,20 +86,47 @@ public class GameModel {
                     map.add(tank);
                     gameobjects.put(tank.getID(), tank);
                     tanks.put(tank.getID(), tank);
-                    namesOfTanks.put(name, tank.getID());
-                    return;
+                    return tank;
                 }
             }
         }
+		return null;
+	}
+	
+	public int getPlayerID() {
+		return playerID;
+	}
+	
+	public void addBot(int team) {
+		Tank tank = addTank(team);
+		if (tank != null) {
+			bots.add(new Bot(this, tank));
+		}
+	}
+	
+    public void addPlayer(int team) {
+        Tank tank = addTank(team);
+		if (tank != null) {
+			playerID = tank.getID();
+		}
     }
     
-    public void moveTank(String name, Direction d) {
-        tanks.get(namesOfTanks.get(name)).setSpeed(d.getMove());
-        tanks.get(namesOfTanks.get(name)).setGunOrientation(d.getMove());
+    public void moveTank(int ID, Direction d) {
+		moveTank(ID, d.getMove());
     }
-    
-    public void shoot(String name) {
-        Projectile projectile = tanks.get(namesOfTanks.get(name)).shoot(freeID++);
+    	
+	public boolean canTankMove(int ID, Vector2D v) {
+		Tank tank = tanks.get(ID);
+		return !map.isAnythingElse(v.add(tank.getPosition()), tank);
+	}
+		
+	public void moveTank(int ID, Vector2D v) {
+		tanks.get(ID).setSpeed(v);
+        tanks.get(ID).setGunOrientation(v);
+    }
+	
+    public void shoot(int ID) {
+        Projectile projectile = tanks.get(ID).shoot(freeID++);
 
         if (map.isFree(projectile.getPosition(), Projectile.size, Projectile.size)) {
             gameobjects.put(projectile.getID(), projectile);
@@ -100,21 +135,22 @@ public class GameModel {
         }
     }
     
-    public List<CellWithPredecessor> getAccessibleCells(Tank tank) {
-        List<CellWithPredecessor> result = new ArrayList<CellWithPredecessor>();
+    public Map<Vector2D, Vector2D> getAccessibleCells(Tank tank) {		
+		Map<Vector2D, Vector2D> result = new HashMap<Vector2D, Vector2D>();
         boolean visited[][] = new boolean[height][];
         for (int i = 0; i < height; ++i) {
             visited[i] = new boolean[width];
         }
-        Queue<Vector2D> queue = new Queue<Vector2D>();
+        Queue<Vector2D> queue = new LinkedList<Vector2D>();
         queue.add(tank.getPosition());
-        while (! queue.empty()) {
+        while (!queue.isEmpty()) {
+		
             Vector2D p = queue.remove();
             visited[p.getX()][p.getY()] = true;
             for (Direction d : Direction.values()) {
-                Vector2D tmp = p.add(d.getMove());
-                if (map.isFree(tmp, tank.getWidth(), tank.getHeight()) &&  ! visited[tmp.getX()][tmp.getY()]) {
-                    result.add(new CellWithPredecessor(tmp, p));
+				Vector2D tmp = p.add(d.getMove());
+                if (!map.isAnythingElse(tmp, tank) &&  !visited[tmp.getX()][tmp.getY()]) {
+                    result.put(tmp, p);
                     queue.add(tmp);
                 }
             }

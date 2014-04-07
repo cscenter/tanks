@@ -14,4 +14,14 @@ public enum Direction {
     public Vector2D getMove() {
         return pos;
     }
+	
+	public Direction fromVector2D(Vector2D v) {
+		for (Direction d : Direction.values()) {
+			if (v.equals(d.getMove())) {
+				return d;
+			}
+		}
+		// unhandled situation!
+		return UP;
+	}
 }

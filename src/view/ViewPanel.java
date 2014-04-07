@@ -16,37 +16,34 @@ public class ViewPanel extends JPanel {
         /// warning !!!
         model = new GameModel();
         GameModelReader.parse(model, "map.txt");
-        model.addTank("Player", 1);
         
-        model.addTank("Semen", 2);
-        
-        final String[] name = {"Player", "Semen"};
-        int i = 0;
+		model.addPlayer(1);
+        model.addBot(2);
+		
+		int playerID = model.getPlayerID();
         
         addKeyListener(new KeyAdapter() {
  
             public void keyPressed(KeyEvent e) {               
                 switch (e.getKeyCode()) {
                 case KeyEvent.VK_W :
-                    model.moveTank(name[0], Direction.UP);
+                    model.moveTank(playerID, Direction.UP);
                     break;
                 case KeyEvent.VK_A :
-                    model.moveTank(name[0], Direction.LEFT);
+                    model.moveTank(playerID, Direction.LEFT);
                     break;
                 case KeyEvent.VK_S :
-                    model.moveTank(name[0], Direction.DOWN);
+                    model.moveTank(playerID, Direction.DOWN);
                     break;
                 case KeyEvent.VK_D :
-                    model.moveTank(name[0], Direction.RIGHT);
+                    model.moveTank(playerID, Direction.RIGHT);
                     break;
                 case KeyEvent.VK_SPACE :
-                    model.shoot(name[0]);
+                    model.shoot(playerID);
                     break;
                 
                 }
-                String tmp = name[1];
-                name[1] = name[0];
-                name[0] = tmp;
+                
                 model.tick();
                 repaint();
             }

@@ -65,6 +65,26 @@ public class DiscreteMap {
         return EMPTY_ID;
     }
     
+	public boolean isAnythingElse(Vector2D pos, GameObject obj) {
+		int w = obj.getWidth();
+		int h = obj.getHeight();
+		if (pos.getX() < 0 || pos.getY() < 0) {
+            return true;
+        }
+        if (pos.getX() + h > height || pos.getY() + w > width) {
+            return true;
+        }
+        
+        for (int i = pos.getX(); i < pos.getX() + h; ++i) {
+            for (int j = pos.getY(); j < pos.getY() + w; ++j) {
+				if ((ids[i][j] != EMPTY_ID) && (ids[i][j] != obj.getID())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+	
     public boolean isFree(Vector2D pos, int w, int h) {
         
         if (pos.getX() < 0 || pos.getY() < 0) {

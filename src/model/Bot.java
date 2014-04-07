@@ -3,25 +3,49 @@ package model;
 import java.util.*;
 
 public class Bot {
-
+	
     private Tank controlledTank;
-    private List<Direction> path;
+    private Stack<Vector2D> plannedMoves;
     private GameModel model;
     
+	private static final Random GENERATOR = new Random();
+	
     public Bot(GameModel model, Tank tank) {
         this.model = model;
         controlledTank = tank;
-        path = new ArrayList<Direction>();
+        plannedMoves = new Stack<Vector2D>();
     }
     
-    public void makeTurn(List<Vector2D> enemies) {
-        if (path.empty()) {
-            List<CellWithPredecessor> availableCells = model.getAccessibleCells(controlledTank);
-            if (!availableCells.empty()) {
-                
-            }
+	private void createPath() {
+		plannedMoves.clear();
+		Map<Vector2D, Vector2D> availableCells = model.getAccessibleCells(controlledTank);
+		if (!availableCells.isEmpty()) {
+			int target = GENERATOR.nextInt(availableCells.size());
+			Object[] keys = availableCells.keySet().toArray();
+			Vector2D cell = (Vector2D) keys[target];
+			Vector2D prev = availableCells.get(cell);
+			
+			List<Vector2D> cells = new ArrayList<Vector2D>();
+			while (!prev.equals(controlledTank.getPosition())) {
+				cells.add(cell.sub(prev));
+				cell = prev;
+				prev = availableCells.get(cell);
+			}
+			cells.add(cell.sub(prev));	
+
+			for (Vector2D c : cells) {
+				plannedMoves.push(c);
+			}
+		}
+	}
+	
+    public void makeTurn() {	
+		if (plannedMoves.empty() || !model.canTankMove(controlledTank.getID(), plannedMoves.peek())) {
+            createPath();
         }
-        
+		if (!plannedMoves.empty()) {
+			model.moveTank(controlledTank.getID(), plannedMoves.pop());
+		}
     }
     
 }
