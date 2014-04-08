@@ -211,6 +211,16 @@ public class GameModel {
         }
     }
     
+    public List<Tank> getEnemies(int team) {
+        List<Tank> enemies = new ArrayList<Tank>();
+        for (Tank t: tanks.values()) {
+            if (t.getTeam() != team) {
+                enemies.add(t);
+            }
+        }
+        return enemies;
+    }
+    
     private void moveTanks() {
         Collection<Integer> toDelete = new ArrayList<Integer>();
         for (Tank tank : tanks.values()) {
@@ -241,6 +251,7 @@ public class GameModel {
                 if (projectiles.containsKey(id)) {
                     Projectile projectile = projectiles.get(id);
                     // deletine projectile
+                    map.remove(projectile);
                     deleteProjectile(id);
                     if (tank.attacked(projectile)) {
                         map.remove(tank);

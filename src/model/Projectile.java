@@ -7,7 +7,7 @@ public class Projectile extends MovableObject {
     
     public Projectile(int id, Vector2D p, Vector2D s, char c, int t) {
         super(id, p, size, size, c, t, s);
-        justCreated = true;
+        justCreated = false;
     }
     
     public void setCreateStatus(boolean p) {

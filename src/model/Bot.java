@@ -43,6 +43,16 @@ public class Bot {
 		if (plannedMoves.empty() || !model.canTankMove(controlledTank.getID(), plannedMoves.peek())) {
             createPath();
         }
+        
+        Collection<Tank> enemies = model.getEnemies(controlledTank.getTeam());
+        
+        for (Tank enemy : enemies) {
+            if (enemy.getPosition().sub(controlledTank.getPosition()).normalize().equals(controlledTank.getGunOrientation())) {
+                model.shoot(controlledTank.getID());
+                break;
+            }
+        }
+        
 		if (!plannedMoves.empty()) {
 			model.moveTank(controlledTank.getID(), plannedMoves.pop());
 		}

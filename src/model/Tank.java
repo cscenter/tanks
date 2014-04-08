@@ -25,13 +25,19 @@ public class Tank extends MovableObject {
         gunOrientation = p.normalize();
     }
     
+    public Vector2D getGunOrientation() {
+        return gunOrientation;
+    }
+    
     public void setPosition(Vector2D p) {
         super.setPosition(p);
         setSpeed(new Vector2D(0, 0));
     }
     
     public boolean attacked(Projectile p) {
-        --health;
+        if (p.getTeam() != getTeam()) {
+            --health;
+        }
         return (health == 0);
     }
     
