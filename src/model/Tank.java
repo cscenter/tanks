@@ -5,29 +5,20 @@ public class Tank extends MovableObject {
     public static final int START_HEALTH = 3;
     
     private int health;
-    
-    private Vector2D gunOrientation;
 
-    public Tank(int id, Vector2D p, int w, int h, char c, int t, Vector2D s) {
-        super(id, p, w, h, c, t, s);
-        gunOrientation = Direction.DOWN.getMove();
+    public Tank(int id, Vector2D p, int w, int h, GameObjectDescription d, int t, Vector2D s) {
+        super(id, p, w, h, d, t, s);
         health = START_HEALTH;
     }
     
     public Projectile shoot(int freeID) {       
         Vector2D pos = new Vector2D(position.getX(), position.getY());
-        pos.setX(pos.getX() + getHeight() / 2 + 2 * gunOrientation.getX());
-        pos.setY(pos.getY() + getWidth() / 2 + 2 * gunOrientation.getY());
-        return new Projectile(freeID, pos, gunOrientation.mul(2), '*', getTeam());
+        pos.setX(pos.getX() + getHeight() / 2 + 2 * orientation.getX());
+        pos.setY(pos.getY() + getWidth() / 2 + 2 * orientation.getY());
+        Projectile p = new Projectile(freeID, pos, orientation.mul(2), GameObjectDescription.PROJECTILE, getTeam());
+        p.setOrientation(orientation);
+        return p;
     }    
-    
-    public void setGunOrientation(Vector2D p) {
-        gunOrientation = p.normalize();
-    }
-    
-    public Vector2D getGunOrientation() {
-        return gunOrientation;
-    }
     
     public void setPosition(Vector2D p) {
         super.setPosition(p);

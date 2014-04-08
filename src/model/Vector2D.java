@@ -61,6 +61,10 @@ public class Vector2D {
         return (x == v.x) && (y == v.y);
     }
     
+    public String toString() {
+        return "(" + Integer.toString(x) + ", " + Integer.toString(y) + ")";
+    }
+    
 }
 
 

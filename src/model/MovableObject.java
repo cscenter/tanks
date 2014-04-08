@@ -6,8 +6,8 @@ public class MovableObject extends GameObject {
 
     protected Vector2D speed;
     
-    public MovableObject(int id, Vector2D p, int w, int h, char c, int t, Vector2D s) {
-        super(id, p, w, h, c);
+    public MovableObject(int id, Vector2D p, int w, int h, GameObjectDescription d, int t, Vector2D s) {
+        super(id, p, w, h, d);
         speed = s;
         team = t;
     }

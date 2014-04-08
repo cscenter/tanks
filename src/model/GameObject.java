@@ -5,15 +5,17 @@ public class GameObject {
     private final int width;
     private final int height;
     private final int id;
+    protected Vector2D orientation;
     
-    private final char description; // to be deleted
+    private final GameObjectDescription description;
     
-    public GameObject(int id, Vector2D p, int w, int h, char c) {
+    public GameObject(int id, Vector2D p, int w, int h, GameObjectDescription desc) {
         this.id = id;
         position = p;
         width = w;
         height = h;
-        description = c;
+        description = desc;
+        orientation = Direction.DOWN.getMove();
     }
     
     public Vector2D getPosition() {
@@ -24,7 +26,7 @@ public class GameObject {
         return id;
     }
     
-    public char getLetter() {
+    public GameObjectDescription getDescription() {
         return description;
     }
     
@@ -38,5 +40,13 @@ public class GameObject {
     
     public boolean attacked(Projectile p) {
         return false;
+    }
+    
+    public void setOrientation(Vector2D p) {
+        orientation = p.normalize();
+    }
+    
+    public Vector2D getOrientation() {
+        return orientation;
     }
 }

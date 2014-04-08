@@ -23,26 +23,27 @@ public class GameModelReader {
 			    String[] tags = sCurrentLine.split(" ");
 			    
 			    for (int j = 0; j < width; ++j)	{
-			        switch (MapLegend.getMapLegend(tags[j])) {
-			        case WATER:
-			            letter = 'W';
+			        GameObjectDescription d;
+			        switch (tags[j].charAt(0)) {
+			        case 'W':
+			            d = GameObjectDescription.WATER;
 			            break;
-			        case WOODENWALL:
-			            letter = 'O';
+			        case 'O':
+			            d = GameObjectDescription.WOODENWALL;
 			            break;
-			        case STONEWALL:
-			            letter = 'S';
+			        case 'S':
+			            d = GameObjectDescription.STONEWALL;
 			            break;
-			        case ASPHALT:
-			            letter = 'A';
+			        case 'A':
+			            d = GameObjectDescription.ASPHALT;
 			            break;
 			        default: ////// ERROR
-			            letter = 'E';
+			            d = GameObjectDescription.ASPHALT;
 			            break;
 			        }
 
-			        if (letter != 'A') {
-    			        model.addImmovableObject(i, j, letter);
+			        if (!d.equals(GameObjectDescription.ASPHALT)) {
+    			        model.addImmovableObject(i, j, d);
 			        }
 			    }
 			}

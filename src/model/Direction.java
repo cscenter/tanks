@@ -15,7 +15,7 @@ public enum Direction {
         return pos;
     }
 	
-	public Direction fromVector2D(Vector2D v) {
+	public static Direction fromVector2D(Vector2D v) {
 		for (Direction d : Direction.values()) {
 			if (v.equals(d.getMove())) {
 				return d;

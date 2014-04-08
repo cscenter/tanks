@@ -7,6 +7,7 @@ public class Bot {
     private Tank controlledTank;
     private Stack<Vector2D> plannedMoves;
     private GameModel model;
+    private int turnsToShoot;
     
 	private static final Random GENERATOR = new Random();
 	
@@ -14,6 +15,7 @@ public class Bot {
         this.model = model;
         controlledTank = tank;
         plannedMoves = new Stack<Vector2D>();
+        turnsToShoot = 0;
     }
     
 	private void createPath() {
@@ -40,17 +42,25 @@ public class Bot {
 	}
 	
     public void makeTurn() {	
-		if (plannedMoves.empty() || !model.canTankMove(controlledTank.getID(), plannedMoves.peek())) {
-            createPath();
+		if (turnsToShoot == 3) {
+		    --turnsToShoot;
+		    return;
+		}
+		if (turnsToShoot == 0) {
+		    Collection<Tank> enemies = model.getEnemies(controlledTank.getTeam());
+            for (Tank enemy : enemies) {
+                if (enemy.getPosition().sub(controlledTank.getPosition()).normalize().equals(controlledTank.getOrientation())) {
+                    model.shoot(controlledTank.getID());
+                    turnsToShoot = 3;
+                    return;
+                }
+            }
+        } else {
+            --turnsToShoot;
         }
         
-        Collection<Tank> enemies = model.getEnemies(controlledTank.getTeam());
-        
-        for (Tank enemy : enemies) {
-            if (enemy.getPosition().sub(controlledTank.getPosition()).normalize().equals(controlledTank.getGunOrientation())) {
-                model.shoot(controlledTank.getID());
-                break;
-            }
+		if (plannedMoves.empty() || !model.canTankMove(controlledTank.getID(), plannedMoves.peek())) {
+            createPath();
         }
         
 		if (!plannedMoves.empty()) {
