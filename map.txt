@@ -1,7 +1,8 @@
-6 6
-W S A A A S
-A A A A O S
-A S A S A A
-A A A A A S
-A W A S A A
-A A A O A A
+7 7
+W S A A A S A
+A A A A O A A
+A S A S A A O
+A A A A A S A
+A W A S A A A
+A A A O A W W
+W A O A A A A
