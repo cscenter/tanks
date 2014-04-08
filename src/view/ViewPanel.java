@@ -1,29 +1,36 @@
 package view;
 
-import java.util.*;
 import model.*;
 import io.*;
-import javax.swing.JPanel;
+import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 
 public class ViewPanel extends JPanel {
     private GameModel model;
-    
+    private Timer timer;   
+
     public ViewPanel() {
         super();
-        /// warning !!!
+
         model = new GameModel();
         GameModelReader.parse(model, "map.txt");
         
-		
         model.addBot(2);
 		model.addBot(2);
 		model.addBot(2);
-		model.addPlayer(1);
 		
-		int playerID = model.getPlayerID();
+		model.addPlayer(1);
+		final int playerID = model.getPlayerID();
+        
+        timer = new Timer(100, new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+                model.tick();
+                repaint();
+            }
+        });
+        
+        timer.start();
         
         addKeyListener(new KeyAdapter() {
  
@@ -45,12 +52,8 @@ public class ViewPanel extends JPanel {
                     model.shoot(playerID);
                     break;
                 
-                }
-                
-                model.tick();
-                repaint();
+                }    
             }
-             
         });
     }
     
