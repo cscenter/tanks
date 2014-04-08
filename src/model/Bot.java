@@ -48,4 +48,8 @@ public class Bot {
 		}
     }
     
+    public int getTankID() {
+        return controlledTank.getID();
+    }
+    
 }

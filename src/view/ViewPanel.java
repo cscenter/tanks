@@ -52,6 +52,11 @@ public class ViewPanel extends JPanel {
                     model.shoot(playerID);
                     break;
                 
+                
+                case KeyEvent.VK_P :
+                    model.debugprint();
+                    break;
+                    
                 }    
             }
         });

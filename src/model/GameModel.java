@@ -19,6 +19,12 @@ public class GameModel {
     
     
     public void debugprint() {
+        System.out.print("Game objects:");
+        System.out.println(gameobjects.size());
+        System.out.print("Tanks: ");
+        System.out.println(tanks.size());
+        System.out.print("Projectiles: ");
+        System.out.println(projectiles.size());
         map.debugprint();
     }
         
@@ -173,36 +179,40 @@ public class GameModel {
             int w = projectile.getWidth();
             int h = projectile.getHeight();
             
-            map.remove(projectile);
-            
             while (!destination.equals(pos) && map.isFree(pos.add(deltaMove), w, h)) {
                 pos = pos.add(deltaMove);
                 deltaMove = destination.sub(pos).normalize();
             }
             
-            if (destination.equals(pos)) {        
+            if (!pos.equals(projectile.getPosition())) {
+                map.remove(projectile);
                 projectile.setPosition(pos);
                 map.add(projectile);
-            } else {
-
+            }
+            
+            if (!destination.equals(pos)) {
+                
+                map.remove(projectile);
+                toDelete.add(projectile.getID());
+                
                 int id = map.getObjectID(pos.add(deltaMove), w, h);
                 if (id != DiscreteMap.EMPTY_ID) {
                     if (gameobjects.get(id).attacked(projectile)) {
+                        // Should be changed in case its not a tank
                         map.remove(gameobjects.get(id));
-                        gameobjects.remove(id);
-                        tanks.remove(id);
+                        deleteTank(id);
                     }
-                    toDelete.add(projectile.getID());
-                    gameobjects.remove(projectile.getID());
                 }
             }
         }
+        // deleting projectiles only here
         for (Integer id : toDelete) {
-            projectiles.remove(id);
+            deleteProjectile(id);
         }
     }
     
     private void moveTanks() {
+        Collection<Integer> toDelete = new ArrayList<Integer>();
         for (Tank tank : tanks.values()) {
             Vector2D pos = tank.getPosition();
             Vector2D destination = pos.add(tank.getSpeed());
@@ -215,34 +225,65 @@ public class GameModel {
             int w = tank.getWidth();
             int h = tank.getHeight();
             
-            map.remove(tank);
-            
-            while (!destination.equals(pos) && map.isFree(pos.add(deltaMove), w, h)) {
+            while (!destination.equals(pos) && !map.isAnythingElse(pos.add(deltaMove), tank)) {
                 pos = pos.add(deltaMove);
                 deltaMove = destination.sub(pos).normalize();
             }
             
-            if (destination.equals(pos)) {        
-                tank.setPosition(pos);
-                map.add(tank);
-            } else { /// warning
-                int id = map.getObjectID(pos.add(deltaMove), w, h);
-                if (projectiles.containsKey(id)) {
-                    Projectile projectile = projectiles.get(id);
-                    projectiles.remove(id);
-                    gameobjects.remove(id);
-                    if (tank.attacked(projectile)) {
-                        map.remove(tank);
-                        gameobjects.remove(tank.getID());
-                        tanks.remove(tank.getID());
-                        System.out.println(tank.getHealth());
-                    }
-                }
-                /* some code here */
+            if (!pos.equals(tank.getPosition())) {
+                map.remove(tank);
                 tank.setPosition(pos);
                 map.add(tank);
             }
+            
+            if (!destination.equals(pos)) {        
+                int id = map.getObjectID(pos.add(deltaMove), w, h);
+                if (projectiles.containsKey(id)) {
+                    Projectile projectile = projectiles.get(id);
+                    // deletine projectile
+                    deleteProjectile(id);
+                    if (tank.attacked(projectile)) {
+                        map.remove(tank);
+                        toDelete.add(tank.getID());
+                    }
+                }
+            }
         }
+        
+        // deleting tanks only here
+        for (Integer id : toDelete) {
+            deleteTank(id);
+            
+        }        
     }
+    
+    
+    private void deleteTank(Tank tank) {
+        deleteTank(tank.getID());
+    }
+    
+    private void deleteTank(int ID) {
+        Bot bot = null;
+        for (Bot b : bots) {
+            if (b.getTankID() == ID) {
+                bot = b;
+                break;
+            }
+        }
+        if (bot != null) {
+            bots.remove(bot);
+        }
+        gameobjects.remove(ID);
+        tanks.remove(ID);
+    }
+    
+    private void deleteProjectile(Projectile projectile) {
+        deleteProjectile(projectile.getID());
+    }
+    
+    private void deleteProjectile(int ID) {
+        gameobjects.remove(ID);
+        projectiles.remove(ID);
+    }    
     
 }
