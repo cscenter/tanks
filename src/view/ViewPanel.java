@@ -35,8 +35,8 @@ public class ViewPanel extends JPanel {
         model = new GameModel();
         GameModelReader.parse(model, "map.txt");
         
-        model.addBot(2);
-		model.addBot(2);
+        //model.addBot(2);
+		//model.addBot(2);
 		model.addBot(2);
 		
 		model.addPlayer(1);
@@ -82,7 +82,7 @@ public class ViewPanel extends JPanel {
     }
     
     public Dimension getPreferredSize() {
-        return new Dimension(500, 500);
+        return new Dimension(800, 800);
     }
     
     protected void paintComponent(Graphics g) {
