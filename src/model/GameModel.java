@@ -30,9 +30,9 @@ public class GameModel {
     
     public void start() {
         addPlayer(1);
-        addBot(2);
-        addBot(2);
-        addBot(2);
+        //addBot(2);
+        //addBot(2);
+        //addBot(2);
     }
         
     public GameModel() {
