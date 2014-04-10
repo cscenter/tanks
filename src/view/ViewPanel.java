@@ -35,12 +35,7 @@ public class ViewPanel extends JPanel {
         model = new GameModel();
         GameModelReader.parse(model, "map.txt");
         
-        model.addBot(2);
-		model.addBot(2);
-		model.addBot(2);
-		
-		model.addPlayer(1);
-		final int playerID = model.getPlayerID();
+        model.start();
         
         timer = new javax.swing.Timer(100, new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
@@ -56,19 +51,19 @@ public class ViewPanel extends JPanel {
             public void keyPressed(KeyEvent e) {               
                 switch (e.getKeyCode()) {
                 case KeyEvent.VK_W :
-                    model.moveTank(playerID, Direction.UP);
+                    model.movePlayer(Direction.UP);
                     break;
                 case KeyEvent.VK_A :
-                    model.moveTank(playerID, Direction.LEFT);
+                    model.movePlayer(Direction.LEFT);
                     break;
                 case KeyEvent.VK_S :
-                    model.moveTank(playerID, Direction.DOWN);
+                    model.movePlayer(Direction.DOWN);
                     break;
                 case KeyEvent.VK_D :
-                    model.moveTank(playerID, Direction.RIGHT);
+                    model.movePlayer(Direction.RIGHT);
                     break;
                 case KeyEvent.VK_SPACE :
-                    model.shoot(playerID);
+                    model.shootPlayer();
                     break;
                 
                 

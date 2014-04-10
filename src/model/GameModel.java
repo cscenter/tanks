@@ -27,6 +27,13 @@ public class GameModel {
         System.out.println(projectiles.size());
         map.debugprint();
     }
+    
+    public void start() {
+        addPlayer(1);
+        addBot(2);
+        addBot(2);
+        addBot(2);
+    }
         
     public GameModel() {
         rebuild(0, 0);
@@ -100,22 +107,26 @@ public class GameModel {
         }
     }
     
-    public int getPlayerID() {
-        return playerID;
-    }
-    
-    public void addBot(int team) {
+    private void addBot(int team) {
         Tank tank = addTank(team);
         if (tank != null) {
             bots.add(new Bot(this, tank));
         }
     }
     
-    public void addPlayer(int team) {
+    private void addPlayer(int team) {
         Tank tank = addTank(team);
         if (tank != null) {
             playerID = tank.getID();
         }
+    }
+    
+    public void movePlayer(Direction d) {
+        moveTank(playerID, d);
+    }
+    
+    public void shootPlayer() {
+        shoot(playerID);
     }
     
     public void moveTank(int ID, Direction d) {
