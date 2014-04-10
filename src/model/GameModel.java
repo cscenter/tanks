@@ -157,7 +157,7 @@ public class GameModel {
     }
     
     private void moveProjectiles() {
-        Collection<Integer> toDelete = new ArrayList<Integer>();
+        Set<Integer> toDelete = new HashSet<Integer>();
         for (Projectile projectile : projectiles.values()) {
             if (projectile.isJustCreated()) {
                 projectile.setCreateStatus(false);
@@ -184,14 +184,18 @@ public class GameModel {
             
             if (!destination.equals(pos)) {
                 
-                map.remove(projectile);
                 toDelete.add(projectile.getID());
                 // Should be changed in case its not a tank
                 int id = map.getBlockID(projectile, deltaMove);
                 if (id != DiscreteMap.EMPTY_ID) {
-                    if (tanks.get(id).attacked(projectile)) {
-                        map.remove(tanks.get(id));
-                        deleteTank(id);
+                
+                    if (tanks.containsKey(id)) {
+                        if (tanks.get(id).attacked(projectile)) {
+                            deleteTank(id);
+                        }
+                    }
+                    if (projectiles.containsKey(id)) {
+                        toDelete.add(id);
                     }
                 }
             }
@@ -213,7 +217,7 @@ public class GameModel {
     }
     
     private void moveTanks() {
-        Collection<Integer> toDelete = new ArrayList<Integer>();
+        Set<Integer> toDelete = new HashSet<Integer>();
         for (Tank tank : tanks.values()) {
             Vector2D pos = tank.getPosition();
             Vector2D destination = pos.add(tank.getSpeed());
@@ -269,6 +273,7 @@ public class GameModel {
         if (bot != null) {
             bots.remove(bot);
         }
+        map.remove(tanks.get(ID));
         tanks.remove(ID);
     }
     
@@ -277,6 +282,7 @@ public class GameModel {
     }
     
     private void deleteProjectile(int ID) {
+        map.remove(projectiles.get(ID));
         projectiles.remove(ID);
     }    
     
