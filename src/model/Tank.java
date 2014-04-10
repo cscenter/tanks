@@ -2,12 +2,13 @@ package model;
 
 public class Tank extends MovableObject {
 
+    public static final int SIZE = GameModel.DISCRETE_FACTOR;
     public static final int START_HEALTH = 3;
     
     private int health;
 
-    public Tank(int id, Vector2D p, int w, int h, GameObjectDescription d, int t, Vector2D s) {
-        super(id, p, w, h, d, t, s);
+    public Tank(int id, Vector2D p, int t, Vector2D s) {
+        super(id, p, SIZE, SIZE, GameObjectDescription.TANK, t, s);
         health = START_HEALTH;
     }
     
@@ -15,7 +16,7 @@ public class Tank extends MovableObject {
         Vector2D pos = new Vector2D(position.getX(), position.getY());
         pos.setX(pos.getX() + getHeight() / 2 + 2 * orientation.getX());
         pos.setY(pos.getY() + getWidth() / 2 + 2 * orientation.getY());
-        Projectile p = new Projectile(freeID, pos, orientation.mul(2), GameObjectDescription.PROJECTILE, getTeam());
+        Projectile p = new Projectile(freeID, pos, orientation.mul(2), getTeam());
         p.setOrientation(orientation);
         return p;
     }    

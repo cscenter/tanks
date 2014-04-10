@@ -4,7 +4,7 @@ import java.util.*;
 
 public class GameModel {
     
-    private static final int DISCRETE_FACTOR = 3;
+    public static final int DISCRETE_FACTOR = 3;
     private DiscreteMap map;
     private Map<Integer, ImmovableObject> immovableobjects;
     private Map<Integer, Projectile> projectiles;
@@ -80,21 +80,24 @@ public class GameModel {
     }
     
     private Tank addTank(int team) {
-        // TODO : write new tank placement algo
-        
+        List<Vector2D> freePositions = new ArrayList<Vector2D>();
         Vector2D s = new Vector2D(0, 0);
         for (int i = 0; i < height; i += DISCRETE_FACTOR) {
             for (int j = 0; j < width; j += DISCRETE_FACTOR) {
                 Vector2D pos = new Vector2D(i, j);
                 if (map.isFree(pos, DISCRETE_FACTOR, DISCRETE_FACTOR)) {
-                    Tank tank = new Tank(freeID++, pos, DISCRETE_FACTOR, DISCRETE_FACTOR,  GameObjectDescription.TANK, team, s);
-                    map.add(tank);
-                    tanks.put(tank.getID(), tank);
-                    return tank;
+                    freePositions.add(pos);
                 }
             }
         }
-        return null;
+        if (freePositions.isEmpty()) {
+            return null;
+        } else {
+            Tank tank = new Tank(freeID++, freePositions.get(r.nextInt(freePositions.size())), team, s);
+            map.add(tank);
+            tanks.put(tank.getID(), tank);
+            return tank;
+        }
     }
     
     public int getPlayerID() {

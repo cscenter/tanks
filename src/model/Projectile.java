@@ -5,8 +5,8 @@ public class Projectile extends MovableObject {
     public static final int SIZE = 1;
     private boolean justCreated;
     
-    public Projectile(int id, Vector2D p, Vector2D s, GameObjectDescription d, int t) {
-        super(id, p, SIZE, SIZE, d, t, s);
+    public Projectile(int id, Vector2D p, Vector2D s, int t) {
+        super(id, p, SIZE, SIZE, GameObjectDescription.PROJECTILE, t, s);
         justCreated = true;
     }
     
