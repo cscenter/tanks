@@ -35,8 +35,8 @@ public class ViewPanel extends JPanel {
         model = new GameModel();
         GameModelReader.parse(model, "map.txt");
         
-        //model.addBot(2);
-		//model.addBot(2);
+        model.addBot(2);
+		model.addBot(2);
 		model.addBot(2);
 		
 		model.addPlayer(1);
@@ -91,10 +91,6 @@ public class ViewPanel extends JPanel {
         int width = model.getWidth();
         int height = model.getHeight();
 
-        boolean visited[][] = new boolean[height][];
-        for (int i = 0; i < height; ++i) {
-            visited[i] = new boolean[width];
-        }
         int k = 64 / 3;
         Image img = images.get(GameObjectDescription.ASPHALT).get(Direction.DOWN);
         for (int i = 0; i < height; i += 3) {
@@ -103,21 +99,13 @@ public class ViewPanel extends JPanel {
             }
         }
         
-        for (int i = 0; i < height; ++i) {
-            for (int j = 0; j < width; ++j) {
-                if (!visited[i][j]) {
-                    GameObject obj = model.getGameObject(i, j);
-                    if (obj != null) {
-                        img = images.get(obj.getDescription()).get(Direction.fromVector2D(obj.getOrientation()));
-                        g.drawImage(img, j * k, i * k, null);
-                        for (int i1 = 0; i1 < obj.getHeight() && i + i1 < height; ++i1) {
-                            for (int j1 = 0; j1 < obj.getWidth() && j + j1 < width; ++j1) {
-                                visited[i + i1][j + j1] = true;
-                            }
-                        }
-                    }                    
-                }
-            }
+        int x;
+        int y;
+        for (GameObject obj : model.getGameObjects()) {
+            img = images.get(obj.getDescription()).get(Direction.fromVector2D(obj.getOrientation()));
+            x = obj.getPosition().getX();
+            y = obj.getPosition().getY();
+            g.drawImage(img, y * k, x * k, null);
         }
     }
 }

@@ -21,6 +21,7 @@ public class Bot {
 	private void createPath() {
 		plannedMoves.clear();
 		Map<Vector2D, Vector2D> availableCells = model.getAccessibleCells(controlledTank);
+
 		if (!availableCells.isEmpty()) {
 			int target = GENERATOR.nextInt(availableCells.size());
 			Object[] keys = availableCells.keySet().toArray();
