@@ -12,25 +12,45 @@ import java.io.*;
 public class ViewPanel extends JPanel {
     private GameModel model;
     private javax.swing.Timer timer;   
-    private EnumMap<GameObjectDescription, EnumMap<Direction, Image> > images;
+    private Image backgroundImage;
+    private Image waterImage;
+    private Image stoneImage;
+    private Image treeImage;
+    private EnumMap<Direction, Image> greenTankImage;
+    private EnumMap<Direction, Image> redTankImage;
+    private EnumMap<Direction, Image> projectileImage;
     
-    public ViewPanel() {
-        super();
-        
-        images = new EnumMap<GameObjectDescription, EnumMap<Direction, Image>>(GameObjectDescription.class);
-        
-        for (GameObjectDescription desc : GameObjectDescription.values()) {
-            images.put(desc, new EnumMap<Direction, Image>(Direction.class));
-            for (Direction d : Direction.values()) {
-                String filename = desc.toString().toLowerCase();
-                filename = "sprites//" + desc.toString().toLowerCase() + "//" + desc.toString().toLowerCase() + d.toString() + ".png";
+    private void initImages() {
+        try {
+            backgroundImage = ImageIO.read(new File("sprites//asphalt//asphalt.png"));
+            waterImage = ImageIO.read(new File("sprites//water//water.png"));
+            stoneImage = ImageIO.read(new File("sprites//stonewall//stonewall.png"));
+            treeImage = ImageIO.read(new File("sprites//woodenwall//woodenwall.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        greenTankImage = new EnumMap<Direction, Image>(Direction.class);
+        redTankImage = new EnumMap<Direction, Image>(Direction.class);
+        projectileImage = new EnumMap<Direction, Image>(Direction.class);
+        for (Direction d : Direction.values()) {            
                 try {
-                    images.get(desc).put(d, ImageIO.read(new File(filename)));
+                    String filename;
+                    filename = "sprites//tank//red//tank" + d.toString() + ".png";
+                    redTankImage.put(d, ImageIO.read(new File(filename)));
+                    filename = "sprites//tank//green//tank" + d.toString() + ".png";
+                    greenTankImage.put(d, ImageIO.read(new File(filename)));
+                    filename = "sprites//projectile//projectile" + d.toString() + ".png";
+                    projectileImage.put(d, ImageIO.read(new File(filename)));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            }
-        }
+            }        
+    }
+        
+    public ViewPanel() {
+        super();
+        
+        initImages();
         
         model = new GameModel();
         GameModelReader.parse(model, "map.txt");
@@ -87,17 +107,39 @@ public class ViewPanel extends JPanel {
         int height = model.getHeight();
 
         int k = 64 / 3;
-        Image img = images.get(GameObjectDescription.ASPHALT).get(Direction.DOWN);
         for (int i = 0; i < height; i += 3) {
             for (int j = 0; j < width; j += 3) {
-                g.drawImage(img, j * k, i * k, null);
+                g.drawImage(backgroundImage, j * k, i * k, null);
             }
         }
         
         int x;
         int y;
+        Image img = null;
         for (GameObject obj : model.getGameObjects()) {
-            img = images.get(obj.getDescription()).get(Direction.fromVector2D(obj.getOrientation()));
+            
+            switch (obj.getDescription()) {
+            case WATER:
+                img = waterImage;
+                break;
+            case STONEWALL:
+                img = stoneImage;
+                break;
+            case WOODENWALL:
+                img = treeImage;
+                break;
+            case TANK:
+                Tank t = (Tank) obj;
+                if (t.getTeam() == 1) {
+                    img = greenTankImage.get(Direction.fromVector2D(t.getOrientation()));
+                } else {
+                    img = redTankImage.get(Direction.fromVector2D(t.getOrientation()));
+                }
+                break;
+            case PROJECTILE:
+                img = projectileImage.get(Direction.fromVector2D(((Projectile)obj).getOrientation()));
+                break;
+            }
             x = obj.getPosition().getX();
             y = obj.getPosition().getY();
             g.drawImage(img, y * k, x * k, null);
