@@ -240,7 +240,9 @@ public class GameModel {
                         }
                     }
                     if (projectiles.containsKey(id)) {
-                        toDelete.add(id);
+                        if (projectiles.get(id).attacked(projectile)) {
+                            toDelete.add(id);
+                        }
                     }
                 }
             }
