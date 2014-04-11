@@ -194,8 +194,8 @@ public class DiscreteMap {
         }
         for (int i = cornerLU.getX(); i < cornerRD.getX(); ++i) {
             for (int j = cornerLU.getY(); j < cornerRD.getY(); ++j) {
-				if ((maze[i][j] != Cell.EMPTY) && (movableIDs[i][j] != obj.getID())) {
-                    return (movableIDs[i][j] != obj.getID()) ? movableIDs[i][j] : immovableIDs[i][j];
+				if (maze[i][j] != Cell.EMPTY) {
+                    return (movableIDs[i][j] != EMPTY_ID) ? movableIDs[i][j] : immovableIDs[i][j];
                 }
             }
         }

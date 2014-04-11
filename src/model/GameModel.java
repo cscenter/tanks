@@ -9,7 +9,7 @@ public class GameModel {
     public static final int SCORE_PER_KILL = 500;
     
     private DiscreteMap map;
-    private Map<Integer, ImmovableObject> immovableobjects;
+    private Map<Integer, ImmovableObject> immovableObjects;
     private Map<Integer, Projectile> projectiles;
     private Map<Integer, Tank> tanks;
     private int freeID;
@@ -24,7 +24,7 @@ public class GameModel {
     
     public void debugprint() {
         System.out.print("Immovable objects:");
-        System.out.println(immovableobjects.size());
+        System.out.println(immovableObjects.size());
         System.out.print("Tanks: ");
         System.out.println(tanks.size());
         System.out.print("Projectiles: ");
@@ -62,7 +62,7 @@ public class GameModel {
        
     public Collection<GameObject> getGameObjects() {
         Collection<GameObject> result = new ArrayList<GameObject>();
-        result.addAll(immovableobjects.values());
+        result.addAll(immovableObjects.values());
         result.addAll(tanks.values());
         result.addAll(projectiles.values());
         return result;
@@ -88,7 +88,7 @@ public class GameModel {
         width = DISCRETE_FACTOR * w;
         height = DISCRETE_FACTOR * h;
         freeID = DiscreteMap.EMPTY_ID + 1;
-        immovableobjects = new HashMap<Integer, ImmovableObject>();
+        immovableObjects = new HashMap<Integer, ImmovableObject>();
         projectiles = new HashMap<Integer, Projectile>();
         tanks = new HashMap<Integer, Tank>();
         map = new DiscreteMap(width, height);
@@ -98,9 +98,16 @@ public class GameModel {
     
     public void addImmovableObject(int i, int j, GameObjectDescription d) {
         Vector2D pos = new Vector2D(DISCRETE_FACTOR * i, DISCRETE_FACTOR * j);
-        ImmovableObject obj = new ImmovableObject(freeID++, pos, DISCRETE_FACTOR, DISCRETE_FACTOR, d);
+        ImmovableObject obj;
+        switch (d) {
+        case TREE:
+            obj = new Tree(freeID++, pos);
+            break;
+        default:
+            obj = new ImmovableObject(freeID++, pos, DISCRETE_FACTOR, DISCRETE_FACTOR, d);        
+        }
         map.add(obj);
-        immovableobjects.put(obj.getID(), obj);
+        immovableObjects.put(obj.getID(), obj);
     }
     
     private void botsMakeTurn() {
@@ -219,10 +226,14 @@ public class GameModel {
             if (!destination.equals(pos)) {
                 
                 toDelete.add(projectile.getID());
-                // Should be changed in case its not a tank
+                
                 int id = map.getBlockID(projectile, deltaMove);
                 if (id != DiscreteMap.EMPTY_ID) {
-                
+                    if (immovableObjects.containsKey(id)) {
+                        if (immovableObjects.get(id).attacked(projectile)) {
+                            deleteImmovableObject(id);
+                        }
+                    }
                     if (tanks.containsKey(id)) {
                         if (tanks.get(id).attacked(projectile)) {
                             deleteTank(id);
@@ -309,6 +320,15 @@ public class GameModel {
         }
         map.remove(tanks.get(ID));
         tanks.remove(ID);
+    }
+    
+    private void deleteImmovableObject(ImmovableObject obj) {
+        deleteImmovableObject(obj.getID());
+    }
+    
+    private void deleteImmovableObject(int ID) {
+        map.remove(immovableObjects.get(ID));
+        immovableObjects.remove(ID);
     }
     
     private void deleteProjectile(Projectile projectile) {
