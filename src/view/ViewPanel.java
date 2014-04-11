@@ -15,10 +15,15 @@ public class ViewPanel extends JPanel {
     private Image backgroundImage;
     private Image waterImage;
     private Image stoneImage;
+    private Image heartImage;
     private Image treeImage;
     private EnumMap<Direction, Image> greenTankImage;
     private EnumMap<Direction, Image> redTankImage;
     private EnumMap<Direction, Image> projectileImage;
+    
+    private boolean isOver = false;
+    private int k = 64 / 3;
+    
     
     private void initImages() {
         try {
@@ -26,6 +31,7 @@ public class ViewPanel extends JPanel {
             waterImage = ImageIO.read(new File("sprites//water//water.png"));
             stoneImage = ImageIO.read(new File("sprites//stonewall//stonewall.png"));
             treeImage = ImageIO.read(new File("sprites//woodenwall//woodenwall.png"));
+            heartImage = ImageIO.read(new File("sprites//health//heart.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -61,6 +67,14 @@ public class ViewPanel extends JPanel {
             public void actionPerformed(ActionEvent ae) {
                 model.tick();
                 repaint();
+                if (!model.isPlayerAlive()) {
+                    JOptionPane.showMessageDialog(ViewPanel.this,
+                        "Oops, you have been killed...\n Your score: " + model.getScore(),
+                        "Game over",
+                        JOptionPane.PLAIN_MESSAGE);
+                    timer.stop();
+                    isOver = true;
+                }
             }
         });
         
@@ -69,6 +83,9 @@ public class ViewPanel extends JPanel {
         addKeyListener(new KeyAdapter() {
  
             public void keyPressed(KeyEvent e) {               
+                if (isOver) {
+                    return;
+                }
                 switch (e.getKeyCode()) {
                 case KeyEvent.VK_W :
                     model.movePlayer(Direction.UP);
@@ -97,7 +114,7 @@ public class ViewPanel extends JPanel {
     }
     
     public Dimension getPreferredSize() {
-        return new Dimension(800, 800);
+        return new Dimension(model.getWidth() * k, (model.getHeight() + 3)* k);
     }
     
     protected void paintComponent(Graphics g) {
@@ -106,7 +123,7 @@ public class ViewPanel extends JPanel {
         int width = model.getWidth();
         int height = model.getHeight();
 
-        int k = 64 / 3;
+        
         for (int i = 0; i < height; i += 3) {
             for (int j = 0; j < width; j += 3) {
                 g.drawImage(backgroundImage, j * k, i * k, null);
@@ -143,6 +160,12 @@ public class ViewPanel extends JPanel {
             x = obj.getPosition().getX();
             y = obj.getPosition().getY();
             g.drawImage(img, y * k, x * k, null);
+        }
+        
+        if (model.isPlayerAlive()) {
+            for (int i = 0; i < model.getPlayerHealth(); ++i) {
+                g.drawImage(heartImage, i * k * 3, height * k, null);
+            }
         }
     }
 }

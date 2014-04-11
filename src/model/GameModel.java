@@ -5,6 +5,9 @@ import java.util.*;
 public class GameModel {
     
     public static final int DISCRETE_FACTOR = 3;
+    public static final int SCORE_PER_TICK = 10;
+    public static final int SCORE_PER_KILL = 500;
+    
     private DiscreteMap map;
     private Map<Integer, ImmovableObject> immovableobjects;
     private Map<Integer, Projectile> projectiles;
@@ -12,6 +15,7 @@ public class GameModel {
     private int freeID;
     private int width;
     private int height;
+    private int score;
     private Random r = new Random();
     
     private int playerID;
@@ -46,6 +50,15 @@ public class GameModel {
     public int getHeight() {
         return height;
     }
+    
+    public int getScore() {
+        return score;
+    }
+    
+    public int getPlayerHealth() {
+        return tanks.get(playerID).getHealth();
+    }
+
        
     public Collection<GameObject> getGameObjects() {
         Collection<GameObject> result = new ArrayList<GameObject>();
@@ -59,6 +72,16 @@ public class GameModel {
         botsMakeTurn();
         moveProjectiles();
         moveTanks();
+        
+        while (bots.size() < 3) {
+            addBot(2);
+            score += SCORE_PER_KILL;
+        }
+        score += SCORE_PER_TICK;
+    }
+    
+    public boolean isPlayerAlive() {
+        return tanks.containsKey(playerID);
     }
     
     public void rebuild(int w, int h) {
@@ -70,12 +93,12 @@ public class GameModel {
         tanks = new HashMap<Integer, Tank>();
         map = new DiscreteMap(width, height);
         bots = new ArrayList<Bot>();
+        score = 0;
     }
     
     public void addImmovableObject(int i, int j, GameObjectDescription d) {
         Vector2D pos = new Vector2D(DISCRETE_FACTOR * i, DISCRETE_FACTOR * j);
         ImmovableObject obj = new ImmovableObject(freeID++, pos, DISCRETE_FACTOR, DISCRETE_FACTOR, d);
-        
         map.add(obj);
         immovableobjects.put(obj.getID(), obj);
     }
