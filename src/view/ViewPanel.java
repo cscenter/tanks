@@ -22,8 +22,9 @@ public class ViewPanel extends JPanel {
     private EnumMap<Direction, Image> projectileImage;
     
     private boolean isOver = false;
-    private int k = 64 / 3;
+    private int k = 64 / GameModel.DISCRETE_FACTOR;
     
+    private static final int TIMER_DELAY = 50;
     
     private void initImages() {
         try {
@@ -63,7 +64,7 @@ public class ViewPanel extends JPanel {
         
         model.start();
         
-        timer = new javax.swing.Timer(100, new ActionListener() {
+        timer = new javax.swing.Timer(TIMER_DELAY, new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
                 model.tick();
                 repaint();
@@ -114,7 +115,7 @@ public class ViewPanel extends JPanel {
     }
     
     public Dimension getPreferredSize() {
-        return new Dimension(model.getWidth() * k, (model.getHeight() + 3)* k);
+        return new Dimension(model.getWidth() * k, (model.getHeight() + GameModel.DISCRETE_FACTOR)* k);
     }
     
     protected void paintComponent(Graphics g) {
@@ -124,8 +125,8 @@ public class ViewPanel extends JPanel {
         int height = model.getHeight();
 
         
-        for (int i = 0; i < height; i += 3) {
-            for (int j = 0; j < width; j += 3) {
+        for (int i = 0; i < height; i += GameModel.DISCRETE_FACTOR) {
+            for (int j = 0; j < width; j += GameModel.DISCRETE_FACTOR) {
                 g.drawImage(backgroundImage, j * k, i * k, null);
             }
         }
@@ -164,7 +165,7 @@ public class ViewPanel extends JPanel {
         
         if (model.isPlayerAlive()) {
             for (int i = 0; i < model.getPlayerHealth(); ++i) {
-                g.drawImage(heartImage, i * k * 3, height * k, null);
+                g.drawImage(heartImage, i * k * GameModel.DISCRETE_FACTOR, height * k, null);
             }
         }
     }

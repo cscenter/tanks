@@ -14,8 +14,8 @@ public class Tank extends MovableObject {
     
     public Projectile shoot(int freeID) {       
         Vector2D pos = new Vector2D(position.getX(), position.getY());
-        pos.setX(pos.getX() + getHeight() / 2 + 2 * orientation.getX());
-        pos.setY(pos.getY() + getWidth() / 2 + 2 * orientation.getY());
+        pos.setX(pos.getX() + SIZE / 2 + (SIZE / 2 + 1) * orientation.getX());
+        pos.setY(pos.getY() + SIZE / 2 + (SIZE / 2 + 1) * orientation.getY());
         Projectile p = new Projectile(freeID, pos, orientation.mul(2), getTeam());
         p.setOrientation(orientation);
         return p;

@@ -4,7 +4,7 @@ import java.util.*;
 
 public class GameModel {
     
-    public static final int DISCRETE_FACTOR = 3;
+    public static final int DISCRETE_FACTOR = 5;
     public static final int SCORE_PER_TICK = 10;
     public static final int SCORE_PER_KILL = 500;
     
