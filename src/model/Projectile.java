@@ -17,4 +17,8 @@ public class Projectile extends MovableObject {
     public boolean isJustCreated() {
         return justCreated;
     }
+    
+    public boolean attacked(Projectile p) {
+        return true;
+    }
 }
