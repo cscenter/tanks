@@ -1,13 +1,13 @@
 12 12
-A A A A A A A A A A A A
-A S S A A O O A A S S A
-A S A A A O O A A A S A
-A A A O A O O A O A A A
-A A A O A A A A O A A A
-A O O O A W W A O O O A
-A O O O A W W A O O O A
-A A A O A A A A O A A A
-A A A O A O O A O A A A
-A S A A A O O A A A S A
-A S S A A O O A A S S A
-A A A A A A A A A A A A
+G G G G G G G G G G G G
+G S S G G R R G G S S G
+G S G G G R R G G G S G
+G G G R G R R G R G G G
+G G G R G G G G R G G G
+G R R R G W W G R R R G
+G R R R G W W G R R R G
+G G G R G G G G R G G G
+G G G R G R R G R G G G
+G S G G G R R G G G S G
+G S S G G R R G G S S G
+G G G G G G G G G G G G

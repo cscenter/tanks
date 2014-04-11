@@ -27,10 +27,10 @@ public class ViewPanel extends JPanel {
     
     private void initImages() {
         try {
-            backgroundImage = ImageIO.read(new File("sprites//asphalt//asphalt.png"));
+            backgroundImage = ImageIO.read(new File("sprites//ground//ground.png"));
             waterImage = ImageIO.read(new File("sprites//water//water.png"));
-            stoneImage = ImageIO.read(new File("sprites//stonewall//stonewall.png"));
-            treeImage = ImageIO.read(new File("sprites//woodenwall//woodenwall.png"));
+            stoneImage = ImageIO.read(new File("sprites//stone//stone.png"));
+            treeImage = ImageIO.read(new File("sprites//tree//tree.png"));
             heartImage = ImageIO.read(new File("sprites//health//heart.png"));
         } catch (IOException e) {
             e.printStackTrace();
@@ -139,10 +139,10 @@ public class ViewPanel extends JPanel {
             case WATER:
                 img = waterImage;
                 break;
-            case STONEWALL:
+            case STONE:
                 img = stoneImage;
                 break;
-            case WOODENWALL:
+            case TREE:
                 img = treeImage;
                 break;
             case TANK:

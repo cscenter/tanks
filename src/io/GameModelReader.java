@@ -28,21 +28,21 @@ public class GameModelReader {
 			        case 'W':
 			            d = GameObjectDescription.WATER;
 			            break;
-			        case 'O':
-			            d = GameObjectDescription.WOODENWALL;
+			        case 'R':
+			            d = GameObjectDescription.TREE;
 			            break;
 			        case 'S':
-			            d = GameObjectDescription.STONEWALL;
+			            d = GameObjectDescription.STONE;
 			            break;
-			        case 'A':
-			            d = GameObjectDescription.ASPHALT;
+			        case 'G':
+			            d = GameObjectDescription.GROUND;
 			            break;
 			        default: ////// ERROR
-			            d = GameObjectDescription.ASPHALT;
+			            d = GameObjectDescription.GROUND;
 			            break;
 			        }
 
-			        if (!d.equals(GameObjectDescription.ASPHALT)) {
+			        if (!d.equals(GameObjectDescription.GROUND)) {
     			        model.addImmovableObject(i, j, d);
 			        }
 			    }
