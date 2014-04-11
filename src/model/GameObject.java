@@ -5,7 +5,6 @@ public class GameObject {
     private final int width;
     private final int height;
     private final int id;
-    protected Vector2D orientation;
     
     private final GameObjectDescription description;
     
@@ -15,7 +14,6 @@ public class GameObject {
         width = w;
         height = h;
         description = desc;
-        orientation = Direction.DOWN.getMove();
     }
     
     public Vector2D getPosition() {
@@ -40,13 +38,5 @@ public class GameObject {
     
     public boolean attacked(Projectile p) {
         return false;
-    }
-    
-    public void setOrientation(Vector2D p) {
-        orientation = p.normalize();
-    }
-    
-    public Vector2D getOrientation() {
-        return orientation;
     }
 }
