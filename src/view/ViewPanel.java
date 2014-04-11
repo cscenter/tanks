@@ -124,6 +124,7 @@ public class ViewPanel extends JPanel {
         int width = model.getWidth();
         int height = model.getHeight();
 
+        g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 30));
         
         for (int i = 0; i < height; i += GameModel.DISCRETE_FACTOR) {
             for (int j = 0; j < width; j += GameModel.DISCRETE_FACTOR) {
@@ -168,6 +169,8 @@ public class ViewPanel extends JPanel {
                 g.drawImage(heartImage, i * k * GameModel.DISCRETE_FACTOR, height * k, null);
             }
         }
+        
+        g.drawString("SCORE: " + Integer.toString(model.getScore()), 6 * k * GameModel.DISCRETE_FACTOR, (height + GameModel.DISCRETE_FACTOR / 2 + 1) * k);
     }
 }
 
