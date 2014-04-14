@@ -186,6 +186,25 @@ public class GameModel {
         if (map.isFreeForProjectile(projectile.getPosition(), Projectile.SIZE, Projectile.SIZE)) {
             projectiles.put(projectile.getID(), projectile);
             map.add(projectile);
+        } else {
+            int id = map.getBlockID(projectile, new Vector2D(0, 0));
+            if (id != DiscreteMap.EMPTY_ID) {
+                if (immovableObjects.containsKey(id)) {
+                    if (immovableObjects.get(id).attacked(projectile)) {
+                        deleteImmovableObject(id);
+                    }
+                }
+                if (tanks.containsKey(id)) {
+                    if (tanks.get(id).attacked(projectile)) {
+                        deleteTank(id);
+                    }
+                }
+                if (projectiles.containsKey(id)) {
+                    if (projectiles.get(id).attacked(projectile)) {
+                        deleteProjectile(id);
+                    }
+                }
+            }
         }
     }
     
