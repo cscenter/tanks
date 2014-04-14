@@ -1,7 +1,9 @@
 package view;
 
 import model.*;
-import io.*;
+import io.GameModelReader;
+import io.ImageGallery;
+import io.MapIOException;
 
 import javax.swing.*;
 
@@ -23,7 +25,14 @@ public class ViewPanel extends JPanel {
         super();
         
         model = new GameModel();
-        gallery = new ImageGallery("sprites");
+        try {
+            gallery = new ImageGallery("sprites");
+        } catch (MapIOException e) {
+            JOptionPane.showMessageDialog(ViewPanel.this,
+                    e.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
         timer = new javax.swing.Timer(TIMER_DELAY, new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
                 model.tick();
@@ -46,54 +55,60 @@ public class ViewPanel extends JPanel {
     }
     
     public void start() {
-
-        GameModelReader.parse(model, "map.txt");
-    	model.start();
-        timer.start();
-        isOver = false;
-        
-        addKeyListener(new KeyAdapter() {
- 
-            public void keyPressed(KeyEvent e) {               
-                if (isOver) {
-                    return;
+        try {
+            GameModelReader.parse(model, "map.txt");
+            model.start();
+            timer.start();
+            isOver = false;
+            
+            addKeyListener(new KeyAdapter() {
+     
+                public void keyPressed(KeyEvent e) {               
+                    if (isOver) {
+                        return;
+                    }
+                    switch (e.getKeyCode()) {
+                    case KeyEvent.VK_W :
+                        model.movePlayer(Direction.UP);
+                        break;
+                    case KeyEvent.VK_A :
+                        model.movePlayer(Direction.LEFT);
+                        break;
+                    case KeyEvent.VK_S :
+                        model.movePlayer(Direction.DOWN);
+                        break;
+                    case KeyEvent.VK_D :
+                        model.movePlayer(Direction.RIGHT);
+                        break;
+                    case KeyEvent.VK_SPACE :
+                        model.shootPlayer();
+                        break;
+                    case KeyEvent.VK_P :
+                        // TODO send message to ViewFrame to pause/unpause
+                        break;
+                    
+                    case KeyEvent.VK_O :
+                        model.debugprint();
+                        break;
+                    }    
                 }
-                switch (e.getKeyCode()) {
-                case KeyEvent.VK_W :
-                    model.movePlayer(Direction.UP);
-                    break;
-                case KeyEvent.VK_A :
-                    model.movePlayer(Direction.LEFT);
-                    break;
-                case KeyEvent.VK_S :
-                    model.movePlayer(Direction.DOWN);
-                    break;
-                case KeyEvent.VK_D :
-                    model.movePlayer(Direction.RIGHT);
-                    break;
-                case KeyEvent.VK_SPACE :
-                    model.shootPlayer();
-                    break;
-                case KeyEvent.VK_P :
-                	// TODO send message to ViewFrame to pause/unpause
-                    break;
-                
-                case KeyEvent.VK_O :
-                    model.debugprint();
-                    break;
-                }    
-            }
-        });
+            });
+        } catch (MapIOException e) {
+            JOptionPane.showMessageDialog(ViewPanel.this,
+                    e.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
     }
     
     public void unpause() {
-    	timer.start();
-    	isOver = false;
+        timer.start();
+        isOver = false;
     }
     
     public void pause() {
-    	timer.stop();
-    	isOver = true;
+        timer.stop();
+        isOver = true;
     }
     
     protected void paintComponent(Graphics g) {
@@ -133,22 +148,3 @@ public class ViewPanel extends JPanel {
         g.drawString("SCORE: " + Integer.toString(model.getScore()), 6 * k * GameModel.DISCRETE_FACTOR, (height + GameModel.DISCRETE_FACTOR / 2 + 1) * k);
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1,4 +1,4 @@
-package view;
+package io;
 
 import model.*;
 import java.util.*;
@@ -17,7 +17,7 @@ public class ImageGallery {
     private EnumMap<Direction, Image> redTankImage;
     private EnumMap<Direction, Image> projectileImage;
     
-    public ImageGallery(String spritesDestination) {
+    public ImageGallery(String spritesDestination) throws MapIOException {
         try {
             backgroundImage = ImageIO.read(new File(spritesDestination + "//ground//ground.png"));
             waterImage = ImageIO.read(new File(spritesDestination + "//water//water.png"));
@@ -25,7 +25,7 @@ public class ImageGallery {
             treeImage = ImageIO.read(new File(spritesDestination + "//tree//tree.png"));
             heartImage = ImageIO.read(new File(spritesDestination + "//health//heart.png"));
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new MapIOException("Cannot load image of Immovable Object");
         }
         greenTankImage = new EnumMap<Direction, Image>(Direction.class);
         redTankImage = new EnumMap<Direction, Image>(Direction.class);
@@ -40,7 +40,7 @@ public class ImageGallery {
                 filename = spritesDestination + "//projectile//projectile" + d.toString() + ".png";
                 projectileImage.put(d, ImageIO.read(new File(filename)));
             } catch (IOException e) {
-                e.printStackTrace();
+                throw new MapIOException("Cannot load image of Movable Object");
             }
         }
     }
