@@ -57,8 +57,17 @@ public class Vector2D {
         return v;            
     }
     
-    public boolean equals(Vector2D v) {
-        return (x == v.x) && (y == v.y);
+    public boolean equals(Object obj) {
+        if (super.equals(obj)) {
+            return true;
+        } else {
+            if (obj instanceof Vector2D) {
+                Vector2D v = (Vector2D) obj;
+                return (x == v.x) && (y == v.y);
+            } else {
+                return false;
+            }
+        }
     }
     
     public String toString() {
