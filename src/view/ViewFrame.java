@@ -1,7 +1,5 @@
 package view;
 
-import java.util.*;
-import model.*;
 import java.awt.Dimension;
 import java.awt.BorderLayout;
  

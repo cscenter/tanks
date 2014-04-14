@@ -5,7 +5,6 @@ import io.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.*;
 
 public class ViewPanel extends JPanel {
     private GameModel model;

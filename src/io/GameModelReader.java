@@ -1,6 +1,5 @@
 package io;
 
-import java.util.*;
 import java.io.*;
 import model.*;
 
@@ -17,7 +16,6 @@ public class GameModelReader {
 
             model.rebuild(width, height);
             
-            char letter;
             for (int i = 0; i < height; ++i) {
 			    sCurrentLine = br.readLine();
 			    String[] tags = sCurrentLine.split(" ");

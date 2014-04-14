@@ -289,9 +289,6 @@ public class GameModel {
             Vector2D destination = pos.add(tank.getSpeed());
             Vector2D deltaMove = destination.sub(pos).normalize();
             
-            int w = tank.getWidth();
-            int h = tank.getHeight();
-            
             while (!destination.equals(pos) && map.canMove(tank, deltaMove)) {
                 pos = pos.add(deltaMove);
                 deltaMove = destination.sub(pos).normalize();
@@ -323,11 +320,6 @@ public class GameModel {
         }        
     }
     
-    
-    private void deleteTank(Tank tank) {
-        deleteTank(tank.getID());
-    }
-    
     private void deleteTank(int ID) {
         Bot bot = null;
         for (Bot b : bots) {
@@ -343,17 +335,9 @@ public class GameModel {
         tanks.remove(ID);
     }
     
-    private void deleteImmovableObject(ImmovableObject obj) {
-        deleteImmovableObject(obj.getID());
-    }
-    
     private void deleteImmovableObject(int ID) {
         map.remove(immovableObjects.get(ID));
         immovableObjects.remove(ID);
-    }
-    
-    private void deleteProjectile(Projectile projectile) {
-        deleteProjectile(projectile.getID());
     }
     
     private void deleteProjectile(int ID) {

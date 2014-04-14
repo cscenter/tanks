@@ -125,12 +125,6 @@ public class DiscreteMap {
         return isOutside(v.getX(), v.getY());
     }
     
-    private boolean isOutside(GameObject obj) {
-        int x  = obj.getPosition().getX();
-        int y  = obj.getPosition().getY();
-        return isOutside(x, y) || isOutside(x + obj.getHeight(), y + obj.getWidth());
-    }
-    
     public Map<Vector2D, Vector2D> getAccessibleCells(MovableObject obj) {
         remove(obj);
         

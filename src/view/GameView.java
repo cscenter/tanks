@@ -1,8 +1,5 @@
 package view;
 
-import java.util.*;
-import model.GameModel;
-
 public class GameView {
 
     public static void createAndShowGUI() {
