@@ -2,10 +2,13 @@ package view;
 
 import model.*;
 import io.*;
+
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.*;
 
+@SuppressWarnings("serial")
 public class ViewPanel extends JPanel {
     private GameModel model;
     private javax.swing.Timer timer;
@@ -32,6 +35,7 @@ public class ViewPanel extends JPanel {
                         JOptionPane.PLAIN_MESSAGE);
                     timer.stop();
                     isOver = true;
+                    // TODO send message to Frame about game ending
                 }
             }
         });
@@ -70,11 +74,13 @@ public class ViewPanel extends JPanel {
                 case KeyEvent.VK_SPACE :
                     model.shootPlayer();
                     break;
-                
+                case KeyEvent.VK_P :
+                	// TODO send message to ViewFrame to pause/unpause
+                    break;
                 
                 case KeyEvent.VK_O :
                     model.debugprint();
-                    break;   
+                    break;
                 }    
             }
         });
