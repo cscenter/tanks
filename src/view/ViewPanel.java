@@ -3,64 +3,27 @@ package view;
 import model.*;
 import io.*;
 import javax.swing.*;
-import javax.imageio.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
-import java.io.*;
 
 public class ViewPanel extends JPanel {
     private GameModel model;
-    private javax.swing.Timer timer;   
-    private Image backgroundImage;
-    private Image waterImage;
-    private Image stoneImage;
-    private Image heartImage;
-    private Image treeImage;
-    private EnumMap<Direction, Image> greenTankImage;
-    private EnumMap<Direction, Image> redTankImage;
-    private EnumMap<Direction, Image> projectileImage;
+    private javax.swing.Timer timer;
     
     private boolean isOver = false;
     private int k = 64 / GameModel.DISCRETE_FACTOR;
     
     private static final int TIMER_DELAY = 50;
-    
-    private void initImages() {
-        try {
-            backgroundImage = ImageIO.read(new File("sprites//ground//ground.png"));
-            waterImage = ImageIO.read(new File("sprites//water//water.png"));
-            stoneImage = ImageIO.read(new File("sprites//stone//stone.png"));
-            treeImage = ImageIO.read(new File("sprites//tree//tree.png"));
-            heartImage = ImageIO.read(new File("sprites//health//heart.png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        greenTankImage = new EnumMap<Direction, Image>(Direction.class);
-        redTankImage = new EnumMap<Direction, Image>(Direction.class);
-        projectileImage = new EnumMap<Direction, Image>(Direction.class);
-        for (Direction d : Direction.values()) {            
-                try {
-                    String filename;
-                    filename = "sprites//tank//red//tank" + d.toString() + ".png";
-                    redTankImage.put(d, ImageIO.read(new File(filename)));
-                    filename = "sprites//tank//green//tank" + d.toString() + ".png";
-                    greenTankImage.put(d, ImageIO.read(new File(filename)));
-                    filename = "sprites//projectile//projectile" + d.toString() + ".png";
-                    projectileImage.put(d, ImageIO.read(new File(filename)));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }        
-    }
+    private ImageGallery gallery;
         
     public ViewPanel() {
         super();
         
-        initImages();
-        
         model = new GameModel();
         GameModelReader.parse(model, "map.txt");
+        
+        gallery = new ImageGallery("sprites");
         
         model.start();
         
@@ -126,47 +89,29 @@ public class ViewPanel extends JPanel {
 
         g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 30));
         
+        Image img = gallery.getBackgroundImage();
+        
         for (int i = 0; i < height; i += GameModel.DISCRETE_FACTOR) {
             for (int j = 0; j < width; j += GameModel.DISCRETE_FACTOR) {
-                g.drawImage(backgroundImage, j * k, i * k, null);
+                g.drawImage(img, j * k, i * k, null);
             }
         }
         
         int x;
         int y;
-        Image img = null;
         for (GameObject obj : model.getGameObjects()) {
             
-            switch (obj.getDescription()) {
-            case WATER:
-                img = waterImage;
-                break;
-            case STONE:
-                img = stoneImage;
-                break;
-            case TREE:
-                img = treeImage;
-                break;
-            case TANK:
-                Tank t = (Tank) obj;
-                if (t.getTeam() == 1) {
-                    img = greenTankImage.get(Direction.fromVector2D(t.getOrientation()));
-                } else {
-                    img = redTankImage.get(Direction.fromVector2D(t.getOrientation()));
-                }
-                break;
-            case PROJECTILE:
-                img = projectileImage.get(Direction.fromVector2D(((Projectile)obj).getOrientation()));
-                break;
-            }
+            img = gallery.getImage(obj);
+            
             x = obj.getPosition().getX();
             y = obj.getPosition().getY();
             g.drawImage(img, y * k, x * k, null);
         }
         
         if (model.isPlayerAlive()) {
+            img = gallery.getHeartImage();
             for (int i = 0; i < model.getPlayerHealth(); ++i) {
-                g.drawImage(heartImage, i * k * GameModel.DISCRETE_FACTOR, height * k, null);
+                g.drawImage(img, i * k * GameModel.DISCRETE_FACTOR, height * k, null);
             }
         }
         
