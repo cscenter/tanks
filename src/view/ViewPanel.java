@@ -20,12 +20,7 @@ public class ViewPanel extends JPanel {
         super();
         
         model = new GameModel();
-        GameModelReader.parse(model, "map.txt");
-        
         gallery = new ImageGallery("sprites");
-        
-        model.start();
-        
         timer = new javax.swing.Timer(TIMER_DELAY, new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
                 model.tick();
@@ -40,8 +35,18 @@ public class ViewPanel extends JPanel {
                 }
             }
         });
-        
+    }
+    
+    public Dimension getPreferredSize() {
+        return new Dimension(model.getWidth() * k, (model.getHeight() + GameModel.DISCRETE_FACTOR)* k);
+    }
+    
+    public void start() {
+
+        GameModelReader.parse(model, "map.txt");
+    	model.start();
         timer.start();
+        isOver = false;
         
         addKeyListener(new KeyAdapter() {
  
@@ -67,17 +72,22 @@ public class ViewPanel extends JPanel {
                     break;
                 
                 
-                case KeyEvent.VK_P :
+                case KeyEvent.VK_O :
                     model.debugprint();
-                    break;
-                    
+                    break;   
                 }    
             }
         });
     }
     
-    public Dimension getPreferredSize() {
-        return new Dimension(model.getWidth() * k, (model.getHeight() + GameModel.DISCRETE_FACTOR)* k);
+    public void unpause() {
+    	timer.start();
+    	isOver = false;
+    }
+    
+    public void pause() {
+    	timer.stop();
+    	isOver = true;
     }
     
     protected void paintComponent(Graphics g) {
