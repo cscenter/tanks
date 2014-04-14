@@ -10,8 +10,8 @@ public class ViewFrame extends JFrame {
     
     private ViewPanel panel;
     
-    public ViewFrame(String title) {
-        super(title);
+    public ViewFrame() {
+        super("Tanks 1.0");
         panel = new ViewPanel();
     }
     
