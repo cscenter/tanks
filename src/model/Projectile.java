@@ -18,6 +18,7 @@ public class Projectile extends MovableObject {
         return justCreated;
     }
     
+    @Override
     public boolean attacked(Projectile p) {
         return true;
     }

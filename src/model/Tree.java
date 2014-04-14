@@ -14,6 +14,7 @@ public class Tree extends ImmovableObject {
         health = START_HEALTH;
     }
     
+    @Override
     public boolean attacked(Projectile p) {
         return (--health == 0);
     }

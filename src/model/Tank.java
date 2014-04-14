@@ -26,6 +26,7 @@ public class Tank extends MovableObject {
         setSpeed(new Vector2D(0, 0));
     }
     
+    @Override
     public boolean attacked(Projectile p) {
         if (p.getTeam() != getTeam()) {
             --health;
