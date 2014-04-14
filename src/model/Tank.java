@@ -4,8 +4,6 @@ public class Tank extends MovableObject {
 
     public static final int SIZE = GameModel.DISCRETE_FACTOR;
     public static final int START_HEALTH = 3;
-    
-    private int health;
 
     public Tank(int id, Vector2D p, int t, Vector2D s) {
         super(id, p, SIZE, SIZE, GameObjectDescription.TANK, t, s);
@@ -25,17 +23,4 @@ public class Tank extends MovableObject {
         super.setPosition(p);
         setSpeed(new Vector2D(0, 0));
     }
-    
-    @Override
-    public boolean attacked(Projectile p) {
-        if (p.getTeam() != getTeam()) {
-            --health;
-        }
-        return (health == 0);
-    }
-    
-    public int getHealth() {
-        return health;
-    }
-    
 }

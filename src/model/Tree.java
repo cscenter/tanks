@@ -1,7 +1,5 @@
 package model;
 
-import java.lang.UnsupportedOperationException;
-
 public class Tree extends ImmovableObject {
     
     public static final int SIZE = GameModel.DISCRETE_FACTOR;
@@ -17,5 +15,10 @@ public class Tree extends ImmovableObject {
     @Override
     public boolean attacked(Projectile p) {
         return (--health == 0);
+    }
+    
+    @Override
+    public int getHealth() {
+        return health;
     }
 }

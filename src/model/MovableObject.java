@@ -7,6 +7,8 @@ public class MovableObject extends GameObject {
     protected Vector2D orientation;
     protected Vector2D speed;
     
+    protected int health = 1;
+    
     public MovableObject(int id, Vector2D p, int w, int h, GameObjectDescription d, int t, Vector2D s) {
         super(id, p, w, h, d);
         speed = s;
@@ -36,5 +38,18 @@ public class MovableObject extends GameObject {
     
     public Vector2D getOrientation() {
         return orientation;
+    }
+    
+    @Override
+    public boolean attacked(Projectile p) {
+        if (p.getTeam() != getTeam()) {
+            --health;
+        }
+        return (health == 0);
+    }
+    
+    @Override
+    public int getHealth() {
+        return health;
     }
 }

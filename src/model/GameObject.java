@@ -1,6 +1,6 @@
 package model;
 
-public class GameObject {
+public class GameObject implements Attackable {
     protected Vector2D position;
     private final int width;
     private final int height;
@@ -36,7 +36,14 @@ public class GameObject {
         return height;
     }
     
+    @Override
     public boolean attacked(Projectile p) {
         return false;
     }
+    
+    @Override
+    public int getHealth() {
+        return -1;
+    }
+
 }
