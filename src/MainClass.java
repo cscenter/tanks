@@ -1,5 +1,3 @@
-package model;
-
 import view.GameView;
 import javax.swing.SwingUtilities;
 

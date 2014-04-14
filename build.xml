@@ -1,4 +1,4 @@
-<project name="GameModel" basedir="." default="main">
+<project name="tanks" basedir="." default="main">
 
     <property name="src.dir"     value="src"/>
 
@@ -6,7 +6,7 @@
     <property name="classes.dir" value="${build.dir}/classes"/>
     <property name="jar.dir"     value="${build.dir}/jar"/>
 
-    <property name="main-class"  value="model.MainClass"/>
+    <property name="main-class"  value="MainClass"/>
 
 
 
@@ -16,7 +16,7 @@
 
     <target name="compile">
         <mkdir dir="${classes.dir}"/>
-        <javac srcdir="${src.dir}" destdir="${classes.dir}"/>
+        <javac srcdir="${src.dir}" includeantruntime="true" destdir="${classes.dir}"/>
         <copy todir="${classes.dir}">
             <fileset dir="${src.dir}" excludes="**/*.java"/>
         </copy>

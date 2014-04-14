@@ -6,9 +6,9 @@ public class DiscreteMap {
     
     public static final int EMPTY_ID = 0;
     
-    private Cell maze[][];
-    private int movableIDs[][];
-    private int immovableIDs[][];
+    private Cell[][] maze;
+    private int[][] movableIDs;
+    private int[][] immovableIDs;
     private final int width;
     private final int height;
     
