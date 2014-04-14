@@ -1,8 +1,6 @@
 package view;
 
-import java.awt.Dimension;
 import java.awt.BorderLayout;
- 
 import javax.swing.JFrame;
 
 
@@ -21,7 +19,6 @@ public class ViewFrame extends JFrame {
         panel.setLayout(new BorderLayout());
         panel.setFocusable(true);
         
-        panel.setPreferredSize(new Dimension(400, 400));
         add(panel);
         pack();
         setVisible(true);
