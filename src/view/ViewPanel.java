@@ -49,14 +49,51 @@ public class ViewPanel extends JPanel {
                         "Game over",
                         JOptionPane.PLAIN_MESSAGE);
                     timer.stop();
+                    setGamePaused(false);
                     setGameStarted(false);
-                    // TODO send message to Frame about game ending
                 }
             }
         });
         
         pcs.addPropertyChangeListener("gamePaused", gamePausedListener);
         pcs.addPropertyChangeListener("gameStarted", gameStartedListener);
+        
+        addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_P && isGameStarted()) {
+                    if (isGamePaused()) {
+                        unpause();
+                    } else {
+                        pause();
+                    }
+                }
+                if (!isGameOn()) {
+                    return;
+                }
+                switch (e.getKeyCode()) {
+                case KeyEvent.VK_W :
+                    model.movePlayer(Direction.UP);
+                    break;
+                case KeyEvent.VK_A :
+                    model.movePlayer(Direction.LEFT);
+                    break;
+                case KeyEvent.VK_S :
+                    model.movePlayer(Direction.DOWN);
+                    break;
+                case KeyEvent.VK_D :
+                    model.movePlayer(Direction.RIGHT);
+                    break;
+                case KeyEvent.VK_SPACE :
+                    model.shootPlayer();
+                    break;
+                
+                case KeyEvent.VK_O :
+                    model.debugprint();
+                    break;
+                }    
+            }
+        });
     }
     
     public boolean isGamePaused() {
@@ -86,6 +123,7 @@ public class ViewPanel extends JPanel {
     
     public void pause() {
         timer.stop();
+        repaint();
         setGamePaused(true);
     }
     
@@ -104,49 +142,6 @@ public class ViewPanel extends JPanel {
             timer.start();
             setGamePaused(false);
             setGameStarted(true);
-            addKeyListener(new KeyAdapter() {
-     
-                public void keyPressed(KeyEvent e) {               
-                    switch (e.getKeyCode()) {
-                    case KeyEvent.VK_W :
-                        if (isGameOn()) {
-                            model.movePlayer(Direction.UP);
-                        }
-                        break;
-                    case KeyEvent.VK_A :
-                        if (isGameOn()) {
-                            model.movePlayer(Direction.LEFT);
-                        }
-                        break;
-                    case KeyEvent.VK_S :
-                        if (isGameOn()) {
-                            model.movePlayer(Direction.DOWN);
-                        }
-                        break;
-                    case KeyEvent.VK_D :
-                        if (isGameOn()) {
-                            model.movePlayer(Direction.RIGHT);
-                        }
-                        break;
-                    case KeyEvent.VK_SPACE :
-                        if (isGameOn()) {
-                            model.shootPlayer();
-                        }
-                        break;
-                    case KeyEvent.VK_P :
-                        if (isGamePaused()) {
-                            unpause();
-                        } else {
-                            pause();
-                        }
-                        break;
-                    
-                    case KeyEvent.VK_O :
-                        model.debugprint();
-                        break;
-                    }    
-                }
-            });
         } catch (MapIOException e) {
             JOptionPane.showMessageDialog(ViewPanel.this,
                     e.getMessage(),
@@ -187,6 +182,10 @@ public class ViewPanel extends JPanel {
             for (int i = 0; i < model.getPlayerHealth(); ++i) {
                 g.drawImage(img, i * k * GameModel.DISCRETE_FACTOR, height * k, null);
             }
+        }
+        
+        if (isGamePaused()) {
+            g.drawString("PAUSED", (width - 8) * k / 2, height * k / 2);
         }
         
         g.drawString("SCORE: " + Integer.toString(model.getScore()), 6 * k * GameModel.DISCRETE_FACTOR, (height + GameModel.DISCRETE_FACTOR / 2 + 1) * k);
