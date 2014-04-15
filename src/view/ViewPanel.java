@@ -97,9 +97,9 @@ public class ViewPanel extends JPanel {
         return !isGamePaused() && isGameStarted();
     }
     
-    public void start() {
+    public void start(String mapFilename) {
         try {
-            GameModelReader.parse(model, "map.txt");
+            GameModelReader.parse(model, mapFilename);
             model.start();
             timer.start();
             setGamePaused(false);

@@ -22,20 +22,8 @@ public class GameModelReader {
                 
                 for (int j = 0; j < width; ++j)    {
                     GameObjectDescription d;
-                    switch (tags[j].charAt(0)) {
-                    case 'W':
-                        d = GameObjectDescription.WATER;
-                        break;
-                    case 'R':
-                        d = GameObjectDescription.TREE;
-                        break;
-                    case 'S':
-                        d = GameObjectDescription.STONE;
-                        break;
-                    case 'G':
-                        d = GameObjectDescription.GROUND;
-                        break;
-                    default: ////// ERROR
+                    d = GameObjectDescription.getDescription(tags[j].charAt(0));
+                    if (d == null) {
                         throw new MapIOException("Invalid chracter at " + (new Vector2D(i, j)).toString() );
                     }
 

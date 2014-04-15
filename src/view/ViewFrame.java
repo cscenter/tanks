@@ -1,5 +1,7 @@
 package view;
 
+import io.GameModelGenerator;
+
 import java.awt.BorderLayout;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
@@ -28,6 +30,7 @@ public class ViewFrame extends JFrame {
         
         JMenuBar menuBar;
         JMenu menu;
+        JMenu newGameSubmenu;
         JMenuItem menuItem;
         final JMenuItem pauseMenuItem = new JMenuItem("Pause");
         final JMenuItem resumeMenuItem = new JMenuItem("Resume");
@@ -35,26 +38,42 @@ public class ViewFrame extends JFrame {
         menuBar = new JMenuBar();
         menu = new JMenu("File");
         
-        menuItem = new JMenuItem("New Game");
+        newGameSubmenu = new JMenu("New Game");
+        menuItem = new JMenuItem("Campaign");
         menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
         menuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                panel.start();
+                panel.start("map.txt");
                 pack();
                 repaint();
                 pauseMenuItem.setEnabled(true);
                 resumeMenuItem.setEnabled(false);
             }
         });
-        menu.add(menuItem);
+        newGameSubmenu.add(menuItem);
+        
+        menuItem = new JMenuItem("Infinite");
+        menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, ActionEvent.CTRL_MASK));
+        menuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                GameModelGenerator.createMap(10, 10, "randomMap.txt");
+                panel.start("randomMap.txt");
+                pack();
+                repaint();
+                pauseMenuItem.setEnabled(true);
+                resumeMenuItem.setEnabled(false);
+            }
+        });
+        newGameSubmenu.add(menuItem);
+        
+        menu.add(newGameSubmenu);
         
         pauseMenuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 panel.pause();
-                //pauseMenuItem.setEnabled(false);
-                //resumeMenuItem.setEnabled(true);
             }
         });
         menu.add(pauseMenuItem);
@@ -63,8 +82,6 @@ public class ViewFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 panel.unpause();
-                //pauseMenuItem.setEnabled(true);
-                //resumeMenuItem.setEnabled(false);
             }
         });
         menu.add(resumeMenuItem);
@@ -140,6 +157,9 @@ public class ViewFrame extends JFrame {
             }
         };
         
+        pauseMenuItem.setEnabled(false);
+        resumeMenuItem.setEnabled(false);
+
         panel = new ViewPanel(gameStaertedListener, gamePausedListener);
     }
     

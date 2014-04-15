@@ -31,8 +31,16 @@ public class Vector2D {
         return new Vector2D(x + v.x, y + v.y);
     }
     
+    public Vector2D add(int x, int y) {
+        return new Vector2D(this.x + x, this.y + y);
+    }
+    
     public Vector2D sub(Vector2D v) {
         return new Vector2D(x - v.x, y - v.y);
+    }
+    
+    public Vector2D sub(int x, int y) {
+        return new Vector2D(this.x - x, this.y - y);
     }
     
     public Vector2D mul(int k) {
@@ -54,29 +62,36 @@ public class Vector2D {
         } else {
             v.setY(sign(y));
         }
-        return v;            
-    }
-    
-    public boolean equals(Object obj) {
-        if (super.equals(obj)) {
-            return true;
-        } else {
-            if (obj instanceof Vector2D) {
-                Vector2D v = (Vector2D) obj;
-                return (x == v.x) && (y == v.y);
-            } else {
-                return false;
-            }
-        }
+        return v;
     }
     
     public String toString() {
         return "(" + Integer.toString(x) + ", " + Integer.toString(y) + ")";
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + x;
+        result = prime * result + y;
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Vector2D other = (Vector2D) obj;
+        if (x != other.x)
+            return false;
+        if (y != other.y)
+            return false;
+        return true;
+    }
     
 }
-
-
-
-
-
