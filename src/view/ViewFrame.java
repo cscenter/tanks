@@ -6,6 +6,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 import javax.swing.AbstractAction;
 import javax.swing.JFrame;
@@ -24,8 +26,6 @@ public class ViewFrame extends JFrame {
     public ViewFrame() {
         super("Tanks 1.0");
         
-        panel = new ViewPanel();
-        
         JMenuBar menuBar;
         JMenu menu;
         JMenuItem menuItem;
@@ -43,8 +43,8 @@ public class ViewFrame extends JFrame {
                 panel.start();
                 pack();
                 repaint();
-                pauseMenuItem.setEnabled(false);
-                resumeMenuItem.setEnabled(true);
+                pauseMenuItem.setEnabled(true);
+                resumeMenuItem.setEnabled(false);
             }
         });
         menu.add(menuItem);
@@ -53,8 +53,8 @@ public class ViewFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 panel.pause();
-                pauseMenuItem.setEnabled(false);
-                resumeMenuItem.setEnabled(true);
+                //pauseMenuItem.setEnabled(false);
+                //resumeMenuItem.setEnabled(true);
             }
         });
         menu.add(pauseMenuItem);
@@ -63,8 +63,8 @@ public class ViewFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 panel.unpause();
-                pauseMenuItem.setEnabled(true);
-                resumeMenuItem.setEnabled(false);
+                //pauseMenuItem.setEnabled(true);
+                //resumeMenuItem.setEnabled(false);
             }
         });
         menu.add(resumeMenuItem);
@@ -115,7 +115,21 @@ public class ViewFrame extends JFrame {
         setJMenuBar(menuBar);
         
         pauseMenuItem.setEnabled(false);
-        resumeMenuItem.setEnabled(true);
+        resumeMenuItem.setEnabled(false);
+        
+        panel = new ViewPanel(new PropertyChangeListener() {
+			
+			@Override
+			public void propertyChange(PropertyChangeEvent arg0) {
+				if (Boolean.TRUE.equals(arg0.getNewValue())) {
+					pauseMenuItem.setEnabled(false);
+	                resumeMenuItem.setEnabled(true);
+				} else {
+					pauseMenuItem.setEnabled(true);
+	                resumeMenuItem.setEnabled(false);
+				}					
+			}
+		});
     }
     
     public void showGUI() {
@@ -123,7 +137,7 @@ public class ViewFrame extends JFrame {
         
         panel.setLayout(new BorderLayout());
         panel.setFocusable(true);
-        
+      
         add(panel);
         pack();
         setVisible(true);

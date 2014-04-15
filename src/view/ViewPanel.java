@@ -9,6 +9,9 @@ import javax.swing.*;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 
 @SuppressWarnings("serial")
 public class ViewPanel extends JPanel {
@@ -16,12 +19,23 @@ public class ViewPanel extends JPanel {
     private javax.swing.Timer timer;
     
     private boolean isOver = false;
-    private int k = 64 / GameModel.DISCRETE_FACTOR;
+    public boolean isOver() {
+		return isOver;
+	}
+
+	public void setOver(boolean isOver) {
+		boolean oldValue = this.isOver; 
+		this.isOver = isOver;
+		pcs.firePropertyChange("isOver", oldValue, isOver);
+	}
+
+	private int k = 64 / GameModel.DISCRETE_FACTOR;
     
     private static final int TIMER_DELAY = 50;
     private ImageGallery gallery;
-        
-    public ViewPanel() {
+    private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+    
+	public ViewPanel(PropertyChangeListener gameStateListener) {
         super();
         
         model = new GameModel();
@@ -48,8 +62,20 @@ public class ViewPanel extends JPanel {
                 }
             }
         });
+        
+        pcs.addPropertyChangeListener("isOver", gameStateListener);
     }
     
+    public void unpause() {
+        timer.start();
+        setOver(false);
+    }
+    
+    public void pause() {
+    	timer.stop();
+    	setOver(true);
+    }
+	
     public Dimension getPreferredSize() {
         return new Dimension(model.getWidth() * k, (model.getHeight() + GameModel.DISCRETE_FACTOR)* k);
     }
@@ -64,27 +90,38 @@ public class ViewPanel extends JPanel {
             addKeyListener(new KeyAdapter() {
      
                 public void keyPressed(KeyEvent e) {               
-                    if (isOver) {
-                        return;
-                    }
                     switch (e.getKeyCode()) {
                     case KeyEvent.VK_W :
-                        model.movePlayer(Direction.UP);
+                        if (!isOver()) {
+                        	model.movePlayer(Direction.UP);
+                        }
                         break;
                     case KeyEvent.VK_A :
-                        model.movePlayer(Direction.LEFT);
+                    	if (!isOver()) {
+                    		model.movePlayer(Direction.LEFT);
+                    	}
                         break;
                     case KeyEvent.VK_S :
-                        model.movePlayer(Direction.DOWN);
+                    	if (!isOver()) {
+                    		model.movePlayer(Direction.DOWN);
+                    	}
                         break;
                     case KeyEvent.VK_D :
-                        model.movePlayer(Direction.RIGHT);
+                    	if (!isOver()) {
+                    		model.movePlayer(Direction.RIGHT);
+                    	}
                         break;
                     case KeyEvent.VK_SPACE :
-                        model.shootPlayer();
+                    	if (!isOver()) {
+                    		model.shootPlayer();
+                    	}
                         break;
                     case KeyEvent.VK_P :
-                        // TODO send message to ViewFrame to pause/unpause
+                        if (isOver()) {
+                        	unpause();
+                        } else {
+                        	pause();
+                        }
                         break;
                     
                     case KeyEvent.VK_O :
@@ -99,16 +136,6 @@ public class ViewPanel extends JPanel {
                     "Error",
                     JOptionPane.ERROR_MESSAGE);
         }
-    }
-    
-    public void unpause() {
-        timer.start();
-        isOver = false;
-    }
-    
-    public void pause() {
-        timer.stop();
-        isOver = true;
     }
     
     protected void paintComponent(Graphics g) {
