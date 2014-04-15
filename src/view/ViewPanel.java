@@ -9,7 +9,6 @@ import javax.swing.*;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
@@ -18,24 +17,17 @@ public class ViewPanel extends JPanel {
     private GameModel model;
     private javax.swing.Timer timer;
     
-    private boolean isOver = false;
-    public boolean isOver() {
-		return isOver;
-	}
+    private boolean gamePaused = false;
+    private boolean gameStarted = false;
+    
 
-	public void setOver(boolean isOver) {
-		boolean oldValue = this.isOver; 
-		this.isOver = isOver;
-		pcs.firePropertyChange("isOver", oldValue, isOver);
-	}
-
-	private int k = 64 / GameModel.DISCRETE_FACTOR;
+    private int k = 64 / GameModel.DISCRETE_FACTOR;
     
     private static final int TIMER_DELAY = 50;
     private ImageGallery gallery;
     private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
     
-	public ViewPanel(PropertyChangeListener gameStateListener) {
+    public ViewPanel(PropertyChangeListener gameStartedListener, PropertyChangeListener gamePausedListener) {
         super();
         
         model = new GameModel();
@@ -57,27 +49,52 @@ public class ViewPanel extends JPanel {
                         "Game over",
                         JOptionPane.PLAIN_MESSAGE);
                     timer.stop();
-                    isOver = true;
+                    setGameStarted(false);
                     // TODO send message to Frame about game ending
                 }
             }
         });
         
-        pcs.addPropertyChangeListener("isOver", gameStateListener);
+        pcs.addPropertyChangeListener("gamePaused", gamePausedListener);
+        pcs.addPropertyChangeListener("gameStarted", gameStartedListener);
+    }
+    
+    public boolean isGamePaused() {
+        return gamePaused;
+    }
+
+    public void setGamePaused(boolean gamePaused) {
+        boolean oldValue = this.gamePaused; 
+        this.gamePaused = gamePaused;
+        pcs.firePropertyChange("gamePaused", oldValue, gamePaused);
+    }
+
+    public boolean isGameStarted() {
+        return gameStarted;
+    }
+
+    public void setGameStarted(boolean gameStarted) {
+        boolean oldValue = this.gameStarted; 
+        this.gameStarted = gameStarted;
+        pcs.firePropertyChange("gameStarted", oldValue, gameStarted);
     }
     
     public void unpause() {
         timer.start();
-        setOver(false);
+        setGamePaused(false);
     }
     
     public void pause() {
-    	timer.stop();
-    	setOver(true);
+        timer.stop();
+        setGamePaused(true);
     }
-	
+    
     public Dimension getPreferredSize() {
         return new Dimension(model.getWidth() * k, (model.getHeight() + GameModel.DISCRETE_FACTOR)* k);
+    }
+    
+    private boolean isGameOn() {
+        return !isGamePaused() && isGameStarted();
     }
     
     public void start() {
@@ -85,42 +102,42 @@ public class ViewPanel extends JPanel {
             GameModelReader.parse(model, "map.txt");
             model.start();
             timer.start();
-            isOver = false;
-            
+            setGamePaused(false);
+            setGameStarted(true);
             addKeyListener(new KeyAdapter() {
      
                 public void keyPressed(KeyEvent e) {               
                     switch (e.getKeyCode()) {
                     case KeyEvent.VK_W :
-                        if (!isOver()) {
-                        	model.movePlayer(Direction.UP);
+                        if (isGameOn()) {
+                            model.movePlayer(Direction.UP);
                         }
                         break;
                     case KeyEvent.VK_A :
-                    	if (!isOver()) {
-                    		model.movePlayer(Direction.LEFT);
-                    	}
+                        if (isGameOn()) {
+                            model.movePlayer(Direction.LEFT);
+                        }
                         break;
                     case KeyEvent.VK_S :
-                    	if (!isOver()) {
-                    		model.movePlayer(Direction.DOWN);
-                    	}
+                        if (isGameOn()) {
+                            model.movePlayer(Direction.DOWN);
+                        }
                         break;
                     case KeyEvent.VK_D :
-                    	if (!isOver()) {
-                    		model.movePlayer(Direction.RIGHT);
-                    	}
+                        if (isGameOn()) {
+                            model.movePlayer(Direction.RIGHT);
+                        }
                         break;
                     case KeyEvent.VK_SPACE :
-                    	if (!isOver()) {
-                    		model.shootPlayer();
-                    	}
+                        if (isGameOn()) {
+                            model.shootPlayer();
+                        }
                         break;
                     case KeyEvent.VK_P :
-                        if (isOver()) {
-                        	unpause();
+                        if (isGamePaused()) {
+                            unpause();
                         } else {
-                        	pause();
+                            pause();
                         }
                         break;
                     

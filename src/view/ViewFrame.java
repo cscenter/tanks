@@ -88,48 +88,59 @@ public class ViewFrame extends JFrame {
         
         menu = new JMenu("Help");
         menu.add(new JMenuItem(new AbstractAction("Show controls") {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(ViewFrame.this,
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(ViewFrame.this,
                         "W - move upward\nA - move left\n" + 
-                		"S - move downward\nD - move right\n" + 
-                		"SPACE - shoot\nP - pause/unpause",
+                        "S - move downward\nD - move right\n" + 
+                        "SPACE - shoot\nP - pause/unpause",
                         "Controls",
                         JOptionPane.PLAIN_MESSAGE);
-			}
-		}));
+            }
+        }));
         menu.add(new JMenuItem(new AbstractAction("About") {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(ViewFrame.this,
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(ViewFrame.this,
                         "Welcome to TANKS. It is a game with the only one aim:\n" + 
-                		"Survive & kill bad red guys as much as you can. I hope" +
-                		" you will enjoy it=)\n\n\nYou can contact me by email: mordbergak@gmail.com",
+                        "Survive & kill bad red guys as much as you can. I hope" +
+                        " you will enjoy it=)\n\n\nYou can contact me by email: mordbergak@gmail.com",
                         "About",
                         JOptionPane.PLAIN_MESSAGE);
-			}
-		}));
+            }
+        }));
         
         menuBar.add(menu);
         
         setJMenuBar(menuBar);
         
-        pauseMenuItem.setEnabled(false);
-        resumeMenuItem.setEnabled(false);
+        PropertyChangeListener gamePausedListener = new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent arg0) {
+                if (Boolean.TRUE.equals(arg0.getNewValue())) {
+                    pauseMenuItem.setEnabled(false);
+                    resumeMenuItem.setEnabled(true);
+                } else {
+                    pauseMenuItem.setEnabled(true);
+                    resumeMenuItem.setEnabled(false);
+                }                    
+            }
+        };
         
-        panel = new ViewPanel(new PropertyChangeListener() {
-			
-			@Override
-			public void propertyChange(PropertyChangeEvent arg0) {
-				if (Boolean.TRUE.equals(arg0.getNewValue())) {
-					pauseMenuItem.setEnabled(false);
-	                resumeMenuItem.setEnabled(true);
-				} else {
-					pauseMenuItem.setEnabled(true);
-	                resumeMenuItem.setEnabled(false);
-				}					
-			}
-		});
+        PropertyChangeListener gameStaertedListener = new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                if (Boolean.TRUE.equals(evt.getNewValue())) {
+                    pauseMenuItem.setEnabled(true);
+                    resumeMenuItem.setEnabled(false);
+                } else {
+                    pauseMenuItem.setEnabled(false);
+                    resumeMenuItem.setEnabled(false);
+                }
+            }
+        };
+        
+        panel = new ViewPanel(gameStaertedListener, gamePausedListener);
     }
     
     public void showGUI() {
