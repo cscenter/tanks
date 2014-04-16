@@ -7,16 +7,13 @@ public class Bot {
     private Tank controlledTank;
     private Stack<Direction> plannedMoves;
     private GameModel model;
-    private int turnsToShoot;
     
     private static final Random GENERATOR = new Random();
-    private static final int MAX_TURNS_TO_SHOOT = 3;
     
     public Bot(GameModel model, Tank tank) {
         this.model = model;
         controlledTank = tank;
         plannedMoves = new Stack<Direction>();
-        turnsToShoot = 0;
     }
     
     private void createPath() {
@@ -43,18 +40,23 @@ public class Bot {
         }
     }
     
-    public void makeTurn() {    
-        if (turnsToShoot == 0) {
-            Collection<Tank> enemies = model.getEnemies(controlledTank.getTeam());
-            for (Tank enemy : enemies) {
-                if (enemy.getPosition().sub(controlledTank.getPosition()).normalize().equals(controlledTank.getOrientation().getMove())) {
+    public void makeTurn() {
+        boolean shootFlag = false;
+        Collection<Tank> enemies = model.getEnemies(controlledTank.getTeam());
+        for (Tank enemy : enemies) {
+            if (enemy.getPosition().sub(controlledTank.getPosition()).normalize().equals(controlledTank.getOrientation().getMove())) {
+                if (controlledTank.canShoot(false)) {
                     model.shoot(controlledTank.getID());
-                    turnsToShoot = MAX_TURNS_TO_SHOOT;
                     return;
+                } else {
+                    shootFlag = true;
+                    break;
                 }
             }
-        } else {
-            --turnsToShoot;
+        }
+
+        if (shootFlag) {
+            controlledTank.canShoot(true);
         }
         
         if (plannedMoves.empty() || !model.canTankMove(controlledTank.getID(), plannedMoves.peek().getMove())) {

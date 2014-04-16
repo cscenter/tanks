@@ -176,7 +176,7 @@ public class GameModel {
     }
     
     public void shoot(Tank t) {
-        if (t.canShoot()) {
+        if (t.canShoot(true)) {
             Projectile projectile = t.shoot(freeID++);
             if (map.isFreeForProjectile(projectile.getPosition(), Projectile.SIZE, Projectile.SIZE)) {
                 projectiles.put(projectile.getID(), projectile);

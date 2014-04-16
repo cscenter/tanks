@@ -11,11 +11,11 @@ public class Tank extends MovableObject {
         super(id, p, GameObjectDescription.TANK, t);
         health = START_HEALTH;
         speed.setDelay(delay);
-        fireDelay = new TurnDelay(delay, 1);
+        fireDelay = new TurnDelay(10 * delay, 1);
     }
     
-    public boolean canShoot() {
-        return fireDelay.makeTurn();
+    public boolean canShoot(boolean change) {
+        return change ? fireDelay.makeTurn() : fireDelay.canMakeTurn();
     }
     
     public Projectile shoot(int freeID) {

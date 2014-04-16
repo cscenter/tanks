@@ -7,7 +7,7 @@ public class Speed {
     
     public Speed(Direction direction, int delay) {
         this.direction = direction;
-        turnDelay = new TurnDelay(delay, 1);
+        turnDelay = new TurnDelay(delay, 0);
     }
 
 

@@ -19,9 +19,9 @@ public class ViewPanel extends JPanel {
     
     private boolean gamePaused = false;
     private boolean gameStarted = false;
-    
+    private boolean turnMade = false;
 
-    private int k = 64 / GameModel.DISCRETE_FACTOR;
+    private int k = (int)(64.0 / GameModel.DISCRETE_FACTOR);
     
     private static final int TIMER_DELAY = 10;
     private ImageGallery gallery;
@@ -41,6 +41,7 @@ public class ViewPanel extends JPanel {
         }
         timer = new javax.swing.Timer(TIMER_DELAY, new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
+                turnMade = false;
                 model.tick();
                 repaint();
                 if (!model.isPlayerAlive()) {
@@ -67,8 +68,9 @@ public class ViewPanel extends JPanel {
         getActionMap().put("Shoot", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (isGameOn()) {
+                if (isGameOn() && !turnMade) {
                     model.shootPlayer();
+                    turnMade = true;
                 }
                 
             }
@@ -78,8 +80,9 @@ public class ViewPanel extends JPanel {
         getActionMap().put("Move Left", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (isGameOn()) {
+                if (isGameOn() && !turnMade) {
                     model.movePlayer(Direction.LEFT);
+                    turnMade = true;
                 }
                 
             }
@@ -89,8 +92,9 @@ public class ViewPanel extends JPanel {
         getActionMap().put("Move Up", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (isGameOn()) {
+                if (isGameOn() && !turnMade) {
                     model.movePlayer(Direction.UP);
+                    turnMade = true;
                 }
                 
             }
@@ -100,8 +104,9 @@ public class ViewPanel extends JPanel {
         getActionMap().put("Move Right", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (isGameOn()) {
+                if (isGameOn() && !turnMade) {
                     model.movePlayer(Direction.RIGHT);
+                    turnMade = true;
                 }
                 
             }
@@ -111,8 +116,9 @@ public class ViewPanel extends JPanel {
         getActionMap().put("Move Down", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (isGameOn()) {
+                if (isGameOn() && !turnMade) {
                     model.movePlayer(Direction.DOWN);
+                    turnMade = true;
                 }
                 
             }
