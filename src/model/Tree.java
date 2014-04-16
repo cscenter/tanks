@@ -2,7 +2,7 @@ package model;
 
 public class Tree extends ImmovableObject {
     
-    public static final int START_HEALTH = 1;
+    public static final int START_HEALTH = 2;
     
     private int health;
     

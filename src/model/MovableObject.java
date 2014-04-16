@@ -4,42 +4,51 @@ public class MovableObject extends GameObject {
 
     private final int team;
     
-    protected Vector2D orientation;
-    protected Vector2D speed;
+    protected Direction orientation;
+    protected Speed speed;
     
     protected int health = 1;
     
     public MovableObject(int id, Vector2D p, GameObjectDescription d, int t) {
         super(id, p, d);
-        speed = new Vector2D(0, 0);
+        speed = new Speed(Direction.NONE, 3);
         team = t;
-        orientation = Direction.DOWN.getMove();
+        orientation = Direction.DOWN;
     }
     
+    public void setDirection(Direction direction) {
+        speed.setDirection(direction);
+    }
+
     public void setPosition(Vector2D p) {
         position = p;
-    }
-    
-    public Vector2D getSpeed() {
-        return speed;
-    }
-    
-    public void setSpeed(Vector2D s) {
-        speed = s;
     }
     
     public int getTeam() {
         return team;
     }
     
-    public void setOrientation(Vector2D p) {
-        orientation = p.normalize();
+    public Direction getDirection() {
+        return speed.getDirection();
     }
     
-    public Vector2D getOrientation() {
+    public void setOrientation(Direction orientation) {
+        this.orientation = orientation;
+    }
+    
+    public Direction getOrientation() {
         return orientation;
     }
+
     
+    public boolean canMakeTurn() {
+        return speed.canMakeTurn();
+    }
+
+    public boolean makeTurn() {
+        return speed.makeTurn();
+    }
+
     @Override
     public boolean attacked(Projectile p) {
         if (p.getTeam() != getTeam()) {

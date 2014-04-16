@@ -1,8 +1,11 @@
 package io;
 
 import model.*;
+
 import java.util.*;
+
 import javax.imageio.*;
+
 import java.io.*;
 import java.awt.*;
 
@@ -30,7 +33,11 @@ public class ImageGallery {
         greenTankImage = new EnumMap<Direction, Image>(Direction.class);
         redTankImage = new EnumMap<Direction, Image>(Direction.class);
         projectileImage = new EnumMap<Direction, Image>(Direction.class);
-        for (Direction d : Direction.values()) {
+        
+        Collection<Direction> directions = new ArrayList<>(Arrays.asList(Direction.values()));
+        directions.remove(Direction.NONE);
+        
+        for (Direction d : directions) {
             try {
                 String filename;
                 filename = spritesDestination + "//tank//red//tank" + d.toString() + ".png";
@@ -64,12 +71,12 @@ public class ImageGallery {
             case TANK:
                 Tank t = (Tank) obj;
                 if (t.getTeam() == 1) {
-                    return greenTankImage.get(Direction.fromVector2D(t.getOrientation()));
+                    return greenTankImage.get(t.getOrientation());
                 } else {
-                    return redTankImage.get(Direction.fromVector2D(t.getOrientation()));
+                    return redTankImage.get(t.getOrientation());
                 }
             case PROJECTILE:
-                return projectileImage.get(Direction.fromVector2D(((Projectile)obj).getOrientation()));
+                return projectileImage.get(((Projectile)obj).getOrientation());
             default:
                 return null;
         }

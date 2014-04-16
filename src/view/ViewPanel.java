@@ -23,7 +23,7 @@ public class ViewPanel extends JPanel {
 
     private int k = 64 / GameModel.DISCRETE_FACTOR;
     
-    private static final int TIMER_DELAY = 50;
+    private static final int TIMER_DELAY = 10;
     private ImageGallery gallery;
     private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
     
@@ -58,40 +58,78 @@ public class ViewPanel extends JPanel {
         pcs.addPropertyChangeListener("gamePaused", gamePausedListener);
         pcs.addPropertyChangeListener("gameStarted", gameStartedListener);
         
-        addKeyListener(new KeyAdapter() {
+        initKeyboard();
+    }
+    
+    private void initKeyboard() {
+
+        getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0), "Shoot");
+        getActionMap().put("Shoot", new AbstractAction() {
             @Override
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_P && isGameStarted()) {
+            public void actionPerformed(ActionEvent e) {
+                if (isGameOn()) {
+                    model.shootPlayer();
+                }
+                
+            }
+        });
+        
+        getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_A, 0), "Move Left");
+        getActionMap().put("Move Left", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (isGameOn()) {
+                    model.movePlayer(Direction.LEFT);
+                }
+                
+            }
+        });
+        
+        getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_W, 0), "Move Up");
+        getActionMap().put("Move Up", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (isGameOn()) {
+                    model.movePlayer(Direction.UP);
+                }
+                
+            }
+        });
+        
+        getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_D, 0), "Move Right");
+        getActionMap().put("Move Right", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (isGameOn()) {
+                    model.movePlayer(Direction.RIGHT);
+                }
+                
+            }
+        });
+        
+        getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_S, 0), "Move Down");
+        getActionMap().put("Move Down", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (isGameOn()) {
+                    model.movePlayer(Direction.DOWN);
+                }
+                
+            }
+        });
+        
+        getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_P, 0), "Pause");
+        getActionMap().put("Pause", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (isGameStarted()) {
                     if (isGamePaused()) {
                         unpause();
                     } else {
                         pause();
                     }
                 }
-                if (!isGameOn()) {
-                    return;
-                }
-                switch (e.getKeyCode()) {
-                case KeyEvent.VK_W :
-                    model.movePlayer(Direction.UP);
-                    break;
-                case KeyEvent.VK_A :
-                    model.movePlayer(Direction.LEFT);
-                    break;
-                case KeyEvent.VK_S :
-                    model.movePlayer(Direction.DOWN);
-                    break;
-                case KeyEvent.VK_D :
-                    model.movePlayer(Direction.RIGHT);
-                    break;
-                case KeyEvent.VK_SPACE :
-                    model.shootPlayer();
-                    break;
                 
-                case KeyEvent.VK_O :
-                    model.debugprint();
-                    break;
-                }    
             }
         });
     }

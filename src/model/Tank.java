@@ -4,25 +4,29 @@ public class Tank extends MovableObject {
 
     public static final int SIZE = GameModel.DISCRETE_FACTOR;
     public static final int START_HEALTH = 3;
-
-    public Tank(int id, Vector2D p, int t) {
+    
+    private TurnDelay fireDelay;
+    
+    public Tank(int id, Vector2D p, int t, int delay) {
         super(id, p, GameObjectDescription.TANK, t);
         health = START_HEALTH;
+        speed.setDelay(delay);
+        fireDelay = new TurnDelay(delay, 1);
     }
     
-    public Projectile shoot(int freeID) {       
+    public boolean canShoot() {
+        return fireDelay.makeTurn();
+    }
+    
+    public Projectile shoot(int freeID) {
         Vector2D pos = new Vector2D(position.getX(), position.getY());
-        pos.setX(pos.getX() + SIZE / 2 + (SIZE / 2 + 1) * orientation.getX());
-        pos.setY(pos.getY() + SIZE / 2 + (SIZE / 2 + 1) * orientation.getY());
-        Projectile p = new Projectile(freeID, pos, getTeam(), orientation.mul(2));
-        p.setOrientation(orientation);
+        Vector2D or = orientation.getMove();
+        pos.setX(pos.getX() + SIZE / 2 + (SIZE / 2 + 1) * or.getX());
+        pos.setY(pos.getY() + SIZE / 2 + (SIZE / 2 + 1) * or.getY());
+        Projectile p = new Projectile(freeID, pos, getTeam(), orientation);
         return p;
     }    
-    
-    public void setPosition(Vector2D p) {
-        super.setPosition(p);
-        setSpeed(new Vector2D(0, 0));
-    }
+
     
     @Override
     public int getWidth() {

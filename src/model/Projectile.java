@@ -3,22 +3,13 @@ package model;
 public class Projectile extends MovableObject {
     
     public static final int SIZE = 1;
-    private boolean justCreated;
 
-    public Projectile(int id, Vector2D p, int t, Vector2D s) {
+    public Projectile(int id, Vector2D p, int t, Direction d) {
         super(id, p, GameObjectDescription.PROJECTILE, t);
-        justCreated = true;
-        speed = s;
+        speed = new Speed(d, 0);
+        setOrientation(d);
     }
-    
-    public void setCreateStatus(boolean p) {
-        justCreated = p;
-    }
-    
-    public boolean isJustCreated() {
-        return justCreated;
-    }
-    
+
     @Override
     public int getWidth() {
         return SIZE;
