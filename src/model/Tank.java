@@ -2,7 +2,7 @@ package model;
 
 public class Tank extends MovableObject {
 
-    public static final int SIZE = GameModel.DISCRETE_FACTOR;
+    public static final int SIZE = GameModel.DISCRETE_FACTOR - 2;
     public static final int START_HEALTH = 3;
     
     private TurnDelay fireDelay;

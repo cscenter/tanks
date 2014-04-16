@@ -1,16 +1,28 @@
 package view;
 
-import model.*;
 import io.GameModelReader;
 import io.ImageGallery;
 import io.MapIOException;
 
-import javax.swing.*;
-
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.HashSet;
+
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.Timer;
+
+import model.Direction;
+import model.GameModel;
+import model.GameObject;
 
 @SuppressWarnings("serial")
 public class ViewPanel extends JPanel {
@@ -19,9 +31,10 @@ public class ViewPanel extends JPanel {
     
     private boolean gamePaused = false;
     private boolean gameStarted = false;
-    private boolean turnMade = false;
 
-    private int k = (int)(64.0 / GameModel.DISCRETE_FACTOR);
+    private Keyer keyListener;
+    
+    private final double k = (64.0 / GameModel.DISCRETE_FACTOR);
     
     private static final int TIMER_DELAY = 10;
     private ImageGallery gallery;
@@ -41,7 +54,6 @@ public class ViewPanel extends JPanel {
         }
         timer = new javax.swing.Timer(TIMER_DELAY, new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
-                turnMade = false;
                 model.tick();
                 repaint();
                 if (!model.isPlayerAlive()) {
@@ -62,82 +74,73 @@ public class ViewPanel extends JPanel {
         initKeyboard();
     }
     
-    private void initKeyboard() {
+    private class Keyer implements KeyListener {
 
-        getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0), "Shoot");
-        getActionMap().put("Shoot", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (isGameOn() && !turnMade) {
-                    model.shootPlayer();
-                    turnMade = true;
-                }
-                
-            }
-        });
+        HashSet<Integer> pressedKeys = new HashSet<Integer>();
         
-        getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_A, 0), "Move Left");
-        getActionMap().put("Move Left", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (isGameOn() && !turnMade) {
-                    model.movePlayer(Direction.LEFT);
-                    turnMade = true;
-                }
-                
-            }
-        });
-        
-        getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_W, 0), "Move Up");
-        getActionMap().put("Move Up", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (isGameOn() && !turnMade) {
-                    model.movePlayer(Direction.UP);
-                    turnMade = true;
-                }
-                
-            }
-        });
-        
-        getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_D, 0), "Move Right");
-        getActionMap().put("Move Right", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (isGameOn() && !turnMade) {
-                    model.movePlayer(Direction.RIGHT);
-                    turnMade = true;
-                }
-                
-            }
-        });
-        
-        getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_S, 0), "Move Down");
-        getActionMap().put("Move Down", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (isGameOn() && !turnMade) {
-                    model.movePlayer(Direction.DOWN);
-                    turnMade = true;
-                }
-                
-            }
-        });
-        
-        getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_P, 0), "Pause");
-        getActionMap().put("Pause", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (isGameStarted()) {
-                    if (isGamePaused()) {
-                        unpause();
-                    } else {
-                        pause();
+        {
+            new Timer(10, new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent arg0) {
+                    for (Integer keyCode : pressedKeys) {
+                        if (keyCode == KeyEvent.VK_P && isGameStarted()) {
+                            if (isGamePaused()) {
+                                unpause();
+                            } else {
+                                pause();
+                            }
+                        }
+                        if (!isGameOn()) {
+                            return;
+                        }
+                        switch (keyCode) {
+                        case KeyEvent.VK_W :
+                            model.movePlayer(Direction.UP);
+                            break;
+                        case KeyEvent.VK_A :
+                            model.movePlayer(Direction.LEFT);
+                            break;
+                        case KeyEvent.VK_S :
+                            model.movePlayer(Direction.DOWN);
+                            break;
+                        case KeyEvent.VK_D :
+                            model.movePlayer(Direction.RIGHT);
+                            break;
+                        case KeyEvent.VK_SPACE :
+                            model.shootPlayer();
+                            break;
+                        
+                        case KeyEvent.VK_O :
+                            model.debugprint();
+                            break;
+                        }
                     }
                 }
-                
-            }
-        });
+            }).start();
+        }
+        
+        @Override
+        public void keyPressed(KeyEvent ovent) {
+            int keyCode = ovent.getKeyCode();
+            pressedKeys.add(keyCode);
+        }
+        @Override
+        public void keyReleased(KeyEvent ovent) {
+            int keyCode = ovent.getKeyCode();
+            pressedKeys.remove(keyCode);
+        }
+        @Override
+        public void keyTyped(KeyEvent ovent) {}
+        
+        public void reset() {
+            pressedKeys.clear();
+        }
+    }
+    
+    private void initKeyboard() {
+        keyListener = new Keyer();
+        
+        addKeyListener(keyListener);
     }
     
     public boolean isGamePaused() {
@@ -172,7 +175,7 @@ public class ViewPanel extends JPanel {
     }
     
     public Dimension getPreferredSize() {
-        return new Dimension(model.getWidth() * k, (model.getHeight() + GameModel.DISCRETE_FACTOR)* k);
+        return new Dimension((int)(model.getWidth() * k), (int)((model.getHeight() + GameModel.DISCRETE_FACTOR)* k));
     }
     
     private boolean isGameOn() {
@@ -184,6 +187,7 @@ public class ViewPanel extends JPanel {
             GameModelReader.parse(model, mapFilename);
             model.start();
             timer.start();
+            keyListener.reset();
             setGamePaused(false);
             setGameStarted(true);
         } catch (MapIOException e) {
@@ -206,7 +210,7 @@ public class ViewPanel extends JPanel {
         
         for (int i = 0; i < height; i += GameModel.DISCRETE_FACTOR) {
             for (int j = 0; j < width; j += GameModel.DISCRETE_FACTOR) {
-                g.drawImage(img, j * k, i * k, null);
+                g.drawImage(img, (int)(j * k), (int)(i * k), null);
             }
         }
         
@@ -218,20 +222,20 @@ public class ViewPanel extends JPanel {
             
             x = obj.getPosition().getX();
             y = obj.getPosition().getY();
-            g.drawImage(img, y * k, x * k, null);
+            g.drawImage(img, (int)(y * k), (int)(x * k), null);
         }
         
         if (model.isPlayerAlive()) {
             img = gallery.getHeartImage();
             for (int i = 0; i < model.getPlayerHealth(); ++i) {
-                g.drawImage(img, i * k * GameModel.DISCRETE_FACTOR, height * k, null);
+                g.drawImage(img, (int)(i * k * GameModel.DISCRETE_FACTOR), (int)(height * k), null);
             }
         }
         
         if (isGamePaused()) {
-            g.drawString("PAUSED", (width - 8) * k / 2, height * k / 2);
+            g.drawString("PAUSED", (int)((width - 8) * k / 2), (int)(height * k / 2));
         }
         
-        g.drawString("SCORE: " + Integer.toString(model.getScore()), 6 * k * GameModel.DISCRETE_FACTOR, (height + GameModel.DISCRETE_FACTOR / 2 + 1) * k);
+        g.drawString("SCORE: " + Integer.toString(model.getScore()), (int)(6 * k * GameModel.DISCRETE_FACTOR), (int)((height + GameModel.DISCRETE_FACTOR / 2 + 1) * k));
     }
 }

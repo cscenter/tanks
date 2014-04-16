@@ -151,11 +151,15 @@ public class GameModel {
     }
     
     public void movePlayer(Direction d) {
-        moveTank(playerID, d);
+        if (tanks.containsKey(playerID)) {
+            moveTank(playerID, d);
+        }
     }
     
     public void shootPlayer() {
-        shoot(playerID);
+        if (tanks.containsKey(playerID)) {
+            shoot(playerID);
+        }
     }
     
     public boolean canTankMove(int ID, Vector2D v) {
