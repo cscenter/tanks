@@ -1,18 +1,16 @@
 package model;
 
-public class GameObject implements Attackable {
+public class GameObject implements Attackable, Sizable {
     protected Vector2D position;
-    private final int width;
-    private final int height;
     private final int id;
     
     private final GameObjectDescription description;
+
+    private static final int SIZE = GameModel.DISCRETE_FACTOR;
     
-    public GameObject(int id, Vector2D p, int w, int h, GameObjectDescription desc) {
+    public GameObject(int id, Vector2D p, GameObjectDescription desc) {
         this.id = id;
         position = p;
-        width = w;
-        height = h;
         description = desc;
     }
     
@@ -28,14 +26,6 @@ public class GameObject implements Attackable {
         return description;
     }
     
-    public int getWidth() {
-        return width;
-    }
-    
-    public int getHeight() {
-        return height;
-    }
-    
     @Override
     public boolean attacked(Projectile p) {
         return false;
@@ -44,6 +34,16 @@ public class GameObject implements Attackable {
     @Override
     public int getHealth() {
         return -1;
+    }
+
+    @Override
+    public int getWidth() {
+        return SIZE;
+    }
+
+    @Override
+    public int getHeight() {
+        return SIZE;
     }
 
 }

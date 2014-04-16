@@ -104,7 +104,7 @@ public class GameModel {
             obj = new Tree(freeID++, pos);
             break;
         default:
-            obj = new ImmovableObject(freeID++, pos, DISCRETE_FACTOR, DISCRETE_FACTOR, d);        
+            obj = new ImmovableObject(freeID++, pos, d);        
         }
         map.add(obj);
         immovableObjects.put(obj.getID(), obj);
@@ -118,7 +118,6 @@ public class GameModel {
     
     private Tank addTank(int team) {
         List<Vector2D> freePositions = new ArrayList<Vector2D>();
-        Vector2D s = new Vector2D(0, 0);
         for (int i = 0; i < height; i += DISCRETE_FACTOR) {
             for (int j = 0; j < width; j += DISCRETE_FACTOR) {
                 Vector2D pos = new Vector2D(i, j);
@@ -130,7 +129,7 @@ public class GameModel {
         if (freePositions.isEmpty()) {
             return null;
         } else {
-            Tank tank = new Tank(freeID++, freePositions.get(r.nextInt(freePositions.size())), team, s);
+            Tank tank = new Tank(freeID++, freePositions.get(r.nextInt(freePositions.size())), team);
             map.add(tank);
             tanks.put(tank.getID(), tank);
             return tank;
@@ -302,7 +301,7 @@ public class GameModel {
                 int id = map.getBlockID(tank, deltaMove);
                 if (projectiles.containsKey(id)) {
                     Projectile projectile = projectiles.get(id);
-                    // deletine projectile
+                    // deleting projectile
                     map.remove(projectile);
                     deleteProjectile(id);
 

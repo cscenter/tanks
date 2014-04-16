@@ -9,9 +9,9 @@ public class MovableObject extends GameObject {
     
     protected int health = 1;
     
-    public MovableObject(int id, Vector2D p, int w, int h, GameObjectDescription d, int t, Vector2D s) {
-        super(id, p, w, h, d);
-        speed = s;
+    public MovableObject(int id, Vector2D p, GameObjectDescription d, int t) {
+        super(id, p, d);
+        speed = new Vector2D(0, 0);
         team = t;
         orientation = Direction.DOWN.getMove();
     }
