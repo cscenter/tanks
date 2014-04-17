@@ -8,6 +8,8 @@ public class GameModel {
     public static final int SCORE_PER_TICK = 1;
     public static final int SCORE_PER_KILL = 500;
     
+    public static final int MAX_DIST_FOR_SEARCH = 30;
+    
     private DiscreteMap map;
     private Map<Integer, ImmovableObject> immovableObjects;
     private Map<Integer, Projectile> projectiles;
@@ -20,7 +22,7 @@ public class GameModel {
     
     private int playerID;
     private Collection<Bot> bots;
-    
+    private int botsCount;
     
     public void debugprint() {
         System.out.print("Immovable objects:");
@@ -32,11 +34,12 @@ public class GameModel {
         map.debugprint();
     }
     
-    public void start() {
+    public void start(int botsCount) {
         addPlayer(1);
-        addBot(2);
-        addBot(2);
-        addBot(2);
+        this.botsCount = botsCount;
+        for (int i = 0; i < botsCount; ++i) {
+            addBot(2);
+        }
     }
         
     public GameModel() {
@@ -73,7 +76,7 @@ public class GameModel {
         moveProjectiles();
         moveTanks();
         
-        while (bots.size() < 3) {
+        while (bots.size() < botsCount) {
             addBot(2);
             score += SCORE_PER_KILL;
         }
@@ -191,6 +194,10 @@ public class GameModel {
         }
     }
     
+    public Tank getPlayerTank() {
+        return tanks.containsKey(playerID) ? tanks.get(playerID) : null;
+    }
+    
     private void attack(Projectile projectile) {
         int id = map.getBlockID(projectile, projectile.getDirection().getMove());
         if (id != DiscreteMap.EMPTY_ID) {
@@ -217,7 +224,7 @@ public class GameModel {
     }
     
     public Map<Vector2D, Vector2D> getAccessibleCells(Tank tank) {
-        return map.getAccessibleCells(tank);
+        return map.getAccessibleCells(tank, MAX_DIST_FOR_SEARCH);
     }
     
     private void moveProjectiles() {

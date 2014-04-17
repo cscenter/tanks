@@ -94,4 +94,8 @@ public class Vector2D {
         return true;
     }
     
+    public static int dist(Vector2D a, Vector2D b) {
+        return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
+    }
+    
 }

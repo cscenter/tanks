@@ -4,6 +4,7 @@ import io.GameModelReader;
 import io.ImageGallery;
 import io.MapIOException;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -23,6 +24,7 @@ import javax.swing.Timer;
 import model.Direction;
 import model.GameModel;
 import model.GameObject;
+import model.Tank;
 
 @SuppressWarnings("serial")
 public class ViewPanel extends JPanel {
@@ -35,6 +37,7 @@ public class ViewPanel extends JPanel {
     private Keyer keyListener;
     
     private final double k = (64.0 / GameModel.DISCRETE_FACTOR);
+    private final int cellImageSize = 64;
     
     private static final int TIMER_DELAY = 10;
     private ImageGallery gallery;
@@ -174,18 +177,18 @@ public class ViewPanel extends JPanel {
         setGamePaused(true);
     }
     
-    public Dimension getPreferredSize() {
-        return new Dimension((int)(model.getWidth() * k), (int)((model.getHeight() + GameModel.DISCRETE_FACTOR)* k));
-    }
+    //public Dimension getPreferredSize() {
+    //    return new Dimension((int)(model.getWidth() * k), (int)((model.getHeight() + GameModel.DISCRETE_FACTOR)* k));
+    //}
     
     private boolean isGameOn() {
         return !isGamePaused() && isGameStarted();
     }
     
-    public void start(String mapFilename) {
+    public void start(String mapFilename, int botsCount) {
         try {
             GameModelReader.parse(model, mapFilename);
-            model.start();
+            model.start(botsCount);
             timer.start();
             keyListener.reset();
             setGamePaused(false);
@@ -198,19 +201,53 @@ public class ViewPanel extends JPanel {
         }
     }
     
+    private int modelCenterX;
+    private int modelCenterY;
+    private int screenWidth;
+    private int screenHeight;
+    
+    /*
+    private boolean isValidCoordinates(int x, int y) {
+        return (x > 0) && (y > 0) && (x + k * GameModel.DISCRETE_FACTOR < screenWidth) && (y + k * GameModel.DISCRETE_FACTOR < screenHeight);
+    }
+    */
+    
+    private boolean isValidCoordinates(double x, double y) {
+        return (x + cellImageSize > 0) && (y  + cellImageSize > 0) && (x < screenWidth) && (y < screenHeight);
+    }
+    
     protected void paintComponent(Graphics g) {
-        super.paintComponent(g);       
+        super.paintComponent(g);
         
-        int width = model.getWidth();
-        int height = model.getHeight();
+        Dimension d = getParent().getSize();
+        screenWidth = d.width;
+        screenHeight = d.height;
 
-        g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 30));
+        int modelWidth = model.getWidth();
+        int modelHeight = model.getHeight();
+        
+        Tank playersTank = model.getPlayerTank();
+        if (playersTank != null) {
+            modelCenterX = (int)(playersTank.getPosition().getX() * k);
+            modelCenterY = (int)(playersTank.getPosition().getY() * k);
+        }
+        
+        int screenCenterX = screenWidth / 2;
+        int screenCenterY = screenHeight / 2;
+
+        int moveX = screenCenterX - (int)(modelCenterY);
+        int moveY = screenCenterY - (int)(modelCenterX);
+        if (isGameOn())
+            g.setColor(Color.BLUE);
+        g.fillRect(0, 0, screenWidth, screenHeight);
         
         Image img = gallery.getBackgroundImage();
         
-        for (int i = 0; i < height; i += GameModel.DISCRETE_FACTOR) {
-            for (int j = 0; j < width; j += GameModel.DISCRETE_FACTOR) {
-                g.drawImage(img, (int)(j * k), (int)(i * k), null);
+        for (int i = 0; i < modelHeight; i += GameModel.DISCRETE_FACTOR) {
+            for (int j = 0; j < modelWidth; j += GameModel.DISCRETE_FACTOR) {
+                if (isValidCoordinates((j * k) + moveX, (i * k) + moveY)) {
+                    g.drawImage(img, (int)(j * k) + moveX, (int)(i * k) + moveY, null);
+                }
             }
         }
         
@@ -222,20 +259,26 @@ public class ViewPanel extends JPanel {
             
             x = obj.getPosition().getX();
             y = obj.getPosition().getY();
-            g.drawImage(img, (int)(y * k), (int)(x * k), null);
+            if (isValidCoordinates((y * k) + moveX, (x * k) + moveY)) {
+                g.drawImage(img, (int)(y * k) + moveX, (int)(x * k) + moveY, null);
+            }
         }
         
         if (model.isPlayerAlive()) {
             img = gallery.getHeartImage();
             for (int i = 0; i < model.getPlayerHealth(); ++i) {
-                g.drawImage(img, (int)(i * k * GameModel.DISCRETE_FACTOR), (int)(height * k), null);
+                g.drawImage(img, i * cellImageSize, 0, null);
             }
         }
         
-        if (isGamePaused()) {
-            g.drawString("PAUSED", (int)((width - 8) * k / 2), (int)(height * k / 2));
-        }
+        g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 30));
+        g.setColor(Color.BLACK);
         
-        g.drawString("SCORE: " + Integer.toString(model.getScore()), (int)(6 * k * GameModel.DISCRETE_FACTOR), (int)((height + GameModel.DISCRETE_FACTOR / 2 + 1) * k));
+        if (isGamePaused()) {
+            g.drawString("PAUSED", (int)((screenWidth - 8) * k / 2), (int)(screenHeight * k / 2));
+        }
+        if (isGameOn()) {
+            g.drawString("SCORE: " + Integer.toString(model.getScore()), 0, (int)(1.5 * cellImageSize));
+        }
     }
 }

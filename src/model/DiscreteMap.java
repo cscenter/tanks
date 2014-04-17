@@ -125,7 +125,7 @@ public class DiscreteMap {
         return isOutside(v.getX(), v.getY());
     }
     
-    public Map<Vector2D, Vector2D> getAccessibleCells(MovableObject obj) {
+    public Map<Vector2D, Vector2D> getAccessibleCells(MovableObject obj, int maxDist) {
         remove(obj);
         
         Map<Vector2D, Vector2D> result = new HashMap<Vector2D, Vector2D>();
@@ -147,7 +147,7 @@ public class DiscreteMap {
                 if (isOutside(tmp) || isOutside(tmp.add(diag))) {
                     continue;
                 }
-                if (!visited[tmp.getX()][tmp.getY()] && canMove(obj, tmp.sub(obj.getPosition()))) {
+                if (!visited[tmp.getX()][tmp.getY()] && canMove(obj, tmp.sub(obj.getPosition())) && Vector2D.dist(obj.getPosition(), tmp) <= maxDist) {
                     visited[tmp.getX()][tmp.getY()] = true;
                     result.put(tmp, p);
                     queue.add(tmp);

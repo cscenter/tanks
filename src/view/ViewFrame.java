@@ -25,6 +25,10 @@ public class ViewFrame extends JFrame {
     
     private ViewPanel panel;
     
+    private static final int RANDOM_MAP_SIZE = 100;
+    private static final int RANDOM_MAP_BOTS_COUNT = 20;
+    
+    
     public ViewFrame() {
         super("Tanks 1.0");
         
@@ -44,8 +48,7 @@ public class ViewFrame extends JFrame {
         menuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                panel.start("map.txt");
-                pack();
+                panel.start("map.txt", 4);
                 repaint();
                 pauseMenuItem.setEnabled(true);
                 resumeMenuItem.setEnabled(false);
@@ -58,9 +61,8 @@ public class ViewFrame extends JFrame {
         menuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                GameModelGenerator.createMap(10, 10, "randomMap.txt");
-                panel.start("randomMap.txt");
-                pack();
+                GameModelGenerator.createMap(RANDOM_MAP_SIZE, RANDOM_MAP_SIZE, "randomMap.txt");
+                panel.start("randomMap.txt", RANDOM_MAP_BOTS_COUNT);
                 repaint();
                 pauseMenuItem.setEnabled(true);
                 resumeMenuItem.setEnabled(false);
@@ -161,6 +163,8 @@ public class ViewFrame extends JFrame {
         resumeMenuItem.setEnabled(false);
 
         panel = new ViewPanel(gameStaertedListener, gamePausedListener);
+        
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
     }
     
     public void showGUI() {
@@ -168,8 +172,10 @@ public class ViewFrame extends JFrame {
         
         panel.setLayout(new BorderLayout());
         panel.setFocusable(true);
-      
-        add(panel);
+        
+        setLayout(new BorderLayout());
+        add(panel, BorderLayout.CENTER);
+        
         pack();
         setVisible(true);
     }

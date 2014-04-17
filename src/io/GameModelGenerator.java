@@ -7,8 +7,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Random;
 import java.util.Stack;
 
@@ -38,7 +40,7 @@ public class GameModelGenerator {
             }
         }
         
-        int firstGroundCellsCount = 1 * (width * height) / (width + height);
+        int firstGroundCellsCount = 2 * (width * height) / (width + height);
         List<Vector2D> firstGroundCells = new ArrayList<>();
         for (int i = 0; i < firstGroundCellsCount; ++i) {
             Vector2D v = new Vector2D(generator.nextInt(height), generator.nextInt(height));
@@ -92,12 +94,12 @@ public class GameModelGenerator {
             visited[i] = new boolean[w];
         }
         
-        Stack<Vector2D> stack = new Stack<>();
+        Queue<Vector2D> queue = new LinkedList<>();
         Map<Vector2D, Vector2D> pred = new HashMap<>();
-        stack.push(a);
+        queue.add(a);
         visited[a.getX()][a.getY()] = true;
-        while (!stack.empty()) {
-            Vector2D cell = stack.pop();
+        while (!queue.isEmpty()) {
+            Vector2D cell = queue.poll();
             if (cell.equals(b)) {
                 break;
             }
@@ -128,7 +130,7 @@ public class GameModelGenerator {
             }
             Collections.shuffle(toAdd);
             for (Vector2D v : toAdd) {
-                stack.push(v);
+                queue.add(v);
             }
         }
         
