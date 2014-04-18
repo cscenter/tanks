@@ -2,6 +2,8 @@ package model;
 
 import java.util.*;
 
+import model.MovableObject.Team;
+
 public class GameModel {
     
     public static final int DISCRETE_FACTOR = 11;
@@ -9,6 +11,7 @@ public class GameModel {
     public static final int SCORE_PER_KILL = 500;
     
     public static final int MAX_DIST_FOR_SEARCH = 30;
+    protected static final Random GENERATOR = new Random();
     
     private DiscreteMap map;
     private Map<Integer, ImmovableObject> immovableObjects;
@@ -17,12 +20,10 @@ public class GameModel {
     private int freeID;
     private int width;
     private int height;
-    private int score;
-    private Random r = new Random();
+    protected int score;
     
     private int playerID;
-    private Collection<Bot> bots;
-    private int botsCount;
+    protected Collection<Bot> bots;
     
     public void debugprint() {
         System.out.print("Immovable objects:");
@@ -34,14 +35,23 @@ public class GameModel {
         map.debugprint();
     }
     
-    public void start(int botsCount) {
-        addPlayer(1);
-        this.botsCount = botsCount;
-        for (int i = 0; i < botsCount; ++i) {
-            addBot(2);
-        }
-    }
+    public void start() {
         
+    }
+    
+    protected Vector2D getRandomEmptyPosition(int w, int h) {
+        List<Vector2D> freePositions = new ArrayList<Vector2D>();
+        for (int i = 0; i < height; ++i) {
+            for (int j = 0; j < width; ++j) {
+                Vector2D pos = new Vector2D(i, j);
+                if (map.isFree(pos, w, h)) {
+                    freePositions.add(pos);
+                }
+            }
+        }
+        return freePositions.isEmpty() ? null : freePositions.get(GENERATOR.nextInt(freePositions.size()));
+    }
+    
     public GameModel() {
         rebuild(0, 0);
     }
@@ -76,10 +86,6 @@ public class GameModel {
         moveProjectiles();
         moveTanks();
         
-        while (bots.size() < botsCount) {
-            addBot(2);
-            score += SCORE_PER_KILL;
-        }
         score += SCORE_PER_TICK;
     }
     
@@ -119,38 +125,36 @@ public class GameModel {
         }
     }
     
-    private Tank addTank(int team, int delay) {
-        List<Vector2D> freePositions = new ArrayList<Vector2D>();
-        for (int i = 0; i < height; i += DISCRETE_FACTOR) {
-            for (int j = 0; j < width; j += DISCRETE_FACTOR) {
-                Vector2D pos = new Vector2D(i, j);
-                if (map.isFree(pos, DISCRETE_FACTOR, DISCRETE_FACTOR)) {
-                    freePositions.add(pos);
-                }
-            }
-        }
-        if (freePositions.isEmpty()) {
-            return null;
-        } else {
-            Tank tank = new Tank(freeID++, freePositions.get(r.nextInt(freePositions.size())), team, delay);
+    private Tank addTank(Team team, int delay, Vector2D position) {
+        Tank tank = null;
+        if (map.isFree(position, Tank.SIZE, Tank.SIZE)) {
+            tank = new  Tank(freeID++, position, team, delay);
             map.add(tank);
             tanks.put(tank.getID(), tank);
-            return tank;
         }
+        return tank;
     }
     
-    private void addBot(int team) {
-        Tank tank = addTank(team, 3);
-        if (tank != null) {
-            bots.add(new Bot(this, tank));
+    protected boolean addBot(Team team, int delay, Vector2D position) {
+        Tank tank = addTank(team, delay, position);
+        if (tank == null) {
+            return false;
         }
+        
+        bots.add(new Bot(this, tank));
+        
+        return true;
     }
     
-    private void addPlayer(int team) {
-        Tank tank = addTank(team, 2);
-        if (tank != null) {
-            playerID = tank.getID();
+    protected boolean addPlayer(Team team, int delay, Vector2D position) {
+        Tank tank = addTank(team, delay, position);
+        if (tank == null) {
+            return false;
         }
+        
+        playerID = tank.getID();
+        
+        return true;
     }
     
     public void movePlayer(Direction d) {
@@ -273,7 +277,7 @@ public class GameModel {
         }
     }
     
-    public List<Tank> getEnemies(int team) {
+    public List<Tank> getEnemies(Team team) {
         List<Tank> enemies = new ArrayList<Tank>();
         for (Tank t: tanks.values()) {
             if (t.getTeam() != team) {

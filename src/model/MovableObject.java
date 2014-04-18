@@ -2,17 +2,17 @@ package model;
 
 public class MovableObject extends GameObject {
 
-    private final int team;
+    private final Team team;
     
     protected Direction orientation;
     protected Speed speed;
     
     protected int health = 1;
     
-    public MovableObject(int id, Vector2D p, GameObjectDescription d, int t) {
+    public MovableObject(int id, Vector2D p, GameObjectDescription d, Team team) {
         super(id, p, d);
         speed = new Speed(Direction.NONE, 3);
-        team = t;
+        this.team = team;
         orientation = Direction.DOWN;
     }
     
@@ -24,7 +24,7 @@ public class MovableObject extends GameObject {
         position = p;
     }
     
-    public int getTeam() {
+    public Team getTeam() {
         return team;
     }
     
@@ -60,5 +60,9 @@ public class MovableObject extends GameObject {
     @Override
     public int getHealth() {
         return health;
+    }
+    
+    public enum Team {
+        GREEN, RED
     }
 }

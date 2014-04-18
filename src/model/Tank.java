@@ -4,14 +4,15 @@ public class Tank extends MovableObject {
 
     public static final int SIZE = GameModel.DISCRETE_FACTOR - 2;
     public static final int START_HEALTH = 3;
+    private static final int FIRE_MOVE_RATE = 10;
     
     private TurnDelay fireDelay;
     
-    public Tank(int id, Vector2D p, int t, int delay) {
-        super(id, p, GameObjectDescription.TANK, t);
+    public Tank(int id, Vector2D p, Team team, int delay) {
+        super(id, p, GameObjectDescription.TANK, team);
         health = START_HEALTH;
         speed.setDelay(delay);
-        fireDelay = new TurnDelay(10 * delay, 1);
+        fireDelay = new TurnDelay(FIRE_MOVE_RATE * delay, 1);
     }
     
     public boolean canShoot(boolean change) {

@@ -24,11 +24,12 @@ import javax.swing.Timer;
 import model.Direction;
 import model.GameModel;
 import model.GameObject;
+import model.InfiniteGameModel;
 import model.Tank;
 
 @SuppressWarnings("serial")
 public class ViewPanel extends JPanel {
-    private GameModel model;
+    private GameModel model = null;
     private javax.swing.Timer timer;
     
     private boolean gamePaused = false;
@@ -45,8 +46,7 @@ public class ViewPanel extends JPanel {
     
     public ViewPanel(PropertyChangeListener gameStartedListener, PropertyChangeListener gamePausedListener) {
         super();
-        
-        model = new GameModel();
+
         try {
             gallery = new ImageGallery("sprites");
         } catch (MapIOException e) {
@@ -81,8 +81,10 @@ public class ViewPanel extends JPanel {
 
         HashSet<Integer> pressedKeys = new HashSet<Integer>();
         
-        {
-            new Timer(10, new ActionListener() {
+        public Keyer() {
+            super();
+            
+            new Timer(TIMER_DELAY, new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent arg0) {
                     for (Integer keyCode : pressedKeys) {
@@ -187,8 +189,9 @@ public class ViewPanel extends JPanel {
     
     public void start(String mapFilename, int botsCount) {
         try {
+            model = new InfiniteGameModel(botsCount);
             GameModelReader.parse(model, mapFilename);
-            model.start(botsCount);
+            model.start();
             timer.start();
             keyListener.reset();
             setGamePaused(false);
@@ -218,6 +221,10 @@ public class ViewPanel extends JPanel {
     
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+        
+        if (model == null) {
+            return;
+        }
         
         Dimension d = getParent().getSize();
         screenWidth = d.width;

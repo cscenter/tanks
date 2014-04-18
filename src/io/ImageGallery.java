@@ -1,6 +1,7 @@
 package io;
 
 import model.*;
+import model.MovableObject.Team;
 
 import java.util.*;
 
@@ -70,7 +71,7 @@ public class ImageGallery {
                 return treeImage;
             case TANK:
                 Tank t = (Tank) obj;
-                if (t.getTeam() == 1) {
+                if (t.getTeam() == Team.GREEN) {
                     return greenTankImage.get(t.getOrientation());
                 } else {
                     return redTankImage.get(t.getOrientation());
