@@ -29,16 +29,6 @@ public class DiscreteMap {
             }
         }
     }
-    /*
-    public void add(GameObject obj) {       
-        GameObjectDescription desc = obj.getDescription();
-        if (desc == GameObjectDescription.TANK || desc == GameObjectDescription.PROJECTILE) {
-            add((MovableObject) obj);
-        } else {
-            add((ImmovableObject) obj);
-        }        
-    }
-    */
     
     public void add(ImmovableObject obj) {
         int i = obj.getPosition().getX();
@@ -125,6 +115,60 @@ public class DiscreteMap {
         return isOutside(v.getX(), v.getY());
     }
     
+    public Stack<Direction> getRandomPath(MovableObject obj, int maxDist) {
+    	
+    	remove(obj);
+        
+    	Stack<Direction> stack = new Stack<>();
+        Vector2D diag = new Vector2D(obj.getHeight(), obj.getWidth());
+       
+        boolean visited[][] = new boolean[height][];
+        for (int i = 0; i < height; ++i) {
+            visited[i] = new boolean[width];
+        }
+        
+        Vector2D prevCell = obj.getPosition(); 
+        visited[obj.getPosition().getX()][obj.getPosition().getY()] = true;
+        
+        int dist = 0;
+        boolean flag = true;
+        List<Direction> directions = new ArrayList<>(Arrays.asList(Direction.values()));
+        
+        while (flag && dist < maxDist) {
+            
+        	if (dist % 5 == 0) {
+        		Collections.shuffle(directions);
+        	}
+        	
+            for (Direction d : directions) {
+                
+            	flag = false;
+            	Vector2D tmp = prevCell.add(d.getMove());
+                if (isOutside(tmp) || isOutside(tmp.add(diag))) {
+                    continue;
+                }
+                
+                if (!visited[tmp.getX()][tmp.getY()] && canMove(obj, tmp.sub(obj.getPosition())) && Vector2D.dist(tmp, obj.getPosition()) > dist) {
+                    visited[tmp.getX()][tmp.getY()] = true;
+                    stack.push(d);
+                    prevCell = tmp;
+                    flag = true;
+                    dist = Vector2D.dist(obj.getPosition(), prevCell);
+                    break;                    
+                }
+            }
+        }
+        
+        add(obj);
+        
+        Stack<Direction> result = new Stack<>(); 
+        while (!stack.isEmpty()) {
+        	result.push(stack.pop());
+        }
+        
+        return result;
+    }
+    
     public Map<Vector2D, Vector2D> getAccessibleCells(MovableObject obj, int maxDist) {
         remove(obj);
         
@@ -156,7 +200,6 @@ public class DiscreteMap {
         }
         
         add(obj);
-        
         
         return result;
     }

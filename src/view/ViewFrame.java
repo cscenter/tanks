@@ -26,7 +26,7 @@ public class ViewFrame extends JFrame {
     private ViewPanel panel;
     
     private static final int RANDOM_MAP_SIZE = 100;
-    private static final int RANDOM_MAP_BOTS_COUNT = 20;
+    private static final int RANDOM_MAP_BOTS_COUNT = 40;
     
     
     public ViewFrame() {
@@ -48,7 +48,7 @@ public class ViewFrame extends JFrame {
         menuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                panel.start("map.txt", 4);
+                panel.start("map.txt", 1);
                 repaint();
                 pauseMenuItem.setEnabled(true);
                 resumeMenuItem.setEnabled(false);

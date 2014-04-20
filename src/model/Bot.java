@@ -16,6 +16,7 @@ public class Bot {
         plannedMoves = new Stack<Direction>();
     }
     
+    /*
     private void createPath() {
         plannedMoves.clear();
         Map<Vector2D, Vector2D> availableCells = model.getAccessibleCells(controlledTank);
@@ -38,6 +39,11 @@ public class Bot {
                 plannedMoves.push(Direction.fromVector2D(c));
             }
         }
+    }
+    */
+    
+    private void createPath() {
+        plannedMoves = model.getRandomPath(controlledTank);
     }
     
     public void makeTurn() {

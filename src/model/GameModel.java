@@ -10,7 +10,7 @@ public class GameModel {
     public static final int SCORE_PER_TICK = 1;
     public static final int SCORE_PER_KILL = 500;
     
-    public static final int MAX_DIST_FOR_SEARCH = 30;
+    public static final int MAX_DIST_FOR_SEARCH = 100;
     protected static final Random GENERATOR = new Random();
     
     private DiscreteMap map;
@@ -349,6 +349,10 @@ public class GameModel {
     private void deleteProjectile(int ID) {
         map.remove(projectiles.get(ID));
         projectiles.remove(ID);
-    }    
+    }
+
+	public Stack<Direction> getRandomPath(MovableObject obj) {
+		return map.getRandomPath(obj, MAX_DIST_FOR_SEARCH);
+	}    
     
 }
