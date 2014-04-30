@@ -1,0 +1,17 @@
+31 16
+R R R R R R R R S S S S S S S S S S S S S S S S S S S S S S S
+R G G G G G G R W W S G S R G S G G G G G S G G G G G G G S S
+R G R G R G R R W W S G S R G S G W R W G S G R W G G G S S S
+R G G R G R G G W W G G S R G S G G G G G S G R W S S G G S S
+R R G G R G R R W W S G S R G S G S G S G S G R W S S G S S S
+R G G R G R R R W W S G G G G S S S G S S S G R W W W G G S S
+R R G G G G R R W W S G S R G G G G G G G G G R R R R G G S S
+R G G R G G G G G G G G S R G W R R W R R W G G G G G G G G G
+R G G G R G G G G G G G S R G W R R W R R W G G G G G G G G G
+R R G G G R R G W W S G S R G G G G G G G G G R R R R G G S S
+R R G R G R R R W W S G G G G S S S G S S S G R W W W G G S S
+R G R G R G R R W W S G S R G S G S G S G S G R W S S G S S S
+R R G G G R G G W W G G S R G S G G G G G S G R W S S G G S S
+R G R G R G R R W W S G S R G S G W R W G S G R W G G G S S S
+R G G G G G G R W W S G S R G S G G G G G S G G G G G G G S S
+R R R R R R R R S S S S S S S S S S S S S S S S S S S S S S S
