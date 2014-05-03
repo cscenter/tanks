@@ -1,13 +1,13 @@
 12 12
 G G G G G G G G G G G G
 G S S G G R R G G S S G
-G S G G G R R G G G S G
-G G G R G R R G R G G G
+G S G G G A R G G G S G
+G G G R G R A G R G G G
+G G G R G G G G A G G G
+G R A R G W W G R R A G
+G R A R G W W G A R R G
 G G G R G G G G R G G G
-G R R R G W W G R R R G
-G R R R G W W G R R R G
-G G G R G G G G R G G G
-G G G R G R R G R G G G
-G S G G G R R G G G S G
-G S S G G R R G G S S G
+G G G R G R A G A G G G
+G S G G G A A G G G S G
+G S S G G R A G G S S G
 G G G G G G G G G G G G
