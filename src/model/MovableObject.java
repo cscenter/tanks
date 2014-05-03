@@ -52,9 +52,9 @@ public class MovableObject extends GameObject {
     @Override
     public boolean attacked(Projectile p) {
         if (p.getTeam() != getTeam()) {
-            --health;
+            health -= p.getDamage();
         }
-        return (health == 0);
+        return (health <= 0);
     }
     
     @Override

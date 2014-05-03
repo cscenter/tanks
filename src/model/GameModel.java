@@ -3,6 +3,7 @@ package model;
 import java.util.*;
 
 import model.MovableObject.Team;
+import model.Tank.Difficulty;
 
 public class GameModel {
     
@@ -35,7 +36,7 @@ public class GameModel {
         map.debugprint();
     }
     
-    public void start() {
+    public void start() throws ModelException {
         
     }
     
@@ -81,7 +82,7 @@ public class GameModel {
         return result;
     }
     
-    public void tick() {
+    public void tick() throws ModelException {
         botsMakeTurn();
         moveProjectiles();
         moveTanks();
@@ -135,15 +136,20 @@ public class GameModel {
         return tank;
     }
     
-    protected boolean addBot(Team team, int delay, Vector2D position) {
-        Tank tank = addTank(team, delay, position);
-        if (tank == null) {
-            return false;
+    // only Bot class can call this method
+    public Tank addTank(Team team, Difficulty difficulty, Vector2D position) {
+    	Tank tank = null;
+        if (map.isFree(position, Tank.SIZE, Tank.SIZE)) {
+            tank = new  Tank(freeID++, position, team, difficulty);
+            map.add(tank);
+            tanks.put(tank.getID(), tank);
         }
+        return tank;
+    }
+    
+    protected void addBot(Team team, Difficulty difficulty, Vector2D position) throws ModelException {
         
-        bots.add(new Bot(this, tank));
-        
-        return true;
+        bots.add(new Bot(this, position, difficulty));
     }
     
     protected boolean addPlayer(Team team, int delay, Vector2D position) {

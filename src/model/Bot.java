@@ -2,17 +2,25 @@ package model;
 
 import java.util.*;
 
+import model.MovableObject.Team;
+import model.Tank.Difficulty;
+
 public class Bot {
     
     private Tank controlledTank;
     private Stack<Direction> plannedMoves;
     private GameModel model;
+    private Difficulty difficulty;   
+
+	private static final Random GENERATOR = new Random();
     
-    private static final Random GENERATOR = new Random();
-    
-    public Bot(GameModel model, Tank tank) {
+    public Bot(GameModel model, Vector2D position, Difficulty difficulty) throws ModelException {
         this.model = model;
-        controlledTank = tank;
+        controlledTank = model.addTank(Team.RED, difficulty, position);
+        setDifficulty(difficulty);
+        if (controlledTank == null) {
+        	throw new ModelException("Cannot add bot at position " + position.toString());
+        }
         plannedMoves = new Stack<Direction>();
     }
     
@@ -82,4 +90,12 @@ public class Bot {
         return controlledTank.getID();
     }
     
+    
+    public Difficulty getDifficulty() {
+		return difficulty;
+	}
+
+	public void setDifficulty(Difficulty difficulty) {
+		this.difficulty = difficulty;
+	}
 }

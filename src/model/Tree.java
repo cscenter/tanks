@@ -13,7 +13,7 @@ public class Tree extends ImmovableObject {
 
     @Override
     public boolean attacked(Projectile p) {
-        return (--health == 0);
+        return (health -= p.getDamage()) <= 0;
     }
     
     @Override

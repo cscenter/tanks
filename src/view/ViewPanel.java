@@ -25,6 +25,7 @@ import model.Direction;
 import model.GameModel;
 import model.GameObject;
 import model.InfiniteGameModel;
+import model.ModelException;
 import model.Tank;
 
 @SuppressWarnings("serial")
@@ -57,7 +58,14 @@ public class ViewPanel extends JPanel {
         }
         timer = new javax.swing.Timer(TIMER_DELAY, new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
-                model.tick();
+                try {
+					model.tick();
+				} catch (ModelException e) {
+					JOptionPane.showMessageDialog(ViewPanel.this,
+		                    e.getMessage(),
+		                    "Error",
+		                    JOptionPane.ERROR_MESSAGE);
+				}
                 repaint();
                 if (!model.isPlayerAlive()) {
                     JOptionPane.showMessageDialog(ViewPanel.this,
@@ -201,7 +209,12 @@ public class ViewPanel extends JPanel {
                     e.getMessage(),
                     "Error",
                     JOptionPane.ERROR_MESSAGE);
-        }
+        } catch (ModelException e) {
+        	JOptionPane.showMessageDialog(ViewPanel.this,
+                    e.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+		}
     }
     
     private int modelCenterX;
