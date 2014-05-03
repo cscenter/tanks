@@ -6,8 +6,11 @@ public class Tree extends ImmovableObject {
     
     private int health;
     
-    public Tree(int id, Vector2D p) {
-        super(id, p, GameObjectDescription.TREE);    
+    public Tree(int id, Vector2D p, GameObjectDescription description) throws ModelException {
+    	super(id, p, description);
+    	if (description != GameObjectDescription.PALM && description != GameObjectDescription.TREE) {
+        	throw new ModelException("Invalid tree construction. Check Object description.");
+        }
         health = START_HEALTH;
     }
 

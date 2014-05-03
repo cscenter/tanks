@@ -15,6 +15,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 
 import javax.swing.JOptionPane;
@@ -24,6 +26,7 @@ import javax.swing.Timer;
 import model.Direction;
 import model.GameModel;
 import model.GameObject;
+import model.GameObjectDescription;
 import model.InfiniteGameModel;
 import model.ModelException;
 import model.Tank;
@@ -250,9 +253,6 @@ public class ViewPanel extends JPanel {
         screenWidth = d.width;
         screenHeight = d.height;
 
-        int modelWidth = model.getWidth();
-        int modelHeight = model.getHeight();
-        
         Tank playersTank = model.getPlayerTank();
         if (playersTank != null) {
             modelCenterX = (int)(playersTank.getPosition().getX() * k);
@@ -268,27 +268,60 @@ public class ViewPanel extends JPanel {
             g.setColor(Color.BLUE);
         g.fillRect(0, 0, screenWidth, screenHeight);
         
-        Image img = gallery.getBackgroundImage();
+        Image img = null;
+
+        int x;
+        int y;
+        Collection<GameObject> toDrawFirst = new ArrayList<>();
+        Collection<GameObject> toDrawSecond = new ArrayList<>();
+        Collection<GameObject> toDrawThird = new ArrayList<>();
         
-        for (int i = 0; i < modelHeight; i += GameModel.DISCRETE_FACTOR) {
-            for (int j = 0; j < modelWidth; j += GameModel.DISCRETE_FACTOR) {
-                if (isValidCoordinates((j * k) + moveX, (i * k) + moveY)) {
-                    g.drawImage(img, (int)(j * k) + moveX, (int)(i * k) + moveY, null);
+        for (GameObject obj : model.getGameObjects()) {
+            
+            x = obj.getPosition().getX();
+            y = obj.getPosition().getY();
+
+            if (isValidCoordinates((y * k) + moveX, (x * k) + moveY)) {
+                switch (obj.getDescription()) {
+                case GROUND:
+                	toDrawSecond.add(obj);
+                	break;
+                case WATER:
+                	toDrawFirst.add(obj);
+                	break;
+            	default:
+            		toDrawThird.add(obj);
                 }
             }
         }
         
-        int x;
-        int y;
-        for (GameObject obj : model.getGameObjects()) {
-            
-            img = gallery.getImage(obj);
+        for (GameObject obj : toDrawFirst) {
+        	
+        	img = gallery.getImage(obj);
             
             x = obj.getPosition().getX();
             y = obj.getPosition().getY();
-            if (isValidCoordinates((y * k) + moveX, (x * k) + moveY)) {
-                g.drawImage(img, (int)(y * k) + moveX, (int)(x * k) + moveY, null);
-            }
+            g.drawImage(img, (int)(y * k) + moveX, (int)(x * k) + moveY, null);
+        }
+        
+        for (GameObject obj : toDrawSecond) {
+        	
+        	img = gallery.getImage(obj);
+            
+            x = obj.getPosition().getX();
+            y = obj.getPosition().getY();
+            
+            g.drawImage(img, (int)(y * k) + moveX - 8, (int)(x * k) + moveY - 8, null);
+        }
+        
+        for (GameObject obj : toDrawThird) {
+        	
+        	img = gallery.getImage(obj);
+            
+            x = obj.getPosition().getX();
+            y = obj.getPosition().getY();
+            
+            g.drawImage(img, (int)(y * k) + moveX, (int)(x * k) + moveY, null);
         }
         
         if (model.isPlayerAlive()) {

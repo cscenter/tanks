@@ -9,8 +9,6 @@ public class InfiniteGameModel extends GameModel {
     private final int DEFAULT_BOTS_COUNT = 3;
     private final int PLAYER_DELAY = 6;
     
-    private final Difficulty DEFAULT_DIFFICULTY = Difficulty.BOSS;
-    
     public InfiniteGameModel() {
         super();
         

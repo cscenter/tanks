@@ -17,6 +17,7 @@ public class ImageGallery {
     private Image stoneImage;
     private Image heartImage;
     private Image treeImage;
+    private Image palmImage;
     private EnumMap<Direction, Image> greenTankImage;
     private EnumMap<Direction, Image> redTankImage;
     private EnumMap<Direction, Image> projectileImage;
@@ -27,6 +28,7 @@ public class ImageGallery {
             waterImage = ImageIO.read(new File(spritesDestination + "//water//water.png"));
             stoneImage = ImageIO.read(new File(spritesDestination + "//stone//stone.png"));
             treeImage = ImageIO.read(new File(spritesDestination + "//tree//tree.png"));
+            palmImage = ImageIO.read(new File(spritesDestination + "//tree//palm.png"));
             heartImage = ImageIO.read(new File(spritesDestination + "//health//heart.png"));
         } catch (IOException e) {
             throw new MapIOException("Cannot load image of Immovable Object");
@@ -61,25 +63,33 @@ public class ImageGallery {
         return heartImage;
     }
     
+    public Image getWaterImage() {
+        return waterImage;
+    }
+    
     public Image getImage(GameObject obj) {
         switch (obj.getDescription()) {
-            case WATER:
-                return waterImage;
-            case STONE:
-                return stoneImage;
-            case TREE:
-                return treeImage;
-            case TANK:
-                Tank t = (Tank) obj;
-                if (t.getTeam() == Team.GREEN) {
-                    return greenTankImage.get(t.getOrientation());
-                } else {
-                    return redTankImage.get(t.getOrientation());
-                }
-            case PROJECTILE:
-                return projectileImage.get(((Projectile)obj).getOrientation());
-            default:
-                return null;
+        case PALM:
+        	return palmImage;
+        case GROUND:
+        	return backgroundImage;
+    	case WATER:
+            return waterImage;
+        case STONE:
+            return stoneImage;
+        case TREE:
+            return treeImage;
+        case TANK:
+            Tank t = (Tank) obj;
+            if (t.getTeam() == Team.GREEN) {
+                return greenTankImage.get(t.getOrientation());
+            } else {
+                return redTankImage.get(t.getOrientation());
+            }
+        case PROJECTILE:
+            return projectileImage.get(((Projectile)obj).getOrientation());
+        default:
+            return null;
         }
     }
 }

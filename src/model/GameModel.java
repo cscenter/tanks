@@ -63,14 +63,6 @@ public class GameModel {
         pointsForBotKill.put(Difficulty.BOSS, 10000);
     }
     
-    public int getWidth() {
-        return width;
-    }
-    
-    public int getHeight() {
-        return height;
-    }
-    
     public int getScore() {
         return score;
     }
@@ -112,17 +104,29 @@ public class GameModel {
         score = 0;
     }
     
-    public void addImmovableObject(int i, int j, GameObjectDescription d) {
+    public void addImmovableObject(int i, int j, GameObjectDescription d) throws ModelException {
         Vector2D pos = new Vector2D(DISCRETE_FACTOR * i, DISCRETE_FACTOR * j);
         ImmovableObject obj;
         switch (d) {
+        case GROUND:
+        	break;
+        case WATER:
+        	obj = new ImmovableObject(freeID++, pos, d);
+        	map.add(obj);
+            immovableObjects.put(obj.getID(), obj);
+            return;
+        case PALM:
         case TREE:
-            obj = new Tree(freeID++, pos);
+            obj = new Tree(freeID++, pos, d);
+            map.add(obj);
+            immovableObjects.put(obj.getID(), obj);
             break;
         default:
-            obj = new ImmovableObject(freeID++, pos, d);        
+            obj = new ImmovableObject(freeID++, pos, d);
+            map.add(obj);
+            immovableObjects.put(obj.getID(), obj);
         }
-        map.add(obj);
+        obj = new ImmovableObject(freeID++, pos, GameObjectDescription.GROUND);
         immovableObjects.put(obj.getID(), obj);
     }
     

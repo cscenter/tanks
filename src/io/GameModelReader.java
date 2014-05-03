@@ -27,14 +27,14 @@ public class GameModelReader {
                         throw new MapIOException("Invalid chracter at " + (new Vector2D(i, j)).toString() );
                     }
 
-                    if (!d.equals(GameObjectDescription.GROUND)) {
-                        model.addImmovableObject(i, j, d);
-                    }
+                    model.addImmovableObject(i, j, d);
                 }
             }
  
         } catch (IOException e) {
             throw new MapIOException("Cannot read map file.");
-        }
+        } catch (ModelException e) {
+			throw new MapIOException(e.getMessage());
+		}
     }
 }

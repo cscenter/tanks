@@ -36,7 +36,18 @@ public class DiscreteMap {
         int j = obj.getPosition().getY();
         int y = j + obj.getWidth();
         
-        Cell tmp = (obj.getDescription() == GameObjectDescription.WATER) ? Cell.SEMIBLOCKED : Cell.BLOCKED;
+        Cell tmp;
+        
+        switch (obj.getDescription()) {
+        case GROUND:
+        	return;
+        case WATER:
+        	tmp = Cell.SEMIBLOCKED;
+        	break;
+        default:
+        	tmp = Cell.BLOCKED;
+        }
+
         int id = obj.getID();
         
         for (; i < x; ++i) {
