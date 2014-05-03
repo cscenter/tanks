@@ -11,8 +11,6 @@ public class Bot {
     private Stack<Direction> plannedMoves;
     private GameModel model;
     private Difficulty difficulty;   
-
-	private static final Random GENERATOR = new Random();
     
     public Bot(GameModel model, Vector2D position, Difficulty difficulty) throws ModelException {
         this.model = model;
@@ -25,6 +23,9 @@ public class Bot {
     }
     
     /*
+     * 
+    private static final Random GENERATOR = new Random();
+    
     private void createPath() {
         plannedMoves.clear();
         Map<Vector2D, Vector2D> availableCells = model.getAccessibleCells(controlledTank);

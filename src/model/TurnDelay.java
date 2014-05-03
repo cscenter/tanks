@@ -8,7 +8,7 @@ public class TurnDelay {
     public TurnDelay(int delay) {
     	super();
         this.delay = delay;
-        this.turnsToMove = 0;
+        this.turnsToMove = 1;
     }
     
     public TurnDelay(int delay, int turnsToMove) {

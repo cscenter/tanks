@@ -7,14 +7,14 @@ import model.Tank.Difficulty;
 
 public class GameModel {
     
-    public static final int DISCRETE_FACTOR = 11;
+    public static final int DISCRETE_FACTOR = 21;
     public static final int SCORE_PER_TICK = 1;
-    public static final int SCORE_PER_KILL = 500;
     
     public static final int MAX_DIST_FOR_SEARCH = 100;
     protected static final Random GENERATOR = new Random();
     
     private DiscreteMap map;
+    private EnumMap<Difficulty, Integer> pointsForBotKill;
     private Map<Integer, ImmovableObject> immovableObjects;
     private Map<Integer, Projectile> projectiles;
     private Map<Integer, Tank> tanks;
@@ -55,6 +55,12 @@ public class GameModel {
     
     public GameModel() {
         rebuild(0, 0);
+        pointsForBotKill = new EnumMap<>(Difficulty.class);
+        pointsForBotKill.put(Difficulty.EASY, 200);
+        pointsForBotKill.put(Difficulty.MEDIUM, 500);
+        pointsForBotKill.put(Difficulty.HARD, 2000);
+        pointsForBotKill.put(Difficulty.INSANE, 5000);
+        pointsForBotKill.put(Difficulty.BOSS, 10000);
     }
     
     public int getWidth() {
@@ -332,6 +338,8 @@ public class GameModel {
         }        
     }
     
+    
+    
     private void deleteTank(int ID) {
         Bot bot = null;
         for (Bot b : bots) {
@@ -341,6 +349,7 @@ public class GameModel {
             }
         }
         if (bot != null) {
+            score += pointsForBotKill.get(bot.getDifficulty());
             bots.remove(bot);
         }
         map.remove(tanks.get(ID));

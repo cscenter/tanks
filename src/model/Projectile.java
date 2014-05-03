@@ -17,7 +17,7 @@ public class Projectile extends MovableObject {
 
 	public Projectile(int id, Vector2D p, Team team, Direction d, int damage) {
         super(id, p, GameObjectDescription.PROJECTILE, team);
-        speed = new Speed(d, 0);
+        speed = new Speed(d, 2);
         setOrientation(d);
         this.damage = damage;
     }

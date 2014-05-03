@@ -41,9 +41,12 @@ public class ViewPanel extends JPanel {
     private final double k = (64.0 / GameModel.DISCRETE_FACTOR);
     private final int cellImageSize = 64;
     
-    private static final int TIMER_DELAY = 10;
+    private static final int TIMER_DELAY = 1;
     private ImageGallery gallery;
     private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+    
+    private int ticksCounter;
+    private static final int REPAINT_DELAY = 8;
     
     public ViewPanel(PropertyChangeListener gameStartedListener, PropertyChangeListener gamePausedListener) {
         super();
@@ -60,13 +63,16 @@ public class ViewPanel extends JPanel {
             public void actionPerformed(ActionEvent ae) {
                 try {
 					model.tick();
+					++ticksCounter;
 				} catch (ModelException e) {
 					JOptionPane.showMessageDialog(ViewPanel.this,
 		                    e.getMessage(),
 		                    "Error",
 		                    JOptionPane.ERROR_MESSAGE);
 				}
-                repaint();
+                if ((ticksCounter & REPAINT_DELAY) == 0) {
+                	repaint();
+                }
                 if (!model.isPlayerAlive()) {
                     JOptionPane.showMessageDialog(ViewPanel.this,
                         "Oops, you have been killed...\n Your score: " + model.getScore(),
@@ -201,6 +207,7 @@ public class ViewPanel extends JPanel {
             GameModelReader.parse(model, mapFilename);
             model.start();
             timer.start();
+            ticksCounter = 0;
             keyListener.reset();
             setGamePaused(false);
             setGameStarted(true);

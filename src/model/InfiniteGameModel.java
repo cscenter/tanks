@@ -7,7 +7,7 @@ public class InfiniteGameModel extends GameModel {
 
     private int botsCount;
     private final int DEFAULT_BOTS_COUNT = 3;
-    private final int PLAYER_DELAY = 2;
+    private final int PLAYER_DELAY = 6;
     
     private final Difficulty DEFAULT_DIFFICULTY = Difficulty.BOSS;
     
@@ -28,7 +28,7 @@ public class InfiniteGameModel extends GameModel {
         
         addPlayer(Team.GREEN, PLAYER_DELAY, getRandomEmptyPosition(Tank.SIZE, Tank.SIZE));
         for (int i = 0; i < botsCount; ++i) {
-            addBot(Team.RED, DEFAULT_DIFFICULTY, getRandomEmptyPosition(Tank.SIZE, Tank.SIZE));
+            addBot(Team.RED, Difficulty.getRandomDifficulty(), getRandomEmptyPosition(Tank.SIZE, Tank.SIZE));
         }
     }
     
@@ -37,8 +37,7 @@ public class InfiniteGameModel extends GameModel {
         super.tick();
         
         while (bots.size() < botsCount) {
-            addBot(Team.RED, DEFAULT_DIFFICULTY, getRandomEmptyPosition(Tank.SIZE, Tank.SIZE));
-            score += SCORE_PER_KILL;
+            addBot(Team.RED, Difficulty.getRandomDifficulty(), getRandomEmptyPosition(Tank.SIZE, Tank.SIZE));
         }
     }
 

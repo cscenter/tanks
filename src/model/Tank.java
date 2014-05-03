@@ -1,17 +1,19 @@
 package model;
 
+import java.util.Random;
+
 public class Tank extends MovableObject {
 
-    public static final int SIZE = GameModel.DISCRETE_FACTOR - 2;
+    public static final int SIZE = GameModel.DISCRETE_FACTOR - 4;
     public static final int DEFAULT_START_HEALTH = 5;
-    private static final int DEFAULT_FIRE_MOVE_RATE = 10;
+    private static final int DEFAULT_FIRE_MOVE_RATE = 20;
     private static final int DEFAULT_DAMAGE = 1;
     
     private int damage;
     private TurnDelay fireDelay;
     
     public enum Difficulty {
-    	EASY (100, 8, 1, DEFAULT_DAMAGE), MEDIUM(100, 4, 2, DEFAULT_DAMAGE), HARD(50, 3, 3, DEFAULT_DAMAGE), INSANE(20, 2, 5, DEFAULT_DAMAGE), BOSS(40, 3, 7, 3);
+    	EASY (1000, 20, 1, DEFAULT_DAMAGE), MEDIUM(1000, 30, 2, DEFAULT_DAMAGE), HARD(500, 25, 3, DEFAULT_DAMAGE), INSANE(200, 10, 5, DEFAULT_DAMAGE), BOSS(400, 15, 7, 3);
     	
     	public int fireDelay;
     	public int moveDelay;
@@ -24,6 +26,13 @@ public class Tank extends MovableObject {
 			this.startHealth = startHealth;
 			this.damage = damage;
 		}
+    	
+    	
+    	private static Random GENERATOR = new Random();
+    	
+		public static Difficulty getRandomDifficulty() {
+			return values()[GENERATOR.nextInt(values().length)];
+    	}
     }
     
     public Tank(int id, Vector2D p, Team team, Difficulty difficulty) {
