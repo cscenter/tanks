@@ -24,9 +24,9 @@ public class InfiniteGameModel extends GameModel {
     public void start() throws ModelException {
         super.start();
         
-        addPlayer(Team.GREEN, PLAYER_DELAY, getRandomEmptyPosition(Tank.SIZE, Tank.SIZE));
+        addPlayer(Team.GREEN, PLAYER_DELAY, getRandomEmptyPosition(Tank.getMaxSize(), Tank.getMaxSize()));
         for (int i = 0; i < botsCount; ++i) {
-            addBot(Team.RED, Difficulty.getRandomDifficulty(), getRandomEmptyPosition(Tank.SIZE, Tank.SIZE));
+            addBot(Team.RED, Difficulty.getRandomDifficulty(), getRandomEmptyPosition(Tank.getMaxSize(), Tank.getMaxSize()));
         }
     }
     
@@ -35,7 +35,7 @@ public class InfiniteGameModel extends GameModel {
         super.tick();
         
         while (bots.size() < botsCount) {
-            addBot(Team.RED, Difficulty.getRandomDifficulty(), getRandomEmptyPosition(Tank.SIZE, Tank.SIZE));
+            addBot(Team.RED, Difficulty.getRandomDifficulty(), getRandomEmptyPosition(Tank.getMaxSize(), Tank.getMaxSize()));
         }
     }
 

@@ -13,6 +13,21 @@ public enum Direction {
         return pos;
     }
 	
+    public Direction getOpposite() {
+    	switch (this) {
+    	case UP:
+    		return DOWN;
+    	case DOWN:
+    		return UP;
+    	case LEFT:
+    		return RIGHT;
+    	case RIGHT:
+    		return LEFT;
+		default:
+			return NONE;
+    	}
+    }
+    
 	public static Direction fromVector2D(Vector2D v) {
 		for (Direction d : Direction.values()) {
 			if (v.equals(d.getMove())) {

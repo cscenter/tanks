@@ -13,6 +13,7 @@ import java.awt.*;
 public class ImageGallery {
     
     private Image backgroundImage;
+    private Image grassImage;
     private Image waterImage;
     private Image stoneImage;
     private Image heartImage;
@@ -25,6 +26,7 @@ public class ImageGallery {
     public ImageGallery(String spritesDestination) throws MapIOException {
         try {
             backgroundImage = ImageIO.read(new File(spritesDestination + "//ground//ground.png"));
+            grassImage = ImageIO.read(new File(spritesDestination + "//ground//grass.png"));
             waterImage = ImageIO.read(new File(spritesDestination + "//water//water.png"));
             stoneImage = ImageIO.read(new File(spritesDestination + "//stone//stone.png"));
             treeImage = ImageIO.read(new File(spritesDestination + "//tree//tree.png"));
@@ -69,6 +71,8 @@ public class ImageGallery {
     
     public Image getImage(GameObject obj) {
         switch (obj.getDescription()) {
+        case GRASS:
+        	return grassImage;
         case PALM:
         	return palmImage;
         case GROUND:

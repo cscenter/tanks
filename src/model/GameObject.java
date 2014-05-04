@@ -6,7 +6,7 @@ public class GameObject implements Attackable, Sizable {
     
     private final GameObjectDescription description;
 
-    private static final int SIZE = GameModel.DISCRETE_FACTOR;
+    protected static final int SIZE = GameModel.DISCRETE_FACTOR;
     
     public GameObject(int id, Vector2D p, GameObjectDescription desc) {
         this.id = id;

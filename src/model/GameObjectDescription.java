@@ -3,10 +3,10 @@ package model;
 import java.util.*;
 
 public enum GameObjectDescription {
-    WATER('W'), TREE('R'), STONE('S'), GROUND('G'), TANK('T'), PROJECTILE('P'), PALM('A');
+    WATER('W'), TREE('R'), STONE('S'), GROUND('G'), TANK('T'), PROJECTILE('P'), PALM('A'), GRASS('V');
     
     char tag;
-    private static Map<Character, GameObjectDescription> stringToDescriptionMapping;
+    private static Map<Character, GameObjectDescription> charToDescriptionMapping;
     
     private GameObjectDescription(char tag) {
         this.tag = tag;
@@ -17,16 +17,39 @@ public enum GameObjectDescription {
     }
     
     public static GameObjectDescription getDescription(char tag) {
-        if (stringToDescriptionMapping == null) {
+        if (charToDescriptionMapping == null) {
             initMapping();
         }
-        return stringToDescriptionMapping.get(tag);
+        if (charToDescriptionMapping.containsKey(tag)) {
+        	return charToDescriptionMapping.get(tag);
+        } else {
+        	switch (tag) {
+        	case '1' :	
+        		return getRandomBackground();
+        	case '2' :
+        		return getRandomTree();
+        	default:
+        		return null;
+        	}
+        }
     }
     
     private static void initMapping() {
-        stringToDescriptionMapping = new HashMap<Character, GameObjectDescription>();
+        charToDescriptionMapping = new HashMap<Character, GameObjectDescription>();
         for (GameObjectDescription s : values()) {
-            stringToDescriptionMapping.put(s.tag, s);
+            charToDescriptionMapping.put(s.tag, s);
         }
+    }
+    
+    private static final Random GENERATOR = new Random();
+    private static GameObjectDescription[] backgrounds = {GRASS, GROUND};
+    private static GameObjectDescription[] trees = {TREE, PALM};
+    
+    public static GameObjectDescription getRandomTree() {
+    	return trees[GENERATOR.nextInt(trees.length)];
+    }
+    
+    public static GameObjectDescription getRandomBackground() {
+    	return backgrounds[GENERATOR.nextInt(backgrounds.length)];    	
     }
 }

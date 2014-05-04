@@ -108,8 +108,11 @@ public class GameModel {
         Vector2D pos = new Vector2D(DISCRETE_FACTOR * i, DISCRETE_FACTOR * j);
         ImmovableObject obj;
         switch (d) {
+        case GRASS:
         case GROUND:
-        	break;
+        	obj = new ImmovableObject(freeID++, pos, d);
+            immovableObjects.put(obj.getID(), obj);
+        	return;
         case WATER:
         	obj = new ImmovableObject(freeID++, pos, d);
         	map.add(obj);
@@ -126,7 +129,7 @@ public class GameModel {
             map.add(obj);
             immovableObjects.put(obj.getID(), obj);
         }
-        obj = new ImmovableObject(freeID++, pos, GameObjectDescription.GROUND);
+        obj = new ImmovableObject(freeID++, pos, GameObjectDescription.getRandomBackground());
         immovableObjects.put(obj.getID(), obj);
     }
     
@@ -138,7 +141,7 @@ public class GameModel {
     
     private Tank addTank(Team team, int delay, Vector2D position) {
         Tank tank = null;
-        if (map.isFree(position, Tank.SIZE, Tank.SIZE)) {
+        if (map.isFree(position, Tank.getMaxSize(), Tank.getMaxSize())) {
             tank = new  Tank(freeID++, position, team, delay);
             map.add(tank);
             tanks.put(tank.getID(), tank);
@@ -149,7 +152,7 @@ public class GameModel {
     // only Bot class can call this method
     public Tank addTank(Team team, Difficulty difficulty, Vector2D position) {
     	Tank tank = null;
-        if (map.isFree(position, Tank.SIZE, Tank.SIZE)) {
+        if (map.isFree(position, Tank.getMaxSize(), Tank.getMaxSize())) {
             tank = new  Tank(freeID++, position, team, difficulty);
             map.add(tank);
             tanks.put(tank.getID(), tank);
@@ -198,8 +201,8 @@ public class GameModel {
     }
     
     public void moveTank(Tank t, Direction direction) {
-        t.setDirection(direction);
-        t.setOrientation(direction);
+    	t.setMoveDirection(direction);
+    	t.setOrientation(direction);
     }
     
     public void shoot(Tank t) {
@@ -314,7 +317,7 @@ public class GameModel {
             Vector2D pos = tank.getPosition();
             Vector2D deltaMove = tank.getDirection().getMove();
             
-            tank.setDirection(Direction.NONE);
+            tank.setMoveDirection(Direction.NONE);
             
             if (map.canMove(tank, deltaMove)) {
                 map.remove(tank);

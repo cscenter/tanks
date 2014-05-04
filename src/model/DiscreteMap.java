@@ -301,7 +301,7 @@ public class DiscreteMap {
             }
             System.out.print("\n");
         }
-        
+        /*
         System.out.println("Movable");
         for (int i = 0; i < height; ++i) {
             for (int j = 0; j < width; ++j) {
@@ -319,6 +319,7 @@ public class DiscreteMap {
             }
             System.out.print("\n");
         }
+        */
     }
     
     enum Cell {

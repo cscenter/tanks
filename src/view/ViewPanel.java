@@ -26,7 +26,6 @@ import javax.swing.Timer;
 import model.Direction;
 import model.GameModel;
 import model.GameObject;
-import model.GameObjectDescription;
 import model.InfiniteGameModel;
 import model.ModelException;
 import model.Tank;
@@ -283,6 +282,7 @@ public class ViewPanel extends JPanel {
 
             if (isValidCoordinates((y * k) + moveX, (x * k) + moveY)) {
                 switch (obj.getDescription()) {
+                case GRASS:
                 case GROUND:
                 	toDrawSecond.add(obj);
                 	break;

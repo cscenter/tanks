@@ -16,7 +16,7 @@ public class MovableObject extends GameObject {
         orientation = Direction.DOWN;
     }
     
-    public void setDirection(Direction direction) {
+    public void setMoveDirection(Direction direction) {
         speed.setDirection(direction);
     }
 
