@@ -8,7 +8,8 @@ import model.Tank.Difficulty;
 public class GameModel {
     
     public static final int DISCRETE_FACTOR = 21;
-    public static final int SCORE_PER_TICK = 1;
+    private static final int SCORE_PER_TICK = 1;
+    private static final int DEFAULT_DELETED_TANKS_LIFETIME = 50;
     
     public static final int MAX_DIST_FOR_SEARCH = 100;
     protected static final Random GENERATOR = new Random();
@@ -25,6 +26,17 @@ public class GameModel {
     
     private int playerID;
     protected Collection<Bot> bots;
+    
+    public class deletedTank {
+		public Vector2D position;
+    	public int timeToDisappear;
+    	public deletedTank(Vector2D position, int timeToDisappear) {
+			this.position = position;
+			this.timeToDisappear = timeToDisappear;
+		}
+    }
+    
+    private Collection<deletedTank> deletedTanks;
     
     public void debugprint() {
         System.out.print("Immovable objects:");
@@ -86,6 +98,21 @@ public class GameModel {
         moveTanks();
         
         score += SCORE_PER_TICK;
+        
+        updateDeletedTanks();
+    }
+    
+    private void updateDeletedTanks() {
+    	Iterator<deletedTank> it = deletedTanks.iterator();
+        while (it.hasNext())
+        {
+        	deletedTank t = it.next();
+        	if (t.timeToDisappear == 0) {
+        		it.remove();
+        	} else {
+        		--t.timeToDisappear;
+        	}
+        }
     }
     
     public boolean isPlayerAlive() {
@@ -101,10 +128,15 @@ public class GameModel {
         tanks = new HashMap<Integer, Tank>();
         map = new DiscreteMap(width, height);
         bots = new ArrayList<Bot>();
+        deletedTanks = new HashSet<>();
         score = 0;
     }
     
-    public void addImmovableObject(int i, int j, GameObjectDescription d) throws ModelException {
+    public Collection<deletedTank> getDeletedTanks() {
+		return deletedTanks;
+	}
+
+	public void addImmovableObject(int i, int j, GameObjectDescription d) throws ModelException {
         Vector2D pos = new Vector2D(DISCRETE_FACTOR * i, DISCRETE_FACTOR * j);
         ImmovableObject obj;
         switch (d) {
@@ -348,7 +380,8 @@ public class GameModel {
     
     
     private void deleteTank(int ID) {
-        Bot bot = null;
+        deletedTanks.add(new deletedTank(tanks.get(ID).getPosition(), DEFAULT_DELETED_TANKS_LIFETIME));
+    	Bot bot = null;
         for (Bot b : bots) {
             if (b.getTankID() == ID) {
                 bot = b;

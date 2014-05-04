@@ -25,6 +25,7 @@ import javax.swing.Timer;
 
 import model.Direction;
 import model.GameModel;
+import model.GameModel.deletedTank;
 import model.GameObject;
 import model.InfiniteGameModel;
 import model.ModelException;
@@ -97,19 +98,24 @@ public class ViewPanel extends JPanel {
 
         HashSet<Integer> pressedKeys = new HashSet<Integer>();
         
+        private Timer timer = null;
+        private static final int TIME_AFTER_PAUSE = TIMER_DELAY * 100;
+        private int timeAfterPausePress = TIME_AFTER_PAUSE;
+        
         public Keyer() {
             super();
-            
-            new Timer(TIMER_DELAY, new ActionListener() {
+            this.timer = new Timer(TIMER_DELAY, new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent arg0) {
-                    for (Integer keyCode : pressedKeys) {
-                        if (keyCode == KeyEvent.VK_P && isGameStarted()) {
+                	Keyer.this.timeAfterPausePress = Math.min(Keyer.this.timeAfterPausePress + 1, TIME_AFTER_PAUSE);
+                	for (Integer keyCode : pressedKeys) {
+                        if (keyCode == KeyEvent.VK_P && isGameStarted() && Keyer.this.timeAfterPausePress == TIME_AFTER_PAUSE) {
                             if (isGamePaused()) {
                                 unpause();
                             } else {
                                 pause();
                             }
+                            Keyer.this.timeAfterPausePress = 0;
                         }
                         if (!isGameOn()) {
                             return;
@@ -137,7 +143,8 @@ public class ViewPanel extends JPanel {
                         }
                     }
                 }
-            }).start();
+            });
+            timer.start();
         }
         
         @Override
@@ -263,24 +270,19 @@ public class ViewPanel extends JPanel {
 
         int moveX = screenCenterX - (int)(modelCenterY);
         int moveY = screenCenterY - (int)(modelCenterX);
-        if (isGameOn())
-            g.setColor(Color.BLUE);
+
         g.fillRect(0, 0, screenWidth, screenHeight);
         
         Image img = null;
 
-        int x;
-        int y;
         Collection<GameObject> toDrawFirst = new ArrayList<>();
         Collection<GameObject> toDrawSecond = new ArrayList<>();
         Collection<GameObject> toDrawThird = new ArrayList<>();
         
         for (GameObject obj : model.getGameObjects()) {
-            
-            x = obj.getPosition().getX();
-            y = obj.getPosition().getY();
 
-            if (isValidCoordinates((y * k) + moveX, (x * k) + moveY)) {
+
+            if (isValidCoordinates((obj.getPosition().getY() * k) + moveX, (obj.getPosition().getX() * k) + moveY)) {
                 switch (obj.getDescription()) {
                 case GRASS:
                 case GROUND:
@@ -298,30 +300,27 @@ public class ViewPanel extends JPanel {
         for (GameObject obj : toDrawFirst) {
         	
         	img = gallery.getImage(obj);
-            
-            x = obj.getPosition().getX();
-            y = obj.getPosition().getY();
-            g.drawImage(img, (int)(y * k) + moveX, (int)(x * k) + moveY, null);
+
+            g.drawImage(img, (int)(obj.getPosition().getY() * k) + moveX, (int)(obj.getPosition().getX() * k) + moveY, null);
         }
         
         for (GameObject obj : toDrawSecond) {
         	
         	img = gallery.getImage(obj);
             
-            x = obj.getPosition().getX();
-            y = obj.getPosition().getY();
-            
-            g.drawImage(img, (int)(y * k) + moveX - 8, (int)(x * k) + moveY - 8, null);
+            g.drawImage(img, (int)(obj.getPosition().getY() * k) + moveX - 8, (int)(obj.getPosition().getX() * k) + moveY - 8, null);
         }
         
         for (GameObject obj : toDrawThird) {
         	
         	img = gallery.getImage(obj);
             
-            x = obj.getPosition().getX();
-            y = obj.getPosition().getY();
-            
-            g.drawImage(img, (int)(y * k) + moveX, (int)(x * k) + moveY, null);
+            g.drawImage(img, (int)(obj.getPosition().getY() * k) + moveX, (int)(obj.getPosition().getX() * k) + moveY, null);
+        }
+        
+        img = gallery.getBoomImage();
+        for (deletedTank tmp : model.getDeletedTanks()) {
+        	g.drawImage(img, (int)(tmp.position.getY() * k) + moveX, (int)(tmp.position.getX() * k) + moveY, null);
         }
         
         if (model.isPlayerAlive()) {

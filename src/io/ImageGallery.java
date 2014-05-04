@@ -19,6 +19,7 @@ public class ImageGallery {
     private Image heartImage;
     private Image treeImage;
     private Image palmImage;
+    private Image boomImage;
     private EnumMap<Direction, Image> greenTankImage;
     private EnumMap<Direction, Image> redTankImage;
     private EnumMap<Direction, Image> projectileImage;
@@ -32,6 +33,7 @@ public class ImageGallery {
             treeImage = ImageIO.read(new File(spritesDestination + "//tree//tree.png"));
             palmImage = ImageIO.read(new File(spritesDestination + "//tree//palm.png"));
             heartImage = ImageIO.read(new File(spritesDestination + "//health//heart.png"));
+            boomImage = ImageIO.read(new File(spritesDestination + "//tank//boom.png"));
         } catch (IOException e) {
             throw new MapIOException("Cannot load image of Immovable Object");
         }
@@ -67,6 +69,10 @@ public class ImageGallery {
     
     public Image getWaterImage() {
         return waterImage;
+    }
+    
+    public Image getBoomImage() {
+        return boomImage;
     }
     
     public Image getImage(GameObject obj) {
