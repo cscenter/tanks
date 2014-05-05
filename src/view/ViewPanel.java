@@ -31,6 +31,7 @@ import model.InfiniteGameModel;
 import model.ModelException;
 import model.Tank;
 
+
 @SuppressWarnings("serial")
 public class ViewPanel extends JPanel {
     private GameModel model = null;
@@ -123,6 +124,7 @@ public class ViewPanel extends JPanel {
                     "Game over",
                     JOptionPane.PLAIN_MESSAGE);
                 timer.stop();
+                pressedKeys.clear();
                 setGamePaused(false);
                 setGameStarted(false);
             }
@@ -205,9 +207,9 @@ public class ViewPanel extends JPanel {
         repaint();
     }
     
-    //public Dimension getPreferredSize() {
-    //    return new Dimension(40, 40);
-    //}
+    public Dimension getPreferredSize() {
+        return new Dimension(40, 40);
+    }
     
     private boolean isGameOn() {
         return !isGamePaused() && isGameStarted();
