@@ -34,12 +34,11 @@ import model.Tank;
 @SuppressWarnings("serial")
 public class ViewPanel extends JPanel {
     private GameModel model = null;
-    private javax.swing.Timer timer;
     
     private boolean gamePaused = false;
     private boolean gameStarted = false;
 
-    private Keyer keyListener;
+    private KeyListenerAndTimer keyListenerAndTimer;
     
     private final double k = (64.0 / GameModel.DISCRETE_FACTOR);
     private final int cellImageSize = 64;
@@ -62,31 +61,6 @@ public class ViewPanel extends JPanel {
                     "Error",
                     JOptionPane.ERROR_MESSAGE);
         }
-        timer = new javax.swing.Timer(TIMER_DELAY, new ActionListener() {
-            public void actionPerformed(ActionEvent ae) {
-                try {
-					model.tick();
-					++ticksCounter;
-				} catch (ModelException e) {
-					JOptionPane.showMessageDialog(ViewPanel.this,
-		                    e.getMessage(),
-		                    "Error",
-		                    JOptionPane.ERROR_MESSAGE);
-				}
-                if ((ticksCounter & REPAINT_DELAY) == 0) {
-                	repaint();
-                }
-                if (!model.isPlayerAlive()) {
-                    JOptionPane.showMessageDialog(ViewPanel.this,
-                        "Oops, you have been killed...\n Your score: " + model.getScore(),
-                        "Game over",
-                        JOptionPane.PLAIN_MESSAGE);
-                    timer.stop();
-                    setGamePaused(false);
-                    setGameStarted(false);
-                }
-            }
-        });
         
         pcs.addPropertyChangeListener("gamePaused", gamePausedListener);
         pcs.addPropertyChangeListener("gameStarted", gameStartedListener);
@@ -94,57 +68,26 @@ public class ViewPanel extends JPanel {
         initKeyboard();
     }
     
-    private class Keyer implements KeyListener {
+    private class KeyListenerAndTimer implements KeyListener {
 
         HashSet<Integer> pressedKeys = new HashSet<Integer>();
         
-        private Timer timer = null;
+        private Timer timer;
         private static final int TIME_AFTER_PAUSE = TIMER_DELAY * 100;
         private int timeAfterPausePress = TIME_AFTER_PAUSE;
         
-        public Keyer() {
+        public KeyListenerAndTimer() {
             super();
-            this.timer = new Timer(TIMER_DELAY, new ActionListener() {
+            
+            timer = new Timer(TIMER_DELAY, new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent arg0) {
-                	Keyer.this.timeAfterPausePress = Math.min(Keyer.this.timeAfterPausePress + 1, TIME_AFTER_PAUSE);
-                	for (Integer keyCode : pressedKeys) {
-                        if (keyCode == KeyEvent.VK_P && isGameStarted() && Keyer.this.timeAfterPausePress == TIME_AFTER_PAUSE) {
-                            if (isGamePaused()) {
-                                unpause();
-                            } else {
-                                pause();
-                            }
-                            Keyer.this.timeAfterPausePress = 0;
-                        }
-                        if (!isGameOn()) {
-                            return;
-                        }
-                        switch (keyCode) {
-                        case KeyEvent.VK_W :
-                            model.movePlayer(Direction.UP);
-                            break;
-                        case KeyEvent.VK_A :
-                            model.movePlayer(Direction.LEFT);
-                            break;
-                        case KeyEvent.VK_S :
-                            model.movePlayer(Direction.DOWN);
-                            break;
-                        case KeyEvent.VK_D :
-                            model.movePlayer(Direction.RIGHT);
-                            break;
-                        case KeyEvent.VK_SPACE :
-                            model.shootPlayer();
-                            break;
-                        
-                        case KeyEvent.VK_O :
-                            model.debugprint();
-                            break;
-                        }
-                    }
+                	handleKeys();
+                	if (isGameOn()) {
+                	    handleGameActions();
+                	}
                 }
             });
-            timer.start();
         }
         
         @Override
@@ -160,15 +103,77 @@ public class ViewPanel extends JPanel {
         @Override
         public void keyTyped(KeyEvent ovent) {}
         
-        public void reset() {
-            pressedKeys.clear();
+        private void handleGameActions() {
+            try {
+                model.tick();
+                ++ticksCounter;
+            } catch (ModelException e) {
+                JOptionPane.showMessageDialog(ViewPanel.this,
+                        e.getMessage(),
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+            if ((ticksCounter & (REPAINT_DELAY - 1)) == 0) {
+                repaint();
+            }
+            if (!model.isPlayerAlive()) {
+                repaint();
+                JOptionPane.showMessageDialog(ViewPanel.this,
+                    "Oops, you have been killed...\n Your score: " + model.getScore(),
+                    "Game over",
+                    JOptionPane.PLAIN_MESSAGE);
+                timer.stop();
+                setGamePaused(false);
+                setGameStarted(false);
+            }
+        }
+        
+        private void handleKeys() {
+            KeyListenerAndTimer.this.timeAfterPausePress = Math.min(KeyListenerAndTimer.this.timeAfterPausePress + 1, TIME_AFTER_PAUSE);
+            for (Integer keyCode : pressedKeys) {
+                if (keyCode == KeyEvent.VK_P && isGameStarted() && KeyListenerAndTimer.this.timeAfterPausePress == TIME_AFTER_PAUSE) {
+                    if (isGamePaused()) {
+                        unpause();
+                    } else {
+                        pause();
+                    }
+                    KeyListenerAndTimer.this.timeAfterPausePress = 0;
+                }
+                if (!isGameOn()) {
+                    return;
+                }
+                switch (keyCode) {
+                case KeyEvent.VK_W :
+                    model.movePlayer(Direction.UP);
+                    break;
+                case KeyEvent.VK_A :
+                    model.movePlayer(Direction.LEFT);
+                    break;
+                case KeyEvent.VK_S :
+                    model.movePlayer(Direction.DOWN);
+                    break;
+                case KeyEvent.VK_D :
+                    model.movePlayer(Direction.RIGHT);
+                    break;
+                case KeyEvent.VK_SPACE :
+                    model.shootPlayer();
+                    break;
+                
+                case KeyEvent.VK_O :
+                    model.debugprint();
+                    break;
+                }
+            }
+        }
+
+        public void start() {
+            timer.start();
         }
     }
     
     private void initKeyboard() {
-        keyListener = new Keyer();
-        
-        addKeyListener(keyListener);
+        keyListenerAndTimer = new KeyListenerAndTimer();
+        addKeyListener(keyListenerAndTimer);
     }
     
     public boolean isGamePaused() {
@@ -192,18 +197,16 @@ public class ViewPanel extends JPanel {
     }
     
     public void unpause() {
-        timer.start();
         setGamePaused(false);
     }
     
     public void pause() {
-        timer.stop();
-        repaint();
         setGamePaused(true);
+        repaint();
     }
     
     //public Dimension getPreferredSize() {
-    //    return new Dimension((int)(model.getWidth() * k), (int)((model.getHeight() + GameModel.DISCRETE_FACTOR)* k));
+    //    return new Dimension(40, 40);
     //}
     
     private boolean isGameOn() {
@@ -215,9 +218,8 @@ public class ViewPanel extends JPanel {
             model = new InfiniteGameModel(botsCount);
             GameModelReader.parse(model, mapFilename);
             model.start();
-            timer.start();
             ticksCounter = 0;
-            keyListener.reset();
+            keyListenerAndTimer.start();
             setGamePaused(false);
             setGameStarted(true);
         } catch (MapIOException e) {
@@ -237,12 +239,6 @@ public class ViewPanel extends JPanel {
     private int modelCenterY;
     private int screenWidth;
     private int screenHeight;
-    
-    /*
-    private boolean isValidCoordinates(int x, int y) {
-        return (x > 0) && (y > 0) && (x + k * GameModel.DISCRETE_FACTOR < screenWidth) && (y + k * GameModel.DISCRETE_FACTOR < screenHeight);
-    }
-    */
     
     private boolean isValidCoordinates(double x, double y) {
         return (x + cellImageSize > 0) && (y  + cellImageSize > 0) && (x < screenWidth) && (y < screenHeight);
@@ -271,6 +267,7 @@ public class ViewPanel extends JPanel {
         int moveX = screenCenterX - (int)(modelCenterY);
         int moveY = screenCenterY - (int)(modelCenterX);
 
+        g.setColor(new Color(51, 51, 51));
         g.fillRect(0, 0, screenWidth, screenHeight);
         
         Image img = null;
@@ -334,9 +331,9 @@ public class ViewPanel extends JPanel {
         g.setColor(Color.BLACK);
         
         if (isGamePaused()) {
-            g.drawString("PAUSED", (int)((screenWidth - 8) * k / 2), (int)(screenHeight * k / 2));
+            g.drawString("PAUSED", (int)((screenWidth - 8) / 2), (int)(screenHeight / 2));
         }
-        if (isGameOn()) {
+        if (isGameStarted()) {
             g.drawString("SCORE: " + Integer.toString(model.getScore()), 0, (int)(1.5 * cellImageSize));
         }
     }

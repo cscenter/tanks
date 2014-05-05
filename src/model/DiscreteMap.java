@@ -119,7 +119,7 @@ public class DiscreteMap {
         
         for (; i < x; ++i) {
             for (j = obj.getPosition().getY(); j < y; ++j) {
-                maze[i][j] = (immovableIDs[i][j] == 0) ? tmp : Cell.SEMIBLOCKED; // it can cause a bug, if there are several objects
+                maze[i][j] = (immovableIDs[i][j] == EMPTY_ID) ? tmp : Cell.SEMIBLOCKED; // it can cause a bug, if there are several objects
                 movableIDs[i][j] = id;
             }
         }        

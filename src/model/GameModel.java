@@ -8,24 +8,24 @@ import model.Tank.Difficulty;
 public class GameModel {
     
     public static final int DISCRETE_FACTOR = 21;
-    private static final int SCORE_PER_TICK = 1;
+    private static final int SCORE_PER_TICK = 0;
     private static final int DEFAULT_DELETED_TANKS_LIFETIME = 50;
-    
+    private EnumMap<Difficulty, Integer> pointsForBotKill;
     public static final int MAX_DIST_FOR_SEARCH = 100;
     protected static final Random GENERATOR = new Random();
     
     private DiscreteMap map;
-    private EnumMap<Difficulty, Integer> pointsForBotKill;
     private Map<Integer, ImmovableObject> immovableObjects;
     private Map<Integer, Projectile> projectiles;
     private Map<Integer, Tank> tanks;
+    
     private int freeID;
     private int width;
     private int height;
     protected int score;
     
     private int playerID;
-    protected Collection<Bot> bots;
+    protected Map<Integer, Bot> bots;
     
     public class deletedTank {
 		public Vector2D position;
@@ -123,12 +123,12 @@ public class GameModel {
         width = DISCRETE_FACTOR * w;
         height = DISCRETE_FACTOR * h;
         freeID = DiscreteMap.EMPTY_ID + 1;
-        immovableObjects = new HashMap<Integer, ImmovableObject>();
-        projectiles = new HashMap<Integer, Projectile>();
-        tanks = new HashMap<Integer, Tank>();
+        immovableObjects = new HashMap<>();
+        projectiles = new HashMap<>();
+        tanks = new HashMap<>();
         map = new DiscreteMap(width, height);
-        bots = new ArrayList<Bot>();
-        deletedTanks = new HashSet<>();
+        bots = new HashMap<>();
+        deletedTanks = new LinkedList<>();
         score = 0;
     }
     
@@ -166,7 +166,7 @@ public class GameModel {
     }
     
     private void botsMakeTurn() {
-        for (Bot bot : bots) {
+        for (Bot bot : bots.values()) {
             bot.makeTurn();
         }
     }
@@ -193,8 +193,8 @@ public class GameModel {
     }
     
     protected void addBot(Team team, Difficulty difficulty, Vector2D position) throws ModelException {
-        
-        bots.add(new Bot(this, position, difficulty));
+        Bot bot = new Bot(this, position, difficulty);
+        bots.put(bot.getTankID(), bot);
     }
     
     protected boolean addPlayer(Team team, int delay, Vector2D position) {
@@ -381,16 +381,10 @@ public class GameModel {
     
     private void deleteTank(int ID) {
         deletedTanks.add(new deletedTank(tanks.get(ID).getPosition(), DEFAULT_DELETED_TANKS_LIFETIME));
-    	Bot bot = null;
-        for (Bot b : bots) {
-            if (b.getTankID() == ID) {
-                bot = b;
-                break;
-            }
-        }
-        if (bot != null) {
-            score += pointsForBotKill.get(bot.getDifficulty());
-            bots.remove(bot);
+    	
+        if (bots.containsKey(ID)) {
+            score += pointsForBotKill.get(bots.get(ID).getDifficulty());
+            bots.remove(ID);
         }
         map.remove(tanks.get(ID));
         tanks.remove(ID);

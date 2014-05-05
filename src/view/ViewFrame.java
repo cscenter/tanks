@@ -48,7 +48,7 @@ public class ViewFrame extends JFrame {
         menuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                panel.start("map.txt", 2);
+                panel.start("maps/thebridge.txt", 20);
             	//panel.start("maps/logo.txt", 5);
                 repaint();
                 pauseMenuItem.setEnabled(true);

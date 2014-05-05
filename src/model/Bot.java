@@ -19,7 +19,7 @@ public class Bot {
         if (controlledTank == null) {
         	throw new ModelException("Cannot add bot at position " + position.toString());
         }
-        plannedMoves = new Stack<Direction>();
+        plannedMoves = new Stack<>();
     }
     
     /*
@@ -96,7 +96,7 @@ public class Bot {
 		return difficulty;
 	}
 
-	public void setDifficulty(Difficulty difficulty) {
+	private void setDifficulty(Difficulty difficulty) {
 		this.difficulty = difficulty;
 	}
 }
