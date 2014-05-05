@@ -9,6 +9,10 @@ public class DiscreteMap {
     private Cell[][] maze;
     private int[][] movableIDs;
     private int[][] immovableIDs;
+    
+    private int[][] visited;
+    private int visitID;
+    
     private final int width;
     private final int height;
     
@@ -18,10 +22,13 @@ public class DiscreteMap {
         maze = new Cell[h][];
         movableIDs = new int[h][];
         immovableIDs = new int[h][];
+        visited = new int[h][];
+        
         for (int i = 0; i < h; ++i) {
             maze[i] = new Cell[w];
             movableIDs[i] = new int[w];
             immovableIDs[i] = new int[w];
+            visited[i] = new int[w];
             for (int j = 0; j < w; ++j) {
                 maze[i][j] = Cell.EMPTY;
                 movableIDs[i][j] = EMPTY_ID;
@@ -128,18 +135,15 @@ public class DiscreteMap {
     
     public Stack<Direction> getRandomPath(MovableObject obj, int maxDist) {
     	
+        ++visitID;
+        
     	remove(obj);
         
     	Stack<Direction> stack = new Stack<>();
         Vector2D diag = new Vector2D(obj.getHeight(), obj.getWidth());
-       
-        boolean visited[][] = new boolean[height][];
-        for (int i = 0; i < height; ++i) {
-            visited[i] = new boolean[width];
-        }
         
         Vector2D prevCell = obj.getPosition(); 
-        visited[obj.getPosition().getX()][obj.getPosition().getY()] = true;
+        visited[obj.getPosition().getX()][obj.getPosition().getY()] = visitID;
         
         int dist = 0;
         boolean flag = true;
@@ -159,8 +163,8 @@ public class DiscreteMap {
                     continue;
                 }
                 
-                if (!visited[tmp.getX()][tmp.getY()] && canMove(obj, tmp.sub(obj.getPosition())) && Vector2D.dist(tmp, obj.getPosition()) > dist) {
-                    visited[tmp.getX()][tmp.getY()] = true;
+                if (visited[tmp.getX()][tmp.getY()] != visitID && canMove(obj, tmp.sub(obj.getPosition())) && Vector2D.dist(tmp, obj.getPosition()) > dist) {
+                    visited[tmp.getX()][tmp.getY()] = visitID;
                     stack.push(d);
                     prevCell = tmp;
                     flag = true;
@@ -181,18 +185,17 @@ public class DiscreteMap {
     }
     
     public Map<Vector2D, Vector2D> getAccessibleCells(MovableObject obj, int maxDist) {
+        
+        ++visitID;
+        
         remove(obj);
         
         Map<Vector2D, Vector2D> result = new HashMap<Vector2D, Vector2D>();
         Vector2D diag = new Vector2D(obj.getHeight(), obj.getWidth());
-        boolean visited[][] = new boolean[height][];
-        for (int i = 0; i < height; ++i) {
-            visited[i] = new boolean[width];
-        }
         
         Queue<Vector2D> queue = new LinkedList<Vector2D>();
         queue.add(obj.getPosition());
-        visited[obj.getPosition().getX()][obj.getPosition().getY()] = true;
+        visited[obj.getPosition().getX()][obj.getPosition().getY()] = visitID;
         
         while (!queue.isEmpty()) {
             
@@ -202,8 +205,8 @@ public class DiscreteMap {
                 if (isOutside(tmp) || isOutside(tmp.add(diag))) {
                     continue;
                 }
-                if (!visited[tmp.getX()][tmp.getY()] && canMove(obj, tmp.sub(obj.getPosition())) && Vector2D.dist(obj.getPosition(), tmp) <= maxDist) {
-                    visited[tmp.getX()][tmp.getY()] = true;
+                if (visited[tmp.getX()][tmp.getY()] != visitID && canMove(obj, tmp.sub(obj.getPosition())) && Vector2D.dist(obj.getPosition(), tmp) <= maxDist) {
+                    visited[tmp.getX()][tmp.getY()] = visitID;
                     result.put(tmp, p);
                     queue.add(tmp);
                 }
