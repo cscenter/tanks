@@ -255,6 +255,11 @@ public class GameModel {
     
     private void attack(Projectile projectile) {
         int id = map.getBlockID(projectile, projectile.getDirection().getMove());
+        // quite unsafe code
+        if (id == DiscreteMap.EMPTY_ID) {
+            id = map.getBlockID(projectile, new Vector2D(0, 0));
+        }
+        
         if (id != DiscreteMap.EMPTY_ID) {
             if (immovableObjects.containsKey(id)) {
                 if (immovableObjects.get(id).attacked(projectile)) {

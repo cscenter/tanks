@@ -11,6 +11,27 @@ public class Vector2D {
         this.y = y;
     }
     
+    public Vector2D(Vector2D v) {
+        this.x = v.getX();
+        this.y = v.getY();
+    }
+    
+    public void incX() {
+        ++(this.x);
+    }
+    
+    public void incX(int k) {
+        this.x += k;
+    }
+    
+    public void incY() {
+        ++(this.y);
+    }
+    
+    public void incY(int k) {
+        this.y += k;
+    }
+    
     public int getX() {
         return x;
     }
