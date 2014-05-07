@@ -31,6 +31,7 @@ public class GameModelGenerator {
             cellVariants.add(desc);
         }
         cellVariants.remove(cellVariants.indexOf(GameObjectDescription.GROUND));
+        cellVariants.remove(cellVariants.indexOf(GameObjectDescription.GRASS));
         cellVariants.remove(cellVariants.indexOf(GameObjectDescription.TANK));
         cellVariants.remove(cellVariants.indexOf(GameObjectDescription.PROJECTILE));
         for (int i = 0; i < height; ++i) {
@@ -44,12 +45,12 @@ public class GameModelGenerator {
         for (int i = 0; i < firstGroundCellsCount; ++i) {
             Vector2D v = new Vector2D(generator.nextInt(height), generator.nextInt(height));
             firstGroundCells.add(v);
-            map[v.getX()][v.getY()] = GameObjectDescription.GROUND;
+            map[v.getX()][v.getY()] = GameObjectDescription.getRandomBackground();
         }
         for (int i = 0; i < firstGroundCellsCount - 1; ++i) {
             List<Vector2D> path = findPath(map, firstGroundCells.get(i), firstGroundCells.get(i + 1));
             for (Vector2D cell : path) {
-                map[cell.getX()][cell.getY()] = GameObjectDescription.GROUND;
+                map[cell.getX()][cell.getY()] =  GameObjectDescription.getRandomBackground();
             }
         }
         

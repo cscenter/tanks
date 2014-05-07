@@ -169,6 +169,7 @@ public class ViewPanel extends JPanel {
         }
 
         public void start() {
+            System.out.println("Staring timer");
             timer.start();
         }
     }
@@ -218,8 +219,12 @@ public class ViewPanel extends JPanel {
     public void start(String mapFilename, int botsCount) {
         try {
             model = new InfiniteGameModel(botsCount);
+            System.out.println("parsing started");
             GameModelReader.parse(model, mapFilename);
+            System.out.println("parsing ended");
+            System.out.println("starting model");
             model.start();
+            System.out.println("model started");
             ticksCounter = 0;
             keyListenerAndTimer.start();
             setGamePaused(false);

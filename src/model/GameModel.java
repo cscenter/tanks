@@ -54,8 +54,8 @@ public class GameModel {
     
     protected Vector2D getRandomEmptyPosition(int w, int h) {
         List<Vector2D> freePositions = new ArrayList<Vector2D>();
-        for (int i = 0; i < height; ++i) {
-            for (int j = 0; j < width; ++j) {
+        for (int i = 0; i < height; i += DISCRETE_FACTOR) {
+            for (int j = 0; j < width; j += DISCRETE_FACTOR) {
                 Vector2D pos = new Vector2D(i, j);
                 if (map.isFree(pos, w, h)) {
                     freePositions.add(pos);
@@ -137,7 +137,8 @@ public class GameModel {
 	}
 
 	public void addImmovableObject(int i, int j, GameObjectDescription d) throws ModelException {
-        Vector2D pos = new Vector2D(DISCRETE_FACTOR * i, DISCRETE_FACTOR * j);
+        System.out.printf("Adding object number %d\n", immovableObjects.size() + 1);
+	    Vector2D pos = new Vector2D(DISCRETE_FACTOR * i, DISCRETE_FACTOR * j);
         ImmovableObject obj;
         switch (d) {
         case GRASS:

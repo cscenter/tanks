@@ -1,8 +1,10 @@
 package model;
 
+import java.awt.Rectangle;
 import java.util.*;
 
 import model.map.Quadtree;
+import model.map.QuadtreeNode;
 
 public class DiscreteMap {
     
@@ -10,15 +12,7 @@ public class DiscreteMap {
     private static final int NOT_VISITED_ID = 0;
     private static final int ELEMENTS_PER_QUAD = 8;
     
-    private class pointWithObject extends Vector2D {
-        public GameObject obj;
-        public pointWithObject(Vector2D pos, GameObject obj) {
-            super(pos);
-            this.obj = obj;
-        }
-    }
-    
-    private Quadtree<pointWithObject> objects;
+    private Quadtree objects;
     
     private Map<Vector2D, Integer> visited;
     private int visitID = NOT_VISITED_ID;
@@ -26,47 +20,40 @@ public class DiscreteMap {
     private final int width;
     private final int height;
     
-    
     public DiscreteMap(int w, int h) {
         width = w;
         height = h;
-        objects = new Quadtree<>(w, h, ELEMENTS_PER_QUAD);
+        objects = new Quadtree(w, h, ELEMENTS_PER_QUAD);
         visited = new HashMap<>();
+        staticRect = new Rectangle();
+    }
+
+    private void addToQuadtree(GameObject obj) {
+        Vector2D pos = obj.getPosition();
+        int w = obj.getWidth();
+        int h = obj.getHeight();
+        objects.insert(new QuadtreeNode(pos, obj));
+        objects.insert(new QuadtreeNode(pos.add(0, w - 1), obj));
+        objects.insert(new QuadtreeNode(pos.add(h - 1, w - 1), obj));
+        objects.insert(new QuadtreeNode(pos.add(h - 1, 0), obj));
+    }
+    
+    private void removeFromQuadtree(GameObject obj) {
+        Vector2D pos = obj.getPosition();
+        int w = obj.getWidth();
+        int h = obj.getHeight();
+        objects.remove(new QuadtreeNode(pos, obj));
+        objects.remove(new QuadtreeNode(pos.add(0, w - 1), obj));
+        objects.remove(new QuadtreeNode(pos.add(h - 1, w - 1), obj));
+        objects.remove(new QuadtreeNode(pos.add(h - 1, 0), obj));
     }
     
     public void add(GameObject obj) {
-        Vector2D pos = obj.getPosition();
-        int w = obj.getWidth();
-        int h = obj.getHeight();
-        objects.insert(new pointWithObject(pos, obj));
-        objects.insert(new pointWithObject(pos.add(x, y), obj));
+        addToQuadtree(obj);
     }
     
     public void remove(GameObject obj) {       
-        GameObjectDescription desc = obj.getDescription();
-        if (desc == GameObjectDescription.TANK || desc == GameObjectDescription.PROJECTILE) {
-            remove((MovableObject) obj);
-        } else {
-            remove((ImmovableObject) obj);
-        }        
-    }
-    
-    public void remove(ImmovableObject obj) {
-        Vector2D pos = obj.getPosition();
-        int w = obj.getWidth();
-        int h = obj.getHeight();
-        
-        mazePutRectangle(pos, h, w, Cell.EMPTY);
-        immovableIDsPutRectangle(pos, h, w, EMPTY_ID);        
-    }
-    
-    public void remove(MovableObject obj) {
-        Vector2D pos = obj.getPosition();
-        int w = obj.getWidth();
-        int h = obj.getHeight();
-        
-        mazePutRectangle(pos, h, w, Cell.EMPTY);
-        movableIDsPutRectangle(pos, h, w, EMPTY_ID);         
+        removeFromQuadtree(obj);        
     }
     
     private boolean isOutside(int x, int y) {
@@ -170,96 +157,83 @@ public class DiscreteMap {
         return result;
     }
     
-    private Cell getMazeAtPos(Vector2D pos) {
-        if (maze.containsKey(pos)) {
-            return maze.get(pos);
-        } else {
-            return Cell.EMPTY;
-        }
-    }
-    
-    private int getImmovableIDsAtPos(Vector2D pos) {
-        if (immovableIDs.containsKey(pos)) {
-            return immovableIDs.get(pos);
-        } else {
-            return EMPTY_ID;
-        }
-    }
-    
-    private int getMovableIDsAtPos(Vector2D pos) {
-        if (movableIDs.containsKey(pos)) {
-            return movableIDs.get(pos);
-        } else {
-            return EMPTY_ID;
-        }
-    }
-    
+    private Rectangle staticRect;
+    private static final int SEARCH_SQUARE_SIZE = GameModel.DISCRETE_FACTOR;
     // I assume that 'obj' is going to add 'v' to its position.
     // only the final position is checked.
     public boolean canMove(MovableObject obj, Vector2D v) {
+        int w = obj.getWidth();
+        int h = obj.getHeight();
         Vector2D cornerLU = obj.getPosition().add(v);
-        Vector2D cornerRD = cornerLU.add(new Vector2D(obj.getHeight(), obj.getWidth()));
+        Vector2D cornerRD = cornerLU.add(h, w);
         if (isOutside(cornerLU) || isOutside(cornerRD)) {
             return false;
         }
-        Vector2D pos = new Vector2D(cornerLU);
-        for (; pos.getX() < cornerRD.getX(); pos.incX()) {
-            for (pos.setY(cornerLU.getY()); pos.getY() < cornerRD.getY(); pos.incY()) {
-				if ((getMazeAtPos(pos) != Cell.EMPTY) && (getMovableIDsAtPos(pos) != obj.getID())) {
-                    return false;
-                }
+        Set<GameObject> objsAtRect = new HashSet<>();
+        staticRect.setBounds(cornerLU.getX() - SEARCH_SQUARE_SIZE, cornerLU.getY() - SEARCH_SQUARE_SIZE, h + SEARCH_SQUARE_SIZE * 2, w + SEARCH_SQUARE_SIZE * 2);
+        objects.query(staticRect, objsAtRect);
+        staticRect.setBounds(cornerLU.getX(), cornerLU.getY(), w, h);
+        for (GameObject block : objsAtRect) {
+            if (block == obj) {
+                continue;
+            }
+            if (staticRect.intersects(block.getPosition().getX(), block.getPosition().getY(), block.getWidth(), block.getHeight())) {
+                return false;
             }
         }
         return true;
     }
     
+    
+    //// !!!! UNSAFE FUNCTION. TEST CAREFULLY
     // Simply the same as 'canMove' method
     public int getBlockID(MovableObject obj, Vector2D v) {
+        int w = obj.getWidth();
+        int h = obj.getHeight();
         Vector2D cornerLU = obj.getPosition().add(v);
-        Vector2D cornerRD = cornerLU.add(new Vector2D(obj.getHeight(), obj.getWidth()));
+        Vector2D cornerRD = cornerLU.add(h, w);
         if (isOutside(cornerLU) || isOutside(cornerRD)) {
             return EMPTY_ID; // can cause a bug.
         }
-        Vector2D pos = new Vector2D(cornerLU);
-        for (; pos.getX() < cornerRD.getX(); pos.incX()) {
-            for (pos.setY(cornerLU.getY()); pos.getY() < cornerRD.getY(); pos.incY()) {
-				if (getMazeAtPos(pos) != Cell.EMPTY) {
-                    return (getMovableIDsAtPos(pos) != EMPTY_ID) ? getMovableIDsAtPos(pos) : getImmovableIDsAtPos(pos);
-                }
+        Set<GameObject> objsAtRect = new HashSet<>();
+        staticRect.setBounds(cornerLU.getX() - SEARCH_SQUARE_SIZE, cornerLU.getY() - SEARCH_SQUARE_SIZE, h + SEARCH_SQUARE_SIZE * 2, w + SEARCH_SQUARE_SIZE * 2);
+        objects.query(staticRect, objsAtRect);
+        staticRect.setBounds(cornerLU.getX(), cornerLU.getY(), w, h);
+        for (GameObject block : objsAtRect) {
+            if (block == obj) {
+                continue;
+            }
+            if (staticRect.intersects(block.getPosition().getX(), block.getPosition().getY(), block.getWidth(), block.getHeight())) {
+                return block.getID();
             }
         }
-        return EMPTY_ID; // it's okay
+        return EMPTY_ID;
     }
     
     public boolean isFree(Vector2D v, int w, int h) {
         Vector2D cornerLU = v;
-        Vector2D cornerRD = cornerLU.add(new Vector2D(h, w));
+        Vector2D cornerRD = cornerLU.add(h, w);
         if (isOutside(cornerLU) || isOutside(cornerRD)) {
             return false;
         }
-        Vector2D pos = new Vector2D(cornerLU);
-        for (; pos.getX() < cornerRD.getX(); pos.incX()) {
-            for (pos.setY(cornerLU.getY()); pos.getY() < cornerRD.getY(); pos.incY()) {
-                if (getMazeAtPos(pos) != Cell.EMPTY) {
-                    return false;
-                }
-            }
-        }
-        return true;
+        Set<GameObject> objsAtRect = new HashSet<>();
+        objects.query(new Rectangle(cornerLU.getX(), cornerLU.getY(), w, h), objsAtRect);
+        return (objsAtRect.isEmpty());
     }
     
     public boolean isFreeForProjectile(Vector2D v, int w, int h) {
         Vector2D cornerLU = v;
-        Vector2D cornerRD = cornerLU.add(new Vector2D(h, w));
+        Vector2D cornerRD = cornerLU.add(h, w);
         if (isOutside(cornerLU) || isOutside(cornerRD)) {
             return false;
         }
-        Vector2D pos = new Vector2D(cornerLU);
-        for (; pos.getX() < cornerRD.getX(); pos.incX()) {
-            for (pos.setY(cornerLU.getY()); pos.getY() < cornerRD.getY(); pos.incY()) {
-                if (getMazeAtPos(pos) == Cell.BLOCKED) {
-                    return false;
-                }
+        Set<GameObject> objsAtRect = new HashSet<>();
+        staticRect.setBounds(cornerLU.getX() - SEARCH_SQUARE_SIZE, cornerLU.getY() - SEARCH_SQUARE_SIZE, h + SEARCH_SQUARE_SIZE * 2, w + SEARCH_SQUARE_SIZE * 2);
+        objects.query(staticRect, objsAtRect);
+        staticRect.setBounds(cornerLU.getX(), cornerLU.getY(), w, h);
+        for (GameObject block : objsAtRect) {
+            if (((block.getDescription() != GameObjectDescription.WATER)) && staticRect.intersects(block.getPosition().getX(), block.getPosition().getY(), block.getWidth(), block.getHeight())) {
+                return false;
             }
         }
         return true;
@@ -267,19 +241,19 @@ public class DiscreteMap {
   
     public void debugprint() {
         System.out.println("Maze");
-        Vector2D pos = new Vector2D(0, 0);
-        for (; pos.getX() < height; pos.incX()) {
-            for (pos.setY(0); pos.getY() < width; pos.incY()) {
-                switch (getMazeAtPos(pos)) {
-                case EMPTY:
+        Set<GameObject> objsAtRect = new HashSet<>();
+        for (int i = 0; i < height; ++i) {
+            for (int j = 0; j < width; ++j) {
+                objsAtRect.clear();
+                objects.query(new Rectangle(i, j, 1, 1), objsAtRect);
+                if (objsAtRect.isEmpty()) {
                     System.out.print(0);
-                    break;
-                case BLOCKED:
-                    System.out.print(1);
-                    break;
-                case SEMIBLOCKED:
-                    System.out.print(2);
-                    break;                    
+                } else {
+                    if (objsAtRect.iterator().next().getDescription() == GameObjectDescription.WATER) {
+                        System.out.print(2);
+                    } else {
+                        System.out.print(1);
+                    }    
                 }                
                 System.out.print(' ');
             }
@@ -304,9 +278,5 @@ public class DiscreteMap {
             System.out.print("\n");
         }
         */
-    }
-    
-    private enum Cell {
-        EMPTY, BLOCKED, SEMIBLOCKED
     }
 }

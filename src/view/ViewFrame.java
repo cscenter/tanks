@@ -25,8 +25,8 @@ public class ViewFrame extends JFrame {
     
     private ViewPanel panel;
     
-    private static final int RANDOM_MAP_SIZE = 100;
-    private static final int RANDOM_MAP_BOTS_COUNT = 40;
+    private static final int RANDOM_MAP_SIZE = 200;
+    private static final int RANDOM_MAP_BOTS_COUNT = 100;
     
     
     public ViewFrame() {
