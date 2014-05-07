@@ -2,14 +2,23 @@ package model;
 
 import java.util.*;
 
+import model.map.Quadtree;
+
 public class DiscreteMap {
     
     public static final int EMPTY_ID = 0;
     private static final int NOT_VISITED_ID = 0;
+    private static final int ELEMENTS_PER_QUAD = 8;
     
-    private Map<Vector2D, Cell> maze;
-    private Map<Vector2D, Integer> movableIDs;
-    private Map<Vector2D, Integer> immovableIDs;
+    private class pointWithObject extends Vector2D {
+        public GameObject obj;
+        public pointWithObject(Vector2D pos, GameObject obj) {
+            super(pos);
+            this.obj = obj;
+        }
+    }
+    
+    private Quadtree<pointWithObject> objects;
     
     private Map<Vector2D, Integer> visited;
     private int visitID = NOT_VISITED_ID;
@@ -21,96 +30,16 @@ public class DiscreteMap {
     public DiscreteMap(int w, int h) {
         width = w;
         height = h;
-        maze = new HashMap<>();
-        movableIDs = new HashMap<>();
-        immovableIDs = new HashMap<>();
+        objects = new Quadtree<>(w, h, ELEMENTS_PER_QUAD);
         visited = new HashMap<>();
     }
     
-    private void mazePutRectangle(Vector2D pos, int h, int w, Cell cell) {
-        int i;
-        int j;
-        for (i = 0, j = 0; i < h; ++i) {
-            maze.put(pos.add(i, j), cell);
-        }
-        for (i = 0, j = 0; j < w; ++j) {
-            maze.put(pos.add(i, j), cell);
-        }
-        for (i = 0, j = w - 1; i < h; ++i) {
-            maze.put(pos.add(i, j), cell);
-        }
-        for (i = h - 1, j = 0; j < w; ++j) {
-            maze.put(pos.add(i, j), cell);
-        }
-    }
-    
-    private void immovableIDsPutRectangle(Vector2D pos, int h, int w, int id) {
-        int i;
-        int j;
-        for (i = 0, j = 0; i < h; ++i) {
-            immovableIDs.put(pos.add(i, j), id);
-        }
-        for (i = 0, j = w - 1; i < h; ++i) {
-            immovableIDs.put(pos.add(i, j), id);
-        }
-        for (i = h - 1, j = 0; j < w; ++j) {
-            immovableIDs.put(pos.add(i, j), id);
-        }
-        for (i = 0, j = 0; j < w; ++j) {
-            immovableIDs.put(pos.add(i, j), id);
-        }
-    }
-    
-    private void movableIDsPutRectangle(Vector2D pos, int h, int w, int id) {
-        int i;
-        int j;
-        for (i = 0, j = 0; i < h; ++i) {
-            movableIDs.put(pos.add(i, j), id);
-        }
-        for (i = 0, j = w - 1; i < h; ++i) {
-            movableIDs.put(pos.add(i, j), id);
-        }
-        for (i = h - 1, j = 0; j < w; ++j) {
-            movableIDs.put(pos.add(i, j), id);
-        }
-        for (i = 0, j = 0; j < w; ++j) {
-            movableIDs.put(pos.add(i, j), id);
-        }
-    }
-    
-    public void add(ImmovableObject obj) {
+    public void add(GameObject obj) {
         Vector2D pos = obj.getPosition();
-        int id = obj.getID();
         int w = obj.getWidth();
         int h = obj.getHeight();
-        
-        Cell cell;
-        
-        switch (obj.getDescription()) {
-        case GRASS:
-        case GROUND:
-        	return;
-        case WATER:
-            cell = Cell.SEMIBLOCKED;
-        	break;
-        default:
-            cell = Cell.BLOCKED;
-        }
-
-        mazePutRectangle(pos, h, w, cell);
-        immovableIDsPutRectangle(pos, h, w, id);
-    }
-    
-    public void add(MovableObject obj) {
-        Vector2D pos = obj.getPosition();
-        int id = obj.getID();
-        int w = obj.getWidth();
-        int h = obj.getHeight();
-        
-        Cell cell = Cell.BLOCKED;
-
-        mazePutRectangle(pos, h, w, cell);
-        movableIDsPutRectangle(pos, h, w, id);
+        objects.insert(new pointWithObject(pos, obj));
+        objects.insert(new pointWithObject(pos.add(x, y), obj));
     }
     
     public void remove(GameObject obj) {       
