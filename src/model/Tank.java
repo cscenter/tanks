@@ -4,7 +4,7 @@ import java.util.Random;
 
 public class Tank extends MovableObject {
 
-	public static final double WIDTH_HEIGHT_RATE = 52.0 / 64.0;
+	private static final int SIZE = (GameModel.DISCRETE_FACTOR * 48) / 64;
     public static final int DEFAULT_START_HEALTH = 5;
     private static final int DEFAULT_FIRE_MOVE_RATE = 20;
     private static final int DEFAULT_DAMAGE = 1;
@@ -75,15 +75,15 @@ public class Tank extends MovableObject {
     
     @Override
     public int getWidth() {
-		return (int) (super.getWidth() * WIDTH_HEIGHT_RATE);
+		return SIZE;
     }
 
     @Override
     public int getHeight() {
-    	return (int) (super.getHeight() * WIDTH_HEIGHT_RATE);
+    	return SIZE;
     }
     
-    public static int getMaxSize() {
-    	return SIZE;
+    public static int getSize() {
+        return SIZE;
     }
 }

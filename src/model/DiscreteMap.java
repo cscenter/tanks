@@ -94,7 +94,7 @@ public class DiscreteMap {
                     continue;
                 }
                 
-                if (getVisetedAtPos(tmp) != visitID && canMove(obj, tmp.sub(obj.getPosition())) && Vector2D.dist(tmp, obj.getPosition()) > dist) {
+                if (getVisetedAtPos(tmp) != visitID && canBotMove(obj, tmp.sub(obj.getPosition())) && Vector2D.dist(tmp, obj.getPosition()) > dist) {
                     visited.put(tmp, visitID);
                     stack.push(d);
                     prevCell = tmp;
@@ -176,7 +176,7 @@ public class DiscreteMap {
         for (GameObject block : objsAtRect) {
             if (block == obj) {
                 continue;
-            }
+            }                
             if (staticRect.intersects(block.getPosition().getX(), block.getPosition().getY(), block.getWidth(), block.getHeight())) {
                 return false;
             }
@@ -184,6 +184,30 @@ public class DiscreteMap {
         return true;
     }
     
+    // I assume that 'obj' is going to add 'v' to its position.
+    // only the final position is checked.
+    public boolean canBotMove(MovableObject obj, Vector2D v) {
+        int w = obj.getWidth();
+        int h = obj.getHeight();
+        Vector2D cornerLU = obj.getPosition().add(v);
+        Vector2D cornerRD = cornerLU.add(h, w);
+        if (isOutside(cornerLU) || isOutside(cornerRD)) {
+            return false;
+        }
+        Set<GameObject> objsAtRect = new HashSet<>();
+        staticRect.setBounds(cornerLU.getX() - SEARCH_SQUARE_SIZE, cornerLU.getY() - SEARCH_SQUARE_SIZE, h + SEARCH_SQUARE_SIZE * 2, w + SEARCH_SQUARE_SIZE * 2);
+        objects.query(staticRect, objsAtRect);
+        staticRect.setBounds(cornerLU.getX(), cornerLU.getY(), w, h);
+        for (GameObject block : objsAtRect) {
+            if (block == obj || block.getDescription() == GameObjectDescription.BONUS) {
+                continue;
+            }                
+            if (staticRect.intersects(block.getPosition().getX(), block.getPosition().getY(), block.getWidth(), block.getHeight())) {
+                return false;
+            }
+        }
+        return true;
+    }
     
     //// !!!! UNSAFE FUNCTION. TEST CAREFULLY
     // Simply the same as 'canMove' method

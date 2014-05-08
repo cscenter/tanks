@@ -9,6 +9,10 @@ public class MovableObject extends GameObject {
     
     protected int health = 1;
     
+    public void setHealth(int health) {
+        this.health = health;
+    }
+
     public MovableObject(int id, Vector2D p, GameObjectDescription d, Team team) {
         super(id, p, d);
         speed = new Speed(Direction.NONE, 3);

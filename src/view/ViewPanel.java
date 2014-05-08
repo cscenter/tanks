@@ -83,10 +83,17 @@ public class ViewPanel extends JPanel {
             timer = new Timer(TIMER_DELAY, new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent arg0) {
-                	handleKeys();
-                	if (isGameOn()) {
-                	    handleGameActions();
-                	}
+                    try {
+                        handleKeys();
+                    	if (isGameOn()) {
+                    	    handleGameActions();
+                    	}
+                    } catch (ModelException e) {
+                        JOptionPane.showMessageDialog(ViewPanel.this,
+                                e.getMessage(),
+                                "Error",
+                                JOptionPane.ERROR_MESSAGE);
+                    }
                 }
             });
         }
@@ -104,16 +111,11 @@ public class ViewPanel extends JPanel {
         @Override
         public void keyTyped(KeyEvent ovent) {}
         
-        private void handleGameActions() {
-            try {
-                model.tick();
-                ++ticksCounter;
-            } catch (ModelException e) {
-                JOptionPane.showMessageDialog(ViewPanel.this,
-                        e.getMessage(),
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-            }
+        private void handleGameActions() throws ModelException {
+            
+            model.tick();
+            ++ticksCounter;
+            
             if ((ticksCounter & (REPAINT_DELAY - 1)) == 0) {
                 repaint();
             }
@@ -130,7 +132,7 @@ public class ViewPanel extends JPanel {
             }
         }
         
-        private void handleKeys() {
+        private void handleKeys() throws ModelException {
             KeyListenerAndTimer.this.timeAfterPausePress = Math.min(KeyListenerAndTimer.this.timeAfterPausePress + 1, TIME_AFTER_PAUSE);
             for (Integer keyCode : pressedKeys) {
                 if (keyCode == KeyEvent.VK_P && isGameStarted() && KeyListenerAndTimer.this.timeAfterPausePress == TIME_AFTER_PAUSE) {
@@ -169,7 +171,6 @@ public class ViewPanel extends JPanel {
         }
 
         public void start() {
-            System.out.println("Staring timer");
             timer.start();
         }
     }
@@ -219,12 +220,8 @@ public class ViewPanel extends JPanel {
     public void start(String mapFilename, int botsCount) {
         try {
             model = new InfiniteGameModel(botsCount);
-            System.out.println("parsing started");
             GameModelReader.parse(model, mapFilename);
-            System.out.println("parsing ended");
-            System.out.println("starting model");
             model.start();
-            System.out.println("model started");
             ticksCounter = 0;
             keyListenerAndTimer.start();
             setGamePaused(false);

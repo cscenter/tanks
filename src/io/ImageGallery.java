@@ -1,6 +1,7 @@
 package io;
 
 import model.*;
+import model.BonusObject.Bonus;
 import model.MovableObject.Team;
 
 import java.util.*;
@@ -23,6 +24,7 @@ public class ImageGallery {
     private EnumMap<Direction, Image> greenTankImage;
     private EnumMap<Direction, Image> redTankImage;
     private EnumMap<Direction, Image> projectileImage;
+    private EnumMap<Bonus, Image> bonusImage;
     
     public ImageGallery(String spritesDestination) throws MapIOException {
         try {
@@ -37,9 +39,10 @@ public class ImageGallery {
         } catch (IOException e) {
             throw new MapIOException("Cannot load image of Immovable Object");
         }
-        greenTankImage = new EnumMap<Direction, Image>(Direction.class);
-        redTankImage = new EnumMap<Direction, Image>(Direction.class);
-        projectileImage = new EnumMap<Direction, Image>(Direction.class);
+        greenTankImage = new EnumMap<>(Direction.class);
+        redTankImage = new EnumMap<>(Direction.class);
+        projectileImage = new EnumMap<>(Direction.class);
+        bonusImage = new EnumMap<>(Bonus.class);
         
         Collection<Direction> directions = new ArrayList<>(Arrays.asList(Direction.values()));
         directions.remove(Direction.NONE);
@@ -55,6 +58,16 @@ public class ImageGallery {
                 projectileImage.put(d, ImageIO.read(new File(filename)));
             } catch (IOException e) {
                 throw new MapIOException("Cannot load image of Movable Object");
+            }
+        }
+        
+        for (Bonus b : Bonus.values()) {
+            try {
+                String filename;
+                filename = spritesDestination + "//bonus//" + b.toString().toLowerCase() + ".png";
+                bonusImage.put(b, ImageIO.read(new File(filename)));
+            } catch (IOException e) {
+                throw new MapIOException("Cannot load image of Bonus");
             }
         }
     }
@@ -77,6 +90,8 @@ public class ImageGallery {
     
     public Image getImage(GameObject obj) {
         switch (obj.getDescription()) {
+        case BONUS:
+            return bonusImage.get(((BonusObject) obj).bonus);
         case GRASS:
         	return grassImage;
         case PALM:

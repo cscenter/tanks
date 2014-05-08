@@ -3,7 +3,7 @@ package model;
 import java.util.*;
 
 public enum GameObjectDescription {
-    WATER('W'), TREE('R'), STONE('S'), GROUND('G'), TANK('T'), PROJECTILE('P'), PALM('A'), GRASS('V');
+    WATER('W'), TREE('R'), STONE('S'), GROUND('G'), TANK('T'), PROJECTILE('P'), PALM('A'), GRASS('V'), BONUS('B');
     
     char tag;
     private static Map<Character, GameObjectDescription> charToDescriptionMapping;

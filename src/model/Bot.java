@@ -55,7 +55,7 @@ public class Bot {
         plannedMoves = model.getRandomPath(controlledTank);
     }
     
-    public void makeTurn() {
+    public void makeTurn() throws ModelException {
         boolean shootFlag = false;
         Collection<Tank> enemies = model.getEnemies(controlledTank.getTeam());
         for (Tank enemy : enemies) {
@@ -74,7 +74,7 @@ public class Bot {
             controlledTank.canShoot(true);
         }
         
-        if (plannedMoves.empty() || !model.canTankMove(controlledTank.getID(), plannedMoves.peek().getMove())) {
+        if (plannedMoves.empty() || !model.canBotMove(controlledTank, plannedMoves.peek().getMove())) {
             createPath();
         }
         

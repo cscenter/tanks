@@ -45,5 +45,4 @@ public class GameObject implements Attackable, Sizable {
     public int getHeight() {
         return SIZE;
     }
-
 }

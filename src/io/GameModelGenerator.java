@@ -30,6 +30,7 @@ public class GameModelGenerator {
         for (GameObjectDescription desc : GameObjectDescription.values()) {
             cellVariants.add(desc);
         }
+        cellVariants.remove(cellVariants.indexOf(GameObjectDescription.BONUS));
         cellVariants.remove(cellVariants.indexOf(GameObjectDescription.GROUND));
         cellVariants.remove(cellVariants.indexOf(GameObjectDescription.GRASS));
         cellVariants.remove(cellVariants.indexOf(GameObjectDescription.TANK));
