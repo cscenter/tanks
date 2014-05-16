@@ -1,4 +1,4 @@
-package model.map;
+package test;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -6,6 +6,8 @@ import java.util.Set;
 import model.GameObject;
 import model.GameObjectDescription;
 import model.Vector2D;
+import model.map.Quadtree;
+import model.map.QuadtreeNode;
 
 import org.junit.After;
 import org.junit.Before;
@@ -28,12 +30,12 @@ public class QuadtreeTest {
     }
     
     @After
-    public void clear1() {
+    public void clear() {
         toAdd.clear();
     }
     
     @Before
-    public void prepareTest1() {
+    public void prepareTest() {
         toAdd.add(createNode(5, 5, 1));
     }
     
@@ -45,18 +47,8 @@ public class QuadtreeTest {
         }
     }
     
-    @Before
-    public void prepareTest2() {
-        toAdd.add(createNode(10, 10, 1));
-    }
-    
     @Test
     public void test2() {
         
-    }
-    
-    @After
-    public void clear2() {
-        toAdd.clear();
     }
 }
