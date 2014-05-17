@@ -13,14 +13,16 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Random;
 
+import model.GameModel;
 import model.GameObjectDescription;
+import model.ModelException;
 import model.Vector2D;
 
 public class GameModelGenerator {
     
     private static Random generator = new Random();
     
-    public static void createMap(int width, int height, String filename) {
+    public static void createMap(int width, int height, String filename, int botsCount) throws ModelException {
         GameObjectDescription[][] map = new GameObjectDescription[height][];
         for (int i = 0; i < height; ++i) {
             map[i] = new GameObjectDescription[width];
@@ -55,20 +57,20 @@ public class GameModelGenerator {
             }
         }
         
-        printMap(map, filename);
+        printMap(map, filename, botsCount);
     }
     
-    private static void printMap(GameObjectDescription[][] map, String filename) {
+    private static void printMap(GameObjectDescription[][] map, String filename, int botsCount) throws ModelException {
         PrintWriter writer = null;
         try {
             writer = new PrintWriter(filename, "UTF-8");
         } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new ModelException("Map generation error.");
         } catch (UnsupportedEncodingException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new ModelException("Map generation error.");
         }
+        
+        writer.println(GameModel.ModelType.INFINITE.toString());
         writer.println(Integer.toString(map.length) + " " + Integer.toString(map[0].length));
         
         String preparedOutput = Arrays.deepToString(map).replaceAll("],", "],\n");
@@ -80,7 +82,9 @@ public class GameModelGenerator {
             preparedOutput = preparedOutput.replaceAll(desc.toString(), "" + desc.getTag());
         }
         
-        writer.print(preparedOutput);
+        writer.println(preparedOutput);
+        
+        writer.print(botsCount);
         writer.close();
         
     }

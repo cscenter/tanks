@@ -1,5 +1,6 @@
 package view;
 
+import io.GameModelLoader;
 import io.GameModelReader;
 import io.ImageGallery;
 import io.MapIOException;
@@ -23,8 +24,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
+import model.Campaign;
 import model.Direction;
 import model.GameModel;
+import model.GameModel.ModelType;
 import model.GameModel.deletedTank;
 import model.GameObject;
 import model.InfiniteGameModel;
@@ -217,26 +220,45 @@ public class ViewPanel extends JPanel {
         return !isGamePaused() && isGameStarted();
     }
     
-    public void start(String mapFilename, int botsCount) {
-        try {
-            model = new InfiniteGameModel(botsCount);
-            GameModelReader.parse(model, mapFilename);
-            model.start();
-            ticksCounter = 0;
-            keyListenerAndTimer.start();
-            setGamePaused(false);
-            setGameStarted(true);
-        } catch (MapIOException e) {
-            JOptionPane.showMessageDialog(ViewPanel.this,
-                    e.getMessage(),
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
-        } catch (ModelException e) {
-        	JOptionPane.showMessageDialog(ViewPanel.this,
-                    e.getMessage(),
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
-		}
+    private ModelType modelType;
+    private Campaign campaign;
+    
+    public void start(ModelType modelType, String mapFilePath) {
+        this.modelType = modelType;
+        switch (modelType) {
+        case INFINITE:
+            try {
+                model = GameModelLoader.load(mapFilePath);
+                model.start();  
+            } catch (MapIOException e) {
+                JOptionPane.showMessageDialog(ViewPanel.this,
+                        e.getMessage(),
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+            } catch (ModelException e) {
+                JOptionPane.showMessageDialog(ViewPanel.this,
+                        e.getMessage(),
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+            break;
+        case CAMPAIGN:
+            try {
+                campaign = new Campaign(mapFilePath);
+                model = campaign.getModel();
+                model.start();
+            } catch (ModelException e) {
+                JOptionPane.showMessageDialog(ViewPanel.this,
+                        e.getMessage(),
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+            break;
+        }
+        ticksCounter = 0;
+        keyListenerAndTimer.start();
+        setGamePaused(false);
+        setGameStarted(true);
     }
     
     private int modelCenterX;

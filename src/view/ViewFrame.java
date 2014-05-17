@@ -19,6 +19,10 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
+import model.GameModel;
+import model.GameObjectDescription;
+import model.ModelException;
+
 
 @SuppressWarnings("serial")
 public class ViewFrame extends JFrame {
@@ -48,8 +52,7 @@ public class ViewFrame extends JFrame {
         menuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //panel.start("maps/thebridge.txt", 20);
-            	panel.start("map.txt", 1);
+            	panel.start(GameModel.ModelType.CAMPAIGN, "maps");
                 repaint();
                 pauseMenuItem.setEnabled(true);
                 resumeMenuItem.setEnabled(false);
@@ -62,8 +65,12 @@ public class ViewFrame extends JFrame {
         menuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                GameModelGenerator.createMap(RANDOM_MAP_SIZE, RANDOM_MAP_SIZE, "randomMap.txt");
-                panel.start("randomMap.txt", RANDOM_MAP_BOTS_COUNT);
+                try {
+                    GameModelGenerator.createMap(RANDOM_MAP_SIZE, RANDOM_MAP_SIZE, "randomMap.txt", RANDOM_MAP_BOTS_COUNT);
+                } catch (ModelException e1) {
+                    System.out.println("Error while map generation occuried.");
+                }
+                panel.start(GameModel.ModelType.INFINITE, "randomMap.txt");
                 repaint();
                 pauseMenuItem.setEnabled(true);
                 resumeMenuItem.setEnabled(false);

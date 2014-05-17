@@ -8,6 +8,10 @@ import model.Tank.Difficulty;
 
 public class GameModel {
     
+    public enum ModelType {
+        INFINITE, CAMPAIGN
+    }
+    
     public static final int DISCRETE_FACTOR = 31;
     private static final int SCORE_PER_TICK = 0;
     private static final int DEFAULT_DELETED_TANKS_LIFETIME = 50;
@@ -52,6 +56,10 @@ public class GameModel {
     
     public void start() throws ModelException {
         
+    }
+    
+    public boolean isOver() {
+        return false;
     }
     
     protected List<Vector2D> getRandomEmptyPositions() {
@@ -241,7 +249,7 @@ public class GameModel {
         bots.put(bot.getTankID(), bot);
     }
     
-    protected boolean addPlayer(Team team, int delay, Vector2D position) {
+    public boolean addPlayer(Team team, int delay, Vector2D position) {
         Tank tank = addTank(team, delay, position);
         if (tank == null) {
             return false;
@@ -483,5 +491,4 @@ public class GameModel {
 	public Stack<Direction> getRandomPath(MovableObject obj) {
 		return map.getRandomPath(obj, MAX_DIST_FOR_SEARCH);
 	}    
-    
 }
