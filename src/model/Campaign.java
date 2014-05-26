@@ -5,7 +5,6 @@ import io.MapIOException;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class Campaign {
@@ -22,6 +21,18 @@ public class Campaign {
             mapFilenames.add(f.getAbsolutePath());
         }
         currentLevel = -1;
+        nextLevel();
+    }
+    
+    public String getMapName() {
+        String filename  = new File(mapFilenames.get(currentLevel)).getName();
+        String mapName = filename.replaceFirst("[.][^.]+$", "").replaceAll("(\\p{Ll})(\\p{Lu})","$1 $2");
+        mapName = mapName.substring(0, 1).toUpperCase() + mapName.substring(1);
+        return mapName;
+    }
+    
+    public void reloadLevel() throws ModelException {
+        --currentLevel;
         nextLevel();
     }
     

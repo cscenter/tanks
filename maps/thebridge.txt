@@ -1,3 +1,4 @@
+CAMPAIGN
 78 18
 G G G G G G W W W W W W W W W W W W W W W W W W W W G G G G G W W W W W W W W W W W W W W W W W W W S W W W W W W W W W R G G W W W W W W G G G G G G G G G
 G G R R R S G W W W W W W W W W W W W W W W W W W W W W G G G W W W W W W W W W S W W W W W W W W W W W W W W S W W W W W G G G W W W W W R G G R R R G R G
@@ -17,3 +18,6 @@ R G G G G G G W W W W W S W W W W W W G S G W W W S W W W G W W W W W W G S G W 
 G G R R G G W W W W W W W W W W W W W W G W W W W W W W G R G W W W W W W G W W W W W W W W S W W W W W W W G W W W W W W W W W W W W W W R G S R R R G G G
 G G S G G W W W W W W W W W W W W G G W W W W W W W W W W G W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W S W W W W W W W W G G G R R R G G G
 G R R R G G W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W S W W R G G G G G G G G
+PLAYER 2 2
+1 1
+EASY 78 18

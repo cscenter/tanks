@@ -1,3 +1,4 @@
+CAMPAIGN
 20 20
 W W S S S S S S S S S S S S S S S S S S
 W W W G G G G G G G G G G G G G G G G S
@@ -19,3 +20,6 @@ S G R G G R G R R G R G W W R G R R G S
 S G G R G R G G R G G W W G R G R G G S
 S G G G G R G G G G G R G G G G S G G S
 S S S S S S S S S S W W W S S S S S S S
+PLAYER 4 2
+1 1
+EASY 19 19

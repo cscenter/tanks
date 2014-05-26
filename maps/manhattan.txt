@@ -1,3 +1,4 @@
+CAMPAIGN
 23 19
 G G G G G G G G G G G G G G G G G G G G G G G
 G S S S G S S S S G S S S G S S W G S S S G R
@@ -18,3 +19,6 @@ G S S G G G G R R R R G G G G G G G G G S S G
 G S S S G R G G G G G G R G S G W G S G S S G
 G S S S G R R R R G R R R G S G W G S G G G G
 G G G G G G G G G G G G G G G G G G G G G G G
+PLAYER 1 1
+1 1
+EASY 23 19

@@ -12,6 +12,9 @@ public class GameModel {
         INFINITE, CAMPAIGN
     }
     
+    private final double BONUS_PROBABILITY = 0.0003;
+    private final int BONUS_RADIUS = 10;
+    
     public static final int DISCRETE_FACTOR = 31;
     private static final int SCORE_PER_TICK = 0;
     private static final int DEFAULT_DELETED_TANKS_LIFETIME = 50;
@@ -19,7 +22,7 @@ public class GameModel {
     public static final int MAX_DIST_FOR_SEARCH = 100;
     protected static final Random GENERATOR = new Random();
     
-    private DiscreteMap map;
+    protected DiscreteMap map;
     private Map<Integer, ImmovableObject> immovableObjects;
     private Map<Integer, Projectile> projectiles;
     private Map<Integer, Tank> tanks;
@@ -62,6 +65,19 @@ public class GameModel {
         return false;
     }
     
+    protected List<Vector2D> getRandomEmptyPositions(Vector2D pos, int dist) {
+        List<Vector2D> freePositions = new ArrayList<>();
+        for (int i = pos.getX() - dist * DISCRETE_FACTOR; i < pos.getX() + dist * DISCRETE_FACTOR; i += DISCRETE_FACTOR) {
+            for (int j = pos.getY() - dist * DISCRETE_FACTOR; j < pos.getY() + dist * DISCRETE_FACTOR; j += DISCRETE_FACTOR) {
+                Vector2D p = new Vector2D(i, j);
+                if (map.isFree(p, DISCRETE_FACTOR, DISCRETE_FACTOR)) {
+                    freePositions.add(p);
+                }
+            }
+        }
+        return freePositions;
+    }
+    
     protected List<Vector2D> getRandomEmptyPositions() {
         List<Vector2D> freePositions = new ArrayList<>();
         for (int i = 0; i < height; i += DISCRETE_FACTOR) {
@@ -73,6 +89,14 @@ public class GameModel {
             }
         }
         return freePositions;
+    }
+    
+    protected Vector2D getRandomEmptyPosition(Vector2D pos, int dist) {
+        List<Vector2D> freePositions = getRandomEmptyPositions(pos, dist);
+        if (freePositions.isEmpty()) {
+            return null;
+        }
+        return freePositions.get(GENERATOR.nextInt(freePositions.size()));
     }
     
     protected Vector2D getRandomEmptyPosition() {
@@ -141,6 +165,14 @@ public class GameModel {
         score += SCORE_PER_TICK;
         
         updateDeletedTanks();
+        
+        if (GENERATOR.nextDouble() < BONUS_PROBABILITY) {
+            Vector2D pos = getRandomEmptyPosition(getPlayerTank().getPosition(), BONUS_RADIUS);
+            if (pos != null) {
+                pos = pos.add(GENERATOR.nextInt(DISCRETE_FACTOR - BonusObject.getSize()), GENERATOR.nextInt(DISCRETE_FACTOR - BonusObject.getSize()));
+                addImmovableObject(pos, GameObjectDescription.BONUS);
+            }
+        }
     }
     
     private void updateDeletedTanks() {
@@ -223,23 +255,29 @@ public class GameModel {
         }
     }
     
-    private Tank addTank(Team team, int delay, Vector2D position) {
+    private Tank addTank(Team team, int delay, Vector2D position) throws ModelException {
         Tank tank = null;
         if (map.isFree(position, Tank.getSize(), Tank.getSize())) {
             tank = new  Tank(freeID++, position, team, delay);
             map.add(tank);
             tanks.put(tank.getID(), tank);
         }
+        if (tank == null) {
+            throw new ModelException("Cannot add tank at position" + position.toString());
+        }
         return tank;
     }
     
     // only Bot class can call this method
-    public Tank addTank(Team team, Difficulty difficulty, Vector2D position) {
+    public Tank addTank(Team team, Difficulty difficulty, Vector2D position) throws ModelException {
     	Tank tank = null;
         if (map.isFree(position, Tank.getSize(), Tank.getSize())) {
             tank = new  Tank(freeID++, position, team, difficulty);
             map.add(tank);
             tanks.put(tank.getID(), tank);
+        }
+        if (tank == null) {
+            throw new ModelException("Cannot add tank(bot) at position" + position.toString());
         }
         return tank;
     }
@@ -249,15 +287,15 @@ public class GameModel {
         bots.put(bot.getTankID(), bot);
     }
     
-    public boolean addPlayer(Team team, int delay, Vector2D position) {
-        Tank tank = addTank(team, delay, position);
-        if (tank == null) {
-            return false;
+    public void addPlayer(Team team, int delay, Vector2D position) throws ModelException {
+        Tank tank;
+        try {
+            tank = addTank(team, delay, position);
         }
-        
+        catch (ModelException e) {
+            throw new ModelException("Cannot add player at position " + position.toString());
+        }
         playerID = tank.getID();
-        
-        return true;
     }
     
     public void movePlayer(Direction d) {

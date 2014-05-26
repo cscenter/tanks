@@ -10,6 +10,14 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.JFrame;
@@ -20,7 +28,6 @@ import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
 import model.GameModel;
-import model.GameObjectDescription;
 import model.ModelException;
 
 
@@ -31,7 +38,57 @@ public class ViewFrame extends JFrame {
     
     private static final int RANDOM_MAP_SIZE = 100;
     private static final int RANDOM_MAP_BOTS_COUNT = 40;
+    public static final String SCORES_TABLE_FILE = "highscores.txt";
+    private static final int MAX_SCORES_TO_PRINT = 10;
     
+    private static final int COLOMNS_IN_SCORE_TABLE = 3;
+    
+    
+    private String getHighScores() {
+        List<String[]> rows = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new FileReader(SCORES_TABLE_FILE)))
+        {
+            String[] row;
+            String line = br.readLine();
+            while (line != null) {
+                row = line.split(" ");
+                rows.add(row);
+                line = br.readLine();
+            }
+
+            /// name mape score
+            Comparator<String[]> cmp = new Comparator<String[]>() {
+
+                @Override
+                public int compare(String[] o1, String[] o2) {
+                    int score1 = Integer.parseInt(o1[2]);
+                    int score2 = Integer.parseInt(o2[2]);
+                    return score2 - score1;
+                }
+                
+            };
+            Collections.sort(rows, cmp);
+            String result = "";
+            for (int i = 0; i < Math.min(rows.size(), MAX_SCORES_TO_PRINT); ++i) {
+                result += String.valueOf(i + 1);
+                for (int j = 0; j < COLOMNS_IN_SCORE_TABLE; ++j) {
+                    result += "\t" + rows.get(i)[j];
+                }
+                result += "\n";
+            }
+            return result;
+        } catch (IOException e) {
+            return "Cannot load results ='(";
+        }
+    }
+    
+    public static void createMap() {
+        try {
+            GameModelGenerator.createMap(RANDOM_MAP_SIZE, RANDOM_MAP_SIZE, "randomMap.txt", RANDOM_MAP_BOTS_COUNT);
+        } catch (ModelException e1) {
+            System.out.println("Error while map generation occuried.");
+        }
+    }
     
     public ViewFrame() {
         super("Tanks 1.0");
@@ -65,11 +122,7 @@ public class ViewFrame extends JFrame {
         menuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
-                    GameModelGenerator.createMap(RANDOM_MAP_SIZE, RANDOM_MAP_SIZE, "randomMap.txt", RANDOM_MAP_BOTS_COUNT);
-                } catch (ModelException e1) {
-                    System.out.println("Error while map generation occuried.");
-                }
+                createMap();
                 panel.start(GameModel.ModelType.INFINITE, "randomMap.txt");
                 repaint();
                 pauseMenuItem.setEnabled(true);
@@ -110,6 +163,19 @@ public class ViewFrame extends JFrame {
                 }
             }
         });
+        
+        menuBar.add(menu);
+        
+        menu = new JMenu("High Scores");
+        menu.add(menu.add(new JMenuItem(new AbstractAction("Show table") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(ViewFrame.this,
+                        getHighScores(),
+                        "High Scores",
+                        JOptionPane.PLAIN_MESSAGE);
+            }
+        })));
         
         menuBar.add(menu);
         

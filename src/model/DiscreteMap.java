@@ -23,7 +23,7 @@ public class DiscreteMap {
     public DiscreteMap(int w, int h) {
         width = w;
         height = h;
-        objects = new Quadtree(w, h, ELEMENTS_PER_QUAD);
+        objects = new Quadtree(h, w, ELEMENTS_PER_QUAD);
         visited = new HashMap<>();
         staticRect = new Rectangle();
     }
@@ -232,6 +232,10 @@ public class DiscreteMap {
             }
         }
         return EMPTY_ID;
+    }
+    
+    public boolean isFree(Vector2D v) {
+        return isFree(v, GameModel.DISCRETE_FACTOR, GameModel.DISCRETE_FACTOR);
     }
     
     public boolean isFree(Vector2D v, int w, int h) {

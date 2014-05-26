@@ -40,8 +40,18 @@ public class CampaignGameModel extends GameModel {
 	
 	@Override
 	public void tick() throws ModelException {
-		// TODO Auto-generated method stub
 		super.tick();
+		
+		if (remainingBots > 0 && botsSpawns.size() != bots.size()) {
+		    for (BotSpawn spawn: botsSpawns) {
+		        if (map.isFree(spawn.position)) {
+		            addBot(Team.RED, spawn.botDifficulty, spawn.position);
+		            if (--remainingBots == 0) {
+		                break;
+		            }
+		        }
+		    }
+		}
 	}
 
 	public void addSpawn(Vector2D pos, Difficulty difficulty) {

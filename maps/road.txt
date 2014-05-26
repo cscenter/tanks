@@ -1,3 +1,4 @@
+CAMPAIGN
 9 40
 S G G G S G G G S
 S G G G S G G G S
@@ -39,3 +40,6 @@ S G G G S G G G S
 S G G G G G G G S
 S G G G R G G G S
 S G G G G G G G S
+PLAYER 2 2
+1 1
+EASY 3 3

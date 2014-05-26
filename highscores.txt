@@ -1,0 +1,10 @@
+ant map1 1
+car map2 19283923
+kitty map -5
+Player Castle 200
+Owner666 Castle 200
+NaVi.Dondo CutTheWay 200
+null Castle 200
+Player1 CutTheWay 200
+Jackson 1CutTheWay 1000
+Wow Castle 20800

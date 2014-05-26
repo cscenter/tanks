@@ -1,7 +1,7 @@
 package view;
 
+import io.GameModelGenerator;
 import io.GameModelLoader;
-import io.GameModelReader;
 import io.ImageGallery;
 import io.MapIOException;
 
@@ -16,6 +16,10 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -53,6 +57,7 @@ public class ViewPanel extends JPanel {
     
     private int ticksCounter;
     private static final int REPAINT_DELAY = 8;
+    private String mapName;
     
     public ViewPanel(PropertyChangeListener gameStartedListener, PropertyChangeListener gamePausedListener) {
         super();
@@ -114,6 +119,131 @@ public class ViewPanel extends JPanel {
         @Override
         public void keyTyped(KeyEvent ovent) {}
         
+        private void CampaignNextLevel() throws ModelException {
+            Object[] options = {"Save & Next",
+            "Don't save & Next"};
+            int n = JOptionPane.showOptionDialog(ViewPanel.this,
+                "Congradulations!\n"
+                + "You have advanced to the next level.",
+                "Do you want to save your result?",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                options[0]);
+            switch (n) {
+            case JOptionPane.YES_OPTION:
+                String s = (String)JOptionPane.showInputDialog(
+                    ViewPanel.this,
+                    "Enter your name:\n",
+                    "Name",
+                    JOptionPane.PLAIN_MESSAGE,
+                    null,
+                    null,
+                    "Player");
+                addScore(s, model.getScore());
+                break;
+            case JOptionPane.NO_OPTION:
+                break;
+            }
+            campaign.nextLevel();
+            mapName = campaign.getMapName();
+            model = campaign.getModel();
+            model.start();
+            timer.start();
+            pressedKeys.clear();
+            setGamePaused(false);
+            setGameStarted(true);
+        }
+        
+        private void InfiniteOver() throws ModelException {
+            Object[] options = {"Save", "Don't save", "Retry"};
+            int n = JOptionPane.showOptionDialog(ViewPanel.this,
+                "Oops, you have been killed...\n Your score: " + model.getScore(),
+                "Game over",
+                JOptionPane.YES_NO_CANCEL_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                options[2]);
+            timer.stop();
+            pressedKeys.clear();
+            setGamePaused(false);
+            setGameStarted(false);
+            switch (n) {
+            case JOptionPane.YES_OPTION:
+                String s = (String)JOptionPane.showInputDialog(
+                    ViewPanel.this,
+                    "Enter your name:\n",
+                    "Name",
+                    JOptionPane.PLAIN_MESSAGE,
+                    null,
+                    null,
+                    "Player");
+                addScore(s, model.getScore());
+                break;
+            case JOptionPane.NO_OPTION:
+                break;
+            case JOptionPane.CANCEL_OPTION:
+                ViewFrame.createMap();
+                try {
+                    model = GameModelLoader.load("randomMap.txt");
+                } catch (MapIOException e) {
+                    JOptionPane.showMessageDialog(ViewPanel.this,
+                        e.getMessage(),
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                }
+                mapName = "Random map";
+                model.start();  
+                timer.start();
+                pressedKeys.clear();
+                setGamePaused(false);
+                setGameStarted(true);
+                break;
+            }
+            
+        }
+        
+        private void CampaignOver() throws ModelException {
+            Object[] options = {"Save", "Don't save", "Retry"};
+            int n = JOptionPane.showOptionDialog(ViewPanel.this,
+                "Oops, you have been killed...\n Your score: " + model.getScore(),
+                "Game over",
+                JOptionPane.YES_NO_CANCEL_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                options[2]);
+            pressedKeys.clear();
+            setGamePaused(false);
+            setGameStarted(false);
+            switch (n) {
+            case JOptionPane.YES_OPTION:
+                String s = (String)JOptionPane.showInputDialog(
+                    ViewPanel.this,
+                    "Enter your name:\n",
+                    "Name",
+                    JOptionPane.PLAIN_MESSAGE,
+                    null,
+                    null,
+                    "Player");
+                addScore(s, model.getScore());
+                break;
+            case JOptionPane.NO_OPTION:
+                break;
+            case JOptionPane.CANCEL_OPTION:
+                campaign.reloadLevel();
+                mapName = campaign.getMapName();
+                model = campaign.getModel();
+                timer.start();
+                pressedKeys.clear();
+                setGamePaused(false);
+                setGameStarted(true);
+                break;
+            }
+        }
+        
         private void handleGameActions() throws ModelException {
             
             model.tick();
@@ -122,16 +252,21 @@ public class ViewPanel extends JPanel {
             if ((ticksCounter & (REPAINT_DELAY - 1)) == 0) {
                 repaint();
             }
-            if (!model.isPlayerAlive()) {
+            if (model.isOver()) {
                 repaint();
-                JOptionPane.showMessageDialog(ViewPanel.this,
-                    "Oops, you have been killed...\n Your score: " + model.getScore(),
-                    "Game over",
-                    JOptionPane.PLAIN_MESSAGE);
-                timer.stop();
-                pressedKeys.clear();
-                setGamePaused(false);
-                setGameStarted(false);
+                switch (modelType) {
+                case INFINITE:
+                    InfiniteOver();
+                    break;
+                case CAMPAIGN:
+                    timer.stop();
+                    if (model.isPlayerAlive()) {
+                        CampaignNextLevel();
+                    } else {
+                        CampaignOver();
+                    }
+                    break;
+                }
             }
         }
         
@@ -175,6 +310,20 @@ public class ViewPanel extends JPanel {
 
         public void start() {
             timer.start();
+        }
+    }
+
+    private void addScore(String name, int score) {
+        if (name == null) {
+            return;
+        }
+        try(PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(ViewFrame.SCORES_TABLE_FILE, true)))) {
+            out.println(name + " " + mapName.replaceAll(" ", "") + " " + String.valueOf(score));
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(ViewPanel.this,
+                "Failed to write score:\n" + e.getMessage(),
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
         }
     }
     
@@ -229,13 +378,9 @@ public class ViewPanel extends JPanel {
         case INFINITE:
             try {
                 model = GameModelLoader.load(mapFilePath);
+                mapName = "Random map";
                 model.start();  
-            } catch (MapIOException e) {
-                JOptionPane.showMessageDialog(ViewPanel.this,
-                        e.getMessage(),
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-            } catch (ModelException e) {
+            } catch (MapIOException | ModelException e) {
                 JOptionPane.showMessageDialog(ViewPanel.this,
                         e.getMessage(),
                         "Error",
@@ -247,6 +392,7 @@ public class ViewPanel extends JPanel {
                 campaign = new Campaign(mapFilePath);
                 model = campaign.getModel();
                 model.start();
+                mapName = campaign.getMapName();
             } catch (ModelException e) {
                 JOptionPane.showMessageDialog(ViewPanel.this,
                         e.getMessage(),
@@ -269,6 +415,9 @@ public class ViewPanel extends JPanel {
     private boolean isValidCoordinates(double x, double y) {
         return (x + cellImageSize > 0) && (y  + cellImageSize > 0) && (x < screenWidth) && (y < screenHeight);
     }
+    
+    private static final Color backgroundColor = new Color(51, 51, 51);
+    private static final Font scoreFont = new Font(Font.MONOSPACED, Font.BOLD, 30);
     
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -293,7 +442,7 @@ public class ViewPanel extends JPanel {
         int moveX = screenCenterX - (int)(modelCenterY);
         int moveY = screenCenterY - (int)(modelCenterX);
 
-        g.setColor(new Color(51, 51, 51));
+        g.setColor(backgroundColor);
         g.fillRect(0, 0, screenWidth, screenHeight);
         
         Image img = null;
@@ -353,7 +502,7 @@ public class ViewPanel extends JPanel {
             }
         }
         
-        g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 30));
+        g.setFont(scoreFont);
         g.setColor(Color.BLACK);
         
         if (isGamePaused()) {
@@ -361,6 +510,7 @@ public class ViewPanel extends JPanel {
         }
         if (isGameStarted()) {
             g.drawString("SCORE: " + Integer.toString(model.getScore()), 0, (int)(1.5 * cellImageSize));
+            g.drawString(mapName, (int)((screenWidth - 15) / 2), (int)(1.5 * cellImageSize));
         }
     }
 }

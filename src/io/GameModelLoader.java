@@ -3,11 +3,9 @@ package io;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Arrays;
 
 import model.CampaignGameModel;
 import model.GameModel;
-import model.GameObjectDescription;
 import model.InfiniteGameModel;
 import model.ModelException;
 import model.MovableObject.Team;
@@ -17,11 +15,9 @@ import model.Vector2D;
 public class GameModelLoader {
 
     public static GameModel load(String filename) throws MapIOException {
-        System.out.println(filename);
         try (BufferedReader br = new BufferedReader(new FileReader(filename)))
         {
             String modelType = br.readLine();
-            System.out.println(1);
             switch (GameModel.ModelType.valueOf(modelType)) {
             case INFINITE:
                 return loadInfinite(br);
@@ -53,7 +49,6 @@ public class GameModelLoader {
     private static CampaignGameModel loadCampaign(BufferedReader br) throws MapIOException {
         CampaignGameModel model = new CampaignGameModel();
         GameModelReader.parse(model, br);
-        System.out.println(2);
         
         try {
             String[] splittedLine = br.readLine().split(" ");
@@ -62,7 +57,7 @@ public class GameModelLoader {
                 throw new MapIOException("Cannot find player's spawn coordinates.");
             }
             
-            Vector2D pos = new Vector2D(Integer.parseInt(splittedLine[1]), Integer.parseInt(splittedLine[2]));
+            Vector2D pos = new Vector2D(Integer.parseInt(splittedLine[2]), Integer.parseInt(splittedLine[1]));
             model.addPlayer(Team.GREEN, DEFAULT_PLAYER_DELAY, pos.sub(1, 1).mul(GameModel.DISCRETE_FACTOR));
             
             splittedLine = br.readLine().split(" ");
@@ -75,12 +70,12 @@ public class GameModelLoader {
             for (int i = 0; i < spawnsCount; ++i) {
                 splittedLine = br.readLine().split(" ");
                 
-                pos = new Vector2D(Integer.parseInt(splittedLine[1]), Integer.parseInt(splittedLine[2]));
+                pos = new Vector2D(Integer.parseInt(splittedLine[2]), Integer.parseInt(splittedLine[1]));
                 model.addSpawn(pos, Difficulty.valueOf(splittedLine[0]));
             }
             
-        } catch (IOException e) {
-            throw new MapIOException("Cannot read map file.");
+        } catch (IOException | ModelException e) {
+            throw new MapIOException("Cannot read map file:\n" +e.getMessage());
         }
         
         

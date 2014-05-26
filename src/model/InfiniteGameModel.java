@@ -9,8 +9,6 @@ public class InfiniteGameModel extends GameModel {
     private static final int DEFAULT_BOTS_COUNT = 3;
     private static final int PLAYER_DELAY = 6;
     
-    private final double BONUS_PROBABILITY = 0.001;
-    
     public InfiniteGameModel() {
         super();
     }
@@ -37,18 +35,11 @@ public class InfiniteGameModel extends GameModel {
                 pos = getRandomEmptyPosition();
             }
         }
-        if (GENERATOR.nextDouble() < BONUS_PROBABILITY) {
-            Vector2D pos = getRandomEmptyPosition();
-            if (pos != null) {
-                pos = pos.add(GENERATOR.nextInt(DISCRETE_FACTOR - BonusObject.getSize()), GENERATOR.nextInt(DISCRETE_FACTOR - BonusObject.getSize()));
-                addImmovableObject(pos, GameObjectDescription.BONUS);
-            }
-        }
     }
 
     @Override
     public boolean isOver() {
-        return isPlayerAlive();
+        return ! isPlayerAlive();
     }
 
 

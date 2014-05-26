@@ -1,41 +1,56 @@
+CAMPAIGN
 40 40
-R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R
-R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R W W R R R R R R R
-R R R R R R R R R R R G G R R R G G G R R R R R R R R G R R R W R R R R R R R G
-R R R R W W R R R R R G W W R R R R R R R R R R R R R R G R R R R R R R R R R R
-R R R R R W R R R R R R W R R R R R R R R R R R R R R R R R R R R R R R R R R R
-R R R R W W G G G R R R W W R R R R R R R G G G R R R G G G R W R R R W R R R R
-R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R W R R R R
-R R R R R R R R R R R R R R R R R R R R R R G R R R R R R R R R R R G R R R R R
-R R R R R G G R R R R R R R R R R R R R R R G R R R R R R R R R R R G G R R R R
-R R R R R G R R R R R W W R R R R R R R R R G R R R R R R R R R R R R G R R R R
-R R R R R R R R R R R W R R G R R G G G G G G G R R R R R R R R R R R G R R R R
-R R R R R R R R R R W W R R G W W W R R R R R R R R R R R R R R R R R R R R R R
-R R R R R G G R R R R R R R G R R R R R R R R R R R R R R R R R R R R R R R R R
-R R R R R R R R G G G G R R R R R R R R R R R R R R R R R R R R R R R R R R R R
-R R R R R R R R G R R R R R R R R R R R R R R R R G G G R R R R R R R R R R R R
-G G R R G G G R R R R R R R R R R R R R R R R R R R R G R R R R R R R R R R R R
-G G G R R R R R W W W R R R R R R R R R R R R R R R R R R R R W W R R G R R R R
-G G G R R R R R R R R R R R R R R R R W W R R R R R R R R R R R R R R G R R R R
-R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R G R R R R
-R R R R R R R R R R R R R R R R R R R R R R R R R R R R R G G G R R R G R R R R
-R R R R R R R R R R R R R R R R R W R R R R R R R R R R R G R R R R R R R R R R
-R R R R R R R R R R R R R R R R W R R R R R R R R R R R R G R R R R R R R R R R
-R R R R R R R R R R R W W W R W W R R R R R R R R R R R R G R W W W R R R R R R
-R R R R R R R R R R W R R R R R R R R R R R R R R R R R R G R R R R R R R R R R
-R R R R R R R R R W R R R R R R R R R R R R R R R W R R R G R R R R R R R R R R
-R R R R R W R R W R R R R R R R R R R R R R R R R W R R R R R R R R R R R R R R
-R R R R W G R R R R R R R R R R R R R R R R R R R W R R R G R R R R R R R R R R
-R R R R R G G R R R R R R R R R R R R R R R R R R R R R R G R R W W W R R R R R
-R R W R W G G G R R R R R R R R R R R R W R R R R G G G R R R R W R W R R R R R
-R R W R R G G G G W R R R R R R R R R R W W R R R R R R R R R R W W W R R R R R
-R R R R R G G G R R R R R R W R R R R R W R R R R G G R R R R R R R R R R R R R
-R R R R R G G R R R R R R R W R R R R R R R R R R R G R R R R R R R R R R R R R
-R R R R R G R R R R R R R R R R R R R R G G G R R R R R R G G G R R R R R R R R
-R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R
-R R R R R R R R R R R R W W W R R R R R R R R R R R R R R R R R G R R R R R R R
-W W W R R R R R R R R R W G W R R W W W W R R R R W W R R R R R G R R R R R R R
-R R R R R R R R R R R R R W R R R W G G G R G R R R R W R R R R G R R R R R R R
-R R R R R R R R R R R R R R R R R W W W W R G R R R R R R R R R R R R R R R R R
-R R R R R W W W R R R R R R R R R W R R W R R R G G G R R R R R R R R R R R R R
-R R R R R R R R R R R R R R R R R W W W W R R R R R R R R R R R R R R R R R R R
+A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A
+A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A W W A A A A A A A
+A A A A A A A A A A A G G A A A G G G A A A A A A A A G A A A W A A A A A A A G
+A A A A W W A A A A A G W W A A A A A A A A A A A A A A G A A A A A A A A A A A
+A A A A A W A A A A A A W A A A A A A A A A A A A A A A A A A A A A A A A A A A
+A A A A W W G G G A A A W W A A A A A A A G G G A A A G G G A W A A A W A A A A
+A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A W A A A A
+A A A A A A A A A A A A A A A A A A A A A A G A A A A A A A A A A A G A A A A A
+A A A A A G G A A A A A A A A A A A A A A A G A A A A A A A A A A A G G A A A A
+A A A A A G A A A A A W W A A A A A A A A A G A A A A A A A A A A A A G A A A A
+A A A A A A A A A A A W A A G A A G G G G G G G A A A A A A A A A A A G A A A A
+A A A A A A A A A A W W A A G W W W A A A A A A A A A A A A A A A A A A A A A A
+A A A A A G G A A A A A A A G A A A A A A A A A A A A A A A A A A A A A A A A A
+A A A A A A A A G G G G A A A A A A A A A A A A A A A A A A A A A A A A A A A A
+A A A A A A A A G A A A A A A A A A A A A A A A A G G G A A A A A A A A A A A A
+G G A A G G G A A A A A A A A A A A A A A A A A A A A G A A A A A A A A A A A A
+G G G A A A A A W W W A A A A A A A A A A A A A A A A A A A A W W A A G A A A A
+G G G A A A A A A A A A A A A A A A A W W A A A A A A A A A A A A A A G A A A A
+A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A G A A A A
+A A A A A A A A A A A A A A A A A A A A A A A A A A A A A G G G A A A G A A A A
+A A A A A A A A A A A A A A A A A W A A A A A A A A A A A G A A A A A A A A A A
+A A A A A A A A A A A A A A A A W A A A A A A A A A A A A G A A A A A A A A A A
+A A A A A A A A A A A W W W A W W A A A A A A A A A A A A G A W W W A A A A A A
+A A A A A A A A A A W A A A A A A A A A A A A A A A A A A G A A A A A A A A A A
+A A A A A A A A A W A A A A A A A A A A A A A A A W A A A G A A A A A A A A A A
+A A A A A W A A W A A A A A A A A A A A A A A A A W A A A A A A A A A A A A A A
+A A A A W G A A A A A A A A A A A A A A A A A A A W A A A G A A A A A A A A A A
+A A A A A G G A A A A A A A A A A A A A A A A A A A A A A G A A W W W A A A A A
+A A W A W G G G A A A A A A A A A A A A W A A A A G G G A A A A W A W A A A A A
+A A W A A G G G G W A A A A A A A A A A W W A A A A A A A A A A W W W A A A A A
+A A A A A G G G A A A A A A W A A A A A W A A A A G G A A A A A A A A A A A A A
+A A A A A G G A A A A A A A W A A A A A A A A A A A G A A A A A A A A A A A A A
+A A A A A G A A A A A A A A A A A A A A G G G A A A A A A G G G A A A A A A A A
+A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A
+A A A A A A A A A A A A W W W A A A A A A A A A A A A A A A A A G A A A A A A A
+W W W A A A A A A A A A W G W A A W W W W A A A A W W A A A A A G A A A A A A A
+A A A A A A A A A A A A A W A A A W G G G A G A A A A W A A A A G A A A A A A A
+A A A A A A A A A A A A A A A A A W W W W A G A A A A A A A A A A A A A A A A A
+A A A A A W W W A A A A A A A A A W A A W A A A G G G A A A A A A A A A A A A A
+A A A A A A A A A A A A A A A A A W W W W A A A A A A A A A A A A A A A A A A A
+PLAYER 1 17
+8 10
+EASY 2 18
+HARD 8 6
+EASY 20 37
+HARD 33 37
+BOSS 28 15
+MEDIUM 35 9
+EASY 36 11
+MEDIUM 13 3
+
+
+
+
