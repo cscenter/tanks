@@ -1,6 +1,5 @@
 package view;
 
-import io.GameModelGenerator;
 import io.GameModelLoader;
 import io.ImageGallery;
 import io.MapIOException;
@@ -34,7 +33,6 @@ import model.GameModel;
 import model.GameModel.ModelType;
 import model.GameModel.deletedTank;
 import model.GameObject;
-import model.InfiniteGameModel;
 import model.ModelException;
 import model.Tank;
 
