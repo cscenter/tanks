@@ -8,3 +8,4 @@ null Castle 200
 Player1 CutTheWay 200
 Jackson 1CutTheWay 1000
 Wow Castle 20800
+Vanya Castle 20800

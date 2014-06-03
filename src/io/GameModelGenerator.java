@@ -23,6 +23,11 @@ public class GameModelGenerator {
     private static Random generator = new Random();
     
     public static void createMap(int width, int height, String filename, int botsCount) throws ModelException {
+        
+        if (botsCount >= width * height) {
+            throw new ModelException("Too many bots.");
+        }
+        
         GameObjectDescription[][] map = new GameObjectDescription[height][];
         for (int i = 0; i < height; ++i) {
             map[i] = new GameObjectDescription[width];
